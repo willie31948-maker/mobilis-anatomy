@@ -1,0 +1,804 @@
+{
+  "source": "Z-Anatomy, CC BY-SA 4.0",
+  "regions": {
+    "hip": {
+      "file": "hip.glb",
+      "bytes": 569600,
+      "meshes": [
+        "iliopsoas__l",
+        "iliopsoas__r",
+        "gluteus_maximus__l",
+        "gluteus_maximus__r",
+        "gluteus_medius__l",
+        "gluteus_medius__r",
+        "tfl__l",
+        "tfl__r",
+        "adductor_group__l",
+        "adductor_group__r",
+        "piriformis__l",
+        "piriformis__r"
+      ]
+    },
+    "thigh": {
+      "file": "thigh.glb",
+      "bytes": 364028,
+      "meshes": [
+        "hamstrings__l",
+        "hamstrings__r",
+        "rectus_femoris__l",
+        "rectus_femoris__r",
+        "quadriceps__l",
+        "quadriceps__r"
+      ]
+    },
+    "trunk": {
+      "file": "trunk.glb",
+      "bytes": 596752,
+      "meshes": [
+        "erector_spinae__l",
+        "erector_spinae__r",
+        "multifidus__l",
+        "multifidus__r",
+        "transversus_abdominis__l",
+        "transversus_abdominis__r",
+        "quadratus_lumborum__l",
+        "quadratus_lumborum__r",
+        "rectus_abdominis__l",
+        "rectus_abdominis__r"
+      ]
+    },
+    "shoulder": {
+      "file": "shoulder.glb",
+      "bytes": 973560,
+      "meshes": [
+        "pectoralis_major__l",
+        "pectoralis_major__r",
+        "pectoralis_minor__l",
+        "pectoralis_minor__r",
+        "rhomboids__l",
+        "rhomboids__r",
+        "lower_trapezius__l",
+        "lower_trapezius__r",
+        "serratus_anterior__l",
+        "serratus_anterior__r",
+        "rotator_cuff__l",
+        "rotator_cuff__r",
+        "latissimus_dorsi__l",
+        "latissimus_dorsi__r",
+        "deltoid__l",
+        "deltoid__r"
+      ]
+    },
+    "neck": {
+      "file": "neck.glb",
+      "bytes": 775496,
+      "meshes": [
+        "upper_trapezius__l",
+        "upper_trapezius__r",
+        "levator_scapulae__l",
+        "levator_scapulae__r",
+        "deep_neck_flexors__l",
+        "deep_neck_flexors__r",
+        "suboccipitals__l",
+        "suboccipitals__r",
+        "sternocleidomastoid__l",
+        "sternocleidomastoid__r",
+        "scalenes__l",
+        "scalenes__r",
+        "splenius__l",
+        "splenius__r"
+      ]
+    },
+    "lowerleg": {
+      "file": "lowerleg.glb",
+      "bytes": 590660,
+      "meshes": [
+        "gastrocnemius__l",
+        "gastrocnemius__r",
+        "soleus__l",
+        "soleus__r",
+        "tibialis_anterior__l",
+        "tibialis_anterior__r",
+        "tibialis_posterior__l",
+        "tibialis_posterior__r",
+        "peroneals__l",
+        "peroneals__r"
+      ]
+    },
+    "arm": {
+      "file": "arm.glb",
+      "bytes": 470832,
+      "meshes": [
+        "biceps_brachii__l",
+        "biceps_brachii__r",
+        "triceps_brachii__l",
+        "triceps_brachii__r",
+        "brachialis__l",
+        "brachialis__r",
+        "brachioradialis__l",
+        "brachioradialis__r"
+      ]
+    },
+    "forearm": {
+      "file": "forearm.glb",
+      "bytes": 692956,
+      "meshes": [
+        "wrist_extensors__l",
+        "wrist_extensors__r",
+        "wrist_flexors__l",
+        "wrist_flexors__r",
+        "finger_flexors__l",
+        "finger_flexors__r",
+        "finger_extensors__l",
+        "finger_extensors__r",
+        "pronators__l",
+        "pronators__r",
+        "supinator__l",
+        "supinator__r"
+      ]
+    },
+    "hand": {
+      "file": "hand.glb",
+      "bytes": 122628,
+      "meshes": [
+        "hand_intrinsics__l",
+        "hand_intrinsics__r"
+      ]
+    },
+    "jaw": {
+      "file": "jaw.glb",
+      "bytes": 329284,
+      "meshes": [
+        "masseter__l",
+        "masseter__r",
+        "temporalis__l",
+        "temporalis__r",
+        "pterygoids__l",
+        "pterygoids__r",
+        "digastric__l",
+        "digastric__r"
+      ]
+    },
+    "context": {
+      "file": "context.glb",
+      "bytes": 542560,
+      "meshes": [
+        "bone__skull__l",
+        "bone__skull__r",
+        "bone__skull__c",
+        "bone__arm_bones__l",
+        "bone__arm_bones__r",
+        "bone__hand_bones__l",
+        "bone__hand_bones__r"
+      ]
+    }
+  },
+  "muscles": {
+    "iliopsoas__l": {
+      "muscle": "iliopsoas",
+      "side": "l",
+      "tris_before": 9828,
+      "tris_after": 3998
+    },
+    "iliopsoas__r": {
+      "muscle": "iliopsoas",
+      "side": "r",
+      "tris_before": 9828,
+      "tris_after": 3998
+    },
+    "gluteus_maximus__l": {
+      "muscle": "gluteus_maximus",
+      "side": "l",
+      "tris_before": 3326,
+      "tris_after": 3326
+    },
+    "gluteus_maximus__r": {
+      "muscle": "gluteus_maximus",
+      "side": "r",
+      "tris_before": 3326,
+      "tris_after": 3326
+    },
+    "gluteus_medius__l": {
+      "muscle": "gluteus_medius",
+      "side": "l",
+      "tris_before": 5176,
+      "tris_after": 4000
+    },
+    "gluteus_medius__r": {
+      "muscle": "gluteus_medius",
+      "side": "r",
+      "tris_before": 5176,
+      "tris_after": 4000
+    },
+    "tfl__l": {
+      "muscle": "tfl",
+      "side": "l",
+      "tris_before": 1862,
+      "tris_after": 1862
+    },
+    "tfl__r": {
+      "muscle": "tfl",
+      "side": "r",
+      "tris_before": 1862,
+      "tris_after": 1862
+    },
+    "adductor_group__l": {
+      "muscle": "adductor_group",
+      "side": "l",
+      "tris_before": 18850,
+      "tris_after": 4000
+    },
+    "adductor_group__r": {
+      "muscle": "adductor_group",
+      "side": "r",
+      "tris_before": 18850,
+      "tris_after": 4000
+    },
+    "piriformis__l": {
+      "muscle": "piriformis",
+      "side": "l",
+      "tris_before": 1500,
+      "tris_after": 1500
+    },
+    "piriformis__r": {
+      "muscle": "piriformis",
+      "side": "r",
+      "tris_before": 1500,
+      "tris_after": 1500
+    },
+    "hamstrings__l": {
+      "muscle": "hamstrings",
+      "side": "l",
+      "tris_before": 21492,
+      "tris_after": 3998
+    },
+    "hamstrings__r": {
+      "muscle": "hamstrings",
+      "side": "r",
+      "tris_before": 21492,
+      "tris_after": 3998
+    },
+    "rectus_femoris__l": {
+      "muscle": "rectus_femoris",
+      "side": "l",
+      "tris_before": 8276,
+      "tris_after": 4000
+    },
+    "rectus_femoris__r": {
+      "muscle": "rectus_femoris",
+      "side": "r",
+      "tris_before": 8276,
+      "tris_after": 4000
+    },
+    "quadriceps__l": {
+      "muscle": "quadriceps",
+      "side": "l",
+      "tris_before": 21980,
+      "tris_after": 4000
+    },
+    "quadriceps__r": {
+      "muscle": "quadriceps",
+      "side": "r",
+      "tris_before": 21980,
+      "tris_after": 4000
+    },
+    "erector_spinae__l": {
+      "muscle": "erector_spinae",
+      "side": "l",
+      "tris_before": 30994,
+      "tris_after": 4000
+    },
+    "erector_spinae__r": {
+      "muscle": "erector_spinae",
+      "side": "r",
+      "tris_before": 30994,
+      "tris_after": 4000
+    },
+    "multifidus__l": {
+      "muscle": "multifidus",
+      "side": "l",
+      "tris_before": 4210,
+      "tris_after": 4000
+    },
+    "multifidus__r": {
+      "muscle": "multifidus",
+      "side": "r",
+      "tris_before": 4210,
+      "tris_after": 4000
+    },
+    "transversus_abdominis__l": {
+      "muscle": "transversus_abdominis",
+      "side": "l",
+      "tris_before": 34328,
+      "tris_after": 4000
+    },
+    "transversus_abdominis__r": {
+      "muscle": "transversus_abdominis",
+      "side": "r",
+      "tris_before": 34328,
+      "tris_after": 4000
+    },
+    "quadratus_lumborum__l": {
+      "muscle": "quadratus_lumborum",
+      "side": "l",
+      "tris_before": 2832,
+      "tris_after": 2832
+    },
+    "quadratus_lumborum__r": {
+      "muscle": "quadratus_lumborum",
+      "side": "r",
+      "tris_before": 2832,
+      "tris_after": 2832
+    },
+    "rectus_abdominis__l": {
+      "muscle": "rectus_abdominis",
+      "side": "l",
+      "tris_before": 20604,
+      "tris_after": 4000
+    },
+    "rectus_abdominis__r": {
+      "muscle": "rectus_abdominis",
+      "side": "r",
+      "tris_before": 20604,
+      "tris_after": 4000
+    },
+    "pectoralis_major__l": {
+      "muscle": "pectoralis_major",
+      "side": "l",
+      "tris_before": 4072,
+      "tris_after": 4000
+    },
+    "pectoralis_major__r": {
+      "muscle": "pectoralis_major",
+      "side": "r",
+      "tris_before": 4072,
+      "tris_after": 4000
+    },
+    "pectoralis_minor__l": {
+      "muscle": "pectoralis_minor",
+      "side": "l",
+      "tris_before": 4142,
+      "tris_after": 4000
+    },
+    "pectoralis_minor__r": {
+      "muscle": "pectoralis_minor",
+      "side": "r",
+      "tris_before": 4142,
+      "tris_after": 4000
+    },
+    "rhomboids__l": {
+      "muscle": "rhomboids",
+      "side": "l",
+      "tris_before": 6294,
+      "tris_after": 4000
+    },
+    "rhomboids__r": {
+      "muscle": "rhomboids",
+      "side": "r",
+      "tris_before": 6294,
+      "tris_after": 4000
+    },
+    "lower_trapezius__l": {
+      "muscle": "lower_trapezius",
+      "side": "l",
+      "tris_before": 4596,
+      "tris_after": 4000
+    },
+    "lower_trapezius__r": {
+      "muscle": "lower_trapezius",
+      "side": "r",
+      "tris_before": 4596,
+      "tris_after": 4000
+    },
+    "upper_trapezius__l": {
+      "muscle": "upper_trapezius",
+      "side": "l",
+      "tris_before": 6760,
+      "tris_after": 4000
+    },
+    "upper_trapezius__r": {
+      "muscle": "upper_trapezius",
+      "side": "r",
+      "tris_before": 6760,
+      "tris_after": 4000
+    },
+    "serratus_anterior__l": {
+      "muscle": "serratus_anterior",
+      "side": "l",
+      "tris_before": 25240,
+      "tris_after": 4000
+    },
+    "serratus_anterior__r": {
+      "muscle": "serratus_anterior",
+      "side": "r",
+      "tris_before": 25240,
+      "tris_after": 4000
+    },
+    "rotator_cuff__l": {
+      "muscle": "rotator_cuff",
+      "side": "l",
+      "tris_before": 9072,
+      "tris_after": 4000
+    },
+    "rotator_cuff__r": {
+      "muscle": "rotator_cuff",
+      "side": "r",
+      "tris_before": 9072,
+      "tris_after": 4000
+    },
+    "levator_scapulae__l": {
+      "muscle": "levator_scapulae",
+      "side": "l",
+      "tris_before": 3082,
+      "tris_after": 3082
+    },
+    "levator_scapulae__r": {
+      "muscle": "levator_scapulae",
+      "side": "r",
+      "tris_before": 3082,
+      "tris_after": 3082
+    },
+    "deep_neck_flexors__l": {
+      "muscle": "deep_neck_flexors",
+      "side": "l",
+      "tris_before": 8274,
+      "tris_after": 4000
+    },
+    "deep_neck_flexors__r": {
+      "muscle": "deep_neck_flexors",
+      "side": "r",
+      "tris_before": 8274,
+      "tris_after": 4000
+    },
+    "suboccipitals__l": {
+      "muscle": "suboccipitals",
+      "side": "l",
+      "tris_before": 2414,
+      "tris_after": 2414
+    },
+    "suboccipitals__r": {
+      "muscle": "suboccipitals",
+      "side": "r",
+      "tris_before": 2414,
+      "tris_after": 2414
+    },
+    "latissimus_dorsi__l": {
+      "muscle": "latissimus_dorsi",
+      "side": "l",
+      "tris_before": 21580,
+      "tris_after": 4000
+    },
+    "latissimus_dorsi__r": {
+      "muscle": "latissimus_dorsi",
+      "side": "r",
+      "tris_before": 21580,
+      "tris_after": 4000
+    },
+    "gastrocnemius__l": {
+      "muscle": "gastrocnemius",
+      "side": "l",
+      "tris_before": 11370,
+      "tris_after": 4000
+    },
+    "gastrocnemius__r": {
+      "muscle": "gastrocnemius",
+      "side": "r",
+      "tris_before": 11370,
+      "tris_after": 4000
+    },
+    "soleus__l": {
+      "muscle": "soleus",
+      "side": "l",
+      "tris_before": 6774,
+      "tris_after": 4000
+    },
+    "soleus__r": {
+      "muscle": "soleus",
+      "side": "r",
+      "tris_before": 6774,
+      "tris_after": 4000
+    },
+    "tibialis_anterior__l": {
+      "muscle": "tibialis_anterior",
+      "side": "l",
+      "tris_before": 3526,
+      "tris_after": 3526
+    },
+    "tibialis_anterior__r": {
+      "muscle": "tibialis_anterior",
+      "side": "r",
+      "tris_before": 3526,
+      "tris_after": 3526
+    },
+    "tibialis_posterior__l": {
+      "muscle": "tibialis_posterior",
+      "side": "l",
+      "tris_before": 5526,
+      "tris_after": 4000
+    },
+    "tibialis_posterior__r": {
+      "muscle": "tibialis_posterior",
+      "side": "r",
+      "tris_before": 5526,
+      "tris_after": 4000
+    },
+    "peroneals__l": {
+      "muscle": "peroneals",
+      "side": "l",
+      "tris_before": 8968,
+      "tris_after": 4000
+    },
+    "peroneals__r": {
+      "muscle": "peroneals",
+      "side": "r",
+      "tris_before": 8968,
+      "tris_after": 4000
+    },
+    "deltoid__l": {
+      "muscle": "deltoid",
+      "side": "l",
+      "tris_before": 10244,
+      "tris_after": 4000
+    },
+    "deltoid__r": {
+      "muscle": "deltoid",
+      "side": "r",
+      "tris_before": 10244,
+      "tris_after": 4000
+    },
+    "biceps_brachii__l": {
+      "muscle": "biceps_brachii",
+      "side": "l",
+      "tris_before": 5914,
+      "tris_after": 4000
+    },
+    "biceps_brachii__r": {
+      "muscle": "biceps_brachii",
+      "side": "r",
+      "tris_before": 5914,
+      "tris_after": 4000
+    },
+    "triceps_brachii__l": {
+      "muscle": "triceps_brachii",
+      "side": "l",
+      "tris_before": 10264,
+      "tris_after": 4000
+    },
+    "triceps_brachii__r": {
+      "muscle": "triceps_brachii",
+      "side": "r",
+      "tris_before": 10264,
+      "tris_after": 4000
+    },
+    "brachialis__l": {
+      "muscle": "brachialis",
+      "side": "l",
+      "tris_before": 3478,
+      "tris_after": 3478
+    },
+    "brachialis__r": {
+      "muscle": "brachialis",
+      "side": "r",
+      "tris_before": 3478,
+      "tris_after": 3478
+    },
+    "brachioradialis__l": {
+      "muscle": "brachioradialis",
+      "side": "l",
+      "tris_before": 7312,
+      "tris_after": 4000
+    },
+    "brachioradialis__r": {
+      "muscle": "brachioradialis",
+      "side": "r",
+      "tris_before": 7312,
+      "tris_after": 4000
+    },
+    "wrist_extensors__l": {
+      "muscle": "wrist_extensors",
+      "side": "l",
+      "tris_before": 8260,
+      "tris_after": 4000
+    },
+    "wrist_extensors__r": {
+      "muscle": "wrist_extensors",
+      "side": "r",
+      "tris_before": 8260,
+      "tris_after": 4000
+    },
+    "wrist_flexors__l": {
+      "muscle": "wrist_flexors",
+      "side": "l",
+      "tris_before": 11418,
+      "tris_after": 4000
+    },
+    "wrist_flexors__r": {
+      "muscle": "wrist_flexors",
+      "side": "r",
+      "tris_before": 11418,
+      "tris_after": 4000
+    },
+    "finger_flexors__l": {
+      "muscle": "finger_flexors",
+      "side": "l",
+      "tris_before": 22850,
+      "tris_after": 3998
+    },
+    "finger_flexors__r": {
+      "muscle": "finger_flexors",
+      "side": "r",
+      "tris_before": 22850,
+      "tris_after": 3998
+    },
+    "finger_extensors__l": {
+      "muscle": "finger_extensors",
+      "side": "l",
+      "tris_before": 14944,
+      "tris_after": 4000
+    },
+    "finger_extensors__r": {
+      "muscle": "finger_extensors",
+      "side": "r",
+      "tris_before": 14944,
+      "tris_after": 4000
+    },
+    "hand_intrinsics__l": {
+      "muscle": "hand_intrinsics",
+      "side": "l",
+      "tris_before": 6326,
+      "tris_after": 4000
+    },
+    "hand_intrinsics__r": {
+      "muscle": "hand_intrinsics",
+      "side": "r",
+      "tris_before": 6326,
+      "tris_after": 4000
+    },
+    "pronators__l": {
+      "muscle": "pronators",
+      "side": "l",
+      "tris_before": 4680,
+      "tris_after": 4000
+    },
+    "pronators__r": {
+      "muscle": "pronators",
+      "side": "r",
+      "tris_before": 4680,
+      "tris_after": 4000
+    },
+    "supinator__l": {
+      "muscle": "supinator",
+      "side": "l",
+      "tris_before": 2754,
+      "tris_after": 2754
+    },
+    "supinator__r": {
+      "muscle": "supinator",
+      "side": "r",
+      "tris_before": 2754,
+      "tris_after": 2754
+    },
+    "sternocleidomastoid__l": {
+      "muscle": "sternocleidomastoid",
+      "side": "l",
+      "tris_before": 4952,
+      "tris_after": 4000
+    },
+    "sternocleidomastoid__r": {
+      "muscle": "sternocleidomastoid",
+      "side": "r",
+      "tris_before": 4952,
+      "tris_after": 4000
+    },
+    "scalenes__l": {
+      "muscle": "scalenes",
+      "side": "l",
+      "tris_before": 4790,
+      "tris_after": 4000
+    },
+    "scalenes__r": {
+      "muscle": "scalenes",
+      "side": "r",
+      "tris_before": 4790,
+      "tris_after": 4000
+    },
+    "splenius__l": {
+      "muscle": "splenius",
+      "side": "l",
+      "tris_before": 9576,
+      "tris_after": 3998
+    },
+    "splenius__r": {
+      "muscle": "splenius",
+      "side": "r",
+      "tris_before": 9576,
+      "tris_after": 3998
+    },
+    "masseter__l": {
+      "muscle": "masseter",
+      "side": "l",
+      "tris_before": 2398,
+      "tris_after": 2398
+    },
+    "masseter__r": {
+      "muscle": "masseter",
+      "side": "r",
+      "tris_before": 2398,
+      "tris_after": 2398
+    },
+    "temporalis__l": {
+      "muscle": "temporalis",
+      "side": "l",
+      "tris_before": 10260,
+      "tris_after": 4000
+    },
+    "temporalis__r": {
+      "muscle": "temporalis",
+      "side": "r",
+      "tris_before": 10260,
+      "tris_after": 4000
+    },
+    "pterygoids__l": {
+      "muscle": "pterygoids",
+      "side": "l",
+      "tris_before": 1048,
+      "tris_after": 1048
+    },
+    "pterygoids__r": {
+      "muscle": "pterygoids",
+      "side": "r",
+      "tris_before": 1048,
+      "tris_after": 1048
+    },
+    "digastric__l": {
+      "muscle": "digastric",
+      "side": "l",
+      "tris_before": 3320,
+      "tris_after": 3320
+    },
+    "digastric__r": {
+      "muscle": "digastric",
+      "side": "r",
+      "tris_before": 3320,
+      "tris_after": 3320
+    }
+  },
+  "missing": [],
+  "context": {
+    "bone__skull__l": {
+      "group": "skull",
+      "tris_before": 27398,
+      "tris_after": 4000
+    },
+    "bone__skull__r": {
+      "group": "skull",
+      "tris_before": 27292,
+      "tris_after": 4000
+    },
+    "bone__skull__c": {
+      "group": "skull",
+      "tris_before": 34145,
+      "tris_after": 4000
+    },
+    "bone__arm_bones__l": {
+      "group": "arm_bones",
+      "tris_before": 32844,
+      "tris_after": 4000
+    },
+    "bone__arm_bones__r": {
+      "group": "arm_bones",
+      "tris_before": 32844,
+      "tris_after": 4000
+    },
+    "bone__hand_bones__l": {
+      "group": "hand_bones",
+      "tris_before": 4518,
+      "tris_after": 4000
+    },
+    "bone__hand_bones__r": {
+      "group": "hand_bones",
+      "tris_before": 4518,
+      "tris_after": 4000
+    }
+  }
+}

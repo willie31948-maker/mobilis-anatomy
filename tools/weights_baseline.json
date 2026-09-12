@@ -1,0 +1,1992 @@
+{
+ "adductor_group__l": {
+  "skinned": true,
+  "verts": 1244,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "LeftUpLeg",
+    "share": 0.8121,
+    "dist_cm": 19.1
+   },
+   {
+    "bone": "Hips",
+    "share": 0.1879,
+    "dist_cm": 26.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "adductor_group__r": {
+  "skinned": true,
+  "verts": 1244,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "RightUpLeg",
+    "share": 0.8121,
+    "dist_cm": 19.1
+   },
+   {
+    "bone": "Hips",
+    "share": 0.1879,
+    "dist_cm": 26.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "biceps_brachii__l": {
+  "skinned": true,
+  "verts": 1244,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "LeftArm",
+    "share": 0.7486,
+    "dist_cm": 15.1
+   },
+   {
+    "bone": "Scapula.l",
+    "share": 0.1513,
+    "dist_cm": 18.8
+   },
+   {
+    "bone": "Radius.l",
+    "share": 0.1001,
+    "dist_cm": 15.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "biceps_brachii__r": {
+  "skinned": true,
+  "verts": 1244,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "RightArm",
+    "share": 0.7486,
+    "dist_cm": 15.1
+   },
+   {
+    "bone": "Scapula.r",
+    "share": 0.1513,
+    "dist_cm": 18.8
+   },
+   {
+    "bone": "Radius.r",
+    "share": 0.1001,
+    "dist_cm": 15.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "brachialis__l": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "LeftArm",
+    "share": 0.5092,
+    "dist_cm": 23.5
+   },
+   {
+    "bone": "Ulna.l",
+    "share": 0.4908,
+    "dist_cm": 6.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "brachialis__r": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "RightArm",
+    "share": 0.5092,
+    "dist_cm": 23.5
+   },
+   {
+    "bone": "Ulna.r",
+    "share": 0.4908,
+    "dist_cm": 6.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "brachioradialis__l": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Ulna.l",
+    "share": 0.5987,
+    "dist_cm": 6.9
+   },
+   {
+    "bone": "Radius.l",
+    "share": 0.285,
+    "dist_cm": 5.8
+   },
+   {
+    "bone": "LeftArm",
+    "share": 0.1163,
+    "dist_cm": 35.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "brachioradialis__r": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Ulna.r",
+    "share": 0.5987,
+    "dist_cm": 6.9
+   },
+   {
+    "bone": "Radius.r",
+    "share": 0.285,
+    "dist_cm": 5.8
+   },
+   {
+    "bone": "RightArm",
+    "share": 0.1163,
+    "dist_cm": 35.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "deep_neck_flexors__l": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 9.4
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "deep_neck_flexors__r": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 9.4
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "deltoid__l": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Scapula.l",
+    "share": 0.6935,
+    "dist_cm": 7.3
+   },
+   {
+    "bone": "LeftArm",
+    "share": 0.2909,
+    "dist_cm": 3.9
+   },
+   {
+    "bone": "Clavicle-Z.l",
+    "share": 0.0156,
+    "dist_cm": 20.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "deltoid__r": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Scapula.r",
+    "share": 0.6935,
+    "dist_cm": 7.3
+   },
+   {
+    "bone": "RightArm",
+    "share": 0.2909,
+    "dist_cm": 3.9
+   },
+   {
+    "bone": "Clavicle-Z.r",
+    "share": 0.0156,
+    "dist_cm": 20.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "digastric__l": {
+  "skinned": true,
+  "verts": 1258,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Mandible",
+    "share": 1.0,
+    "dist_cm": 6.5
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "digastric__r": {
+  "skinned": true,
+  "verts": 1258,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Mandible",
+    "share": 1.0,
+    "dist_cm": 6.5
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "erector_spinae__l": {
+  "skinned": true,
+  "verts": 1245,
+  "n_bones": 13,
+  "influences": [
+   {
+    "bone": "T10",
+    "share": 0.1501,
+    "dist_cm": 4.5
+   },
+   {
+    "bone": "T8",
+    "share": 0.135,
+    "dist_cm": 7.8
+   },
+   {
+    "bone": "T6",
+    "share": 0.112,
+    "dist_cm": 13.3
+   },
+   {
+    "bone": "T12",
+    "share": 0.1057,
+    "dist_cm": 8.0
+   },
+   {
+    "bone": "T4",
+    "share": 0.0763,
+    "dist_cm": 18.9
+   },
+   {
+    "bone": "L1",
+    "share": 0.0727,
+    "dist_cm": 10.5
+   },
+   {
+    "bone": "L5",
+    "share": 0.06,
+    "dist_cm": 21.3
+   },
+   {
+    "bone": "L2",
+    "share": 0.0543,
+    "dist_cm": 13.2
+   },
+   {
+    "bone": "L4",
+    "share": 0.0532,
+    "dist_cm": 18.8
+   },
+   {
+    "bone": "Hips",
+    "share": 0.052,
+    "dist_cm": 25.4
+   },
+   {
+    "bone": "L3",
+    "share": 0.0518,
+    "dist_cm": 15.8
+   },
+   {
+    "bone": "T2",
+    "share": 0.0453,
+    "dist_cm": 23.8
+   },
+   {
+    "bone": "T1",
+    "share": 0.0315,
+    "dist_cm": 25.8
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 4
+ },
+ "erector_spinae__r": {
+  "skinned": true,
+  "verts": 1245,
+  "n_bones": 13,
+  "influences": [
+   {
+    "bone": "T10",
+    "share": 0.1498,
+    "dist_cm": 4.5
+   },
+   {
+    "bone": "T8",
+    "share": 0.135,
+    "dist_cm": 7.8
+   },
+   {
+    "bone": "T6",
+    "share": 0.1121,
+    "dist_cm": 13.3
+   },
+   {
+    "bone": "T12",
+    "share": 0.1052,
+    "dist_cm": 8.0
+   },
+   {
+    "bone": "T4",
+    "share": 0.0765,
+    "dist_cm": 18.8
+   },
+   {
+    "bone": "L1",
+    "share": 0.0725,
+    "dist_cm": 10.5
+   },
+   {
+    "bone": "L5",
+    "share": 0.06,
+    "dist_cm": 21.3
+   },
+   {
+    "bone": "L2",
+    "share": 0.0543,
+    "dist_cm": 13.2
+   },
+   {
+    "bone": "L4",
+    "share": 0.0532,
+    "dist_cm": 18.8
+   },
+   {
+    "bone": "Hips",
+    "share": 0.052,
+    "dist_cm": 25.4
+   },
+   {
+    "bone": "L3",
+    "share": 0.0518,
+    "dist_cm": 15.8
+   },
+   {
+    "bone": "T2",
+    "share": 0.0457,
+    "dist_cm": 23.7
+   },
+   {
+    "bone": "T1",
+    "share": 0.0317,
+    "dist_cm": 25.8
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 4
+ },
+ "finger_extensors__l": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "LeftHand",
+    "share": 0.6875,
+    "dist_cm": 3.6
+   },
+   {
+    "bone": "Ulna.l",
+    "share": 0.3125,
+    "dist_cm": 21.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "finger_extensors__r": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "RightHand",
+    "share": 0.6875,
+    "dist_cm": 3.6
+   },
+   {
+    "bone": "Ulna.r",
+    "share": 0.3125,
+    "dist_cm": 21.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "finger_flexors__l": {
+  "skinned": true,
+  "verts": 1214,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "LeftHand",
+    "share": 0.6097,
+    "dist_cm": 4.3
+   },
+   {
+    "bone": "Ulna.l",
+    "share": 0.3903,
+    "dist_cm": 20.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "finger_flexors__r": {
+  "skinned": true,
+  "verts": 1214,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "RightHand",
+    "share": 0.6097,
+    "dist_cm": 4.3
+   },
+   {
+    "bone": "Ulna.r",
+    "share": 0.3903,
+    "dist_cm": 20.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "gastrocnemius__l": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Tibia.l",
+    "share": 0.8257,
+    "dist_cm": 10.5
+   },
+   {
+    "bone": "LeftUpLeg",
+    "share": 0.1665,
+    "dist_cm": 49.9
+   },
+   {
+    "bone": "LeftFoot",
+    "share": 0.0078,
+    "dist_cm": 29.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "gastrocnemius__r": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Tibia.r",
+    "share": 0.8257,
+    "dist_cm": 10.5
+   },
+   {
+    "bone": "RightUpLeg",
+    "share": 0.1665,
+    "dist_cm": 49.9
+   },
+   {
+    "bone": "RightFoot",
+    "share": 0.0078,
+    "dist_cm": 29.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "gluteus_maximus__l": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.695,
+    "dist_cm": 12.1
+   },
+   {
+    "bone": "LeftUpLeg",
+    "share": 0.305,
+    "dist_cm": 6.5
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "gluteus_maximus__r": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.695,
+    "dist_cm": 12.1
+   },
+   {
+    "bone": "RightUpLeg",
+    "share": 0.305,
+    "dist_cm": 6.5
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "gluteus_medius__l": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.6932,
+    "dist_cm": 11.7
+   },
+   {
+    "bone": "LeftUpLeg",
+    "share": 0.3068,
+    "dist_cm": 7.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "gluteus_medius__r": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.6932,
+    "dist_cm": 11.7
+   },
+   {
+    "bone": "RightUpLeg",
+    "share": 0.3068,
+    "dist_cm": 7.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "hamstrings__l": {
+  "skinned": true,
+  "verts": 1237,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.5141,
+    "dist_cm": 35.5
+   },
+   {
+    "bone": "Tibia.l",
+    "share": 0.4859,
+    "dist_cm": 13.8
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "hamstrings__r": {
+  "skinned": true,
+  "verts": 1237,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.5141,
+    "dist_cm": 35.5
+   },
+   {
+    "bone": "Tibia.r",
+    "share": 0.4859,
+    "dist_cm": 13.8
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "hand_intrinsics__l": {
+  "skinned": true,
+  "verts": 1273,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "LeftHand",
+    "share": 1.0,
+    "dist_cm": 6.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "hand_intrinsics__r": {
+  "skinned": true,
+  "verts": 1273,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "RightHand",
+    "share": 1.0,
+    "dist_cm": 6.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "iliopsoas__l": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "L3",
+    "share": 0.7699,
+    "dist_cm": 10.8
+   },
+   {
+    "bone": "LeftUpLeg",
+    "share": 0.2301,
+    "dist_cm": 9.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "iliopsoas__r": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "L3",
+    "share": 0.7699,
+    "dist_cm": 10.8
+   },
+   {
+    "bone": "RightUpLeg",
+    "share": 0.2301,
+    "dist_cm": 9.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "latissimus_dorsi__l": {
+  "skinned": true,
+  "verts": 1259,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Spine1",
+    "share": 1.0,
+    "dist_cm": 15.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "latissimus_dorsi__r": {
+  "skinned": true,
+  "verts": 1259,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Spine1",
+    "share": 1.0,
+    "dist_cm": 15.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "levator_scapulae__l": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.l",
+    "share": 1.0,
+    "dist_cm": 10.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "levator_scapulae__r": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.r",
+    "share": 1.0,
+    "dist_cm": 10.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "lower_trapezius__l": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.l",
+    "share": 1.0,
+    "dist_cm": 12.7
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "lower_trapezius__r": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.r",
+    "share": 1.0,
+    "dist_cm": 12.7
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "masseter__l": {
+  "skinned": true,
+  "verts": 1191,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Mandible",
+    "share": 1.0,
+    "dist_cm": 6.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "masseter__r": {
+  "skinned": true,
+  "verts": 1191,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Mandible",
+    "share": 1.0,
+    "dist_cm": 6.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "multifidus__l": {
+  "skinned": true,
+  "verts": 1254,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Spine",
+    "share": 1.0,
+    "dist_cm": 9.4
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "multifidus__r": {
+  "skinned": true,
+  "verts": 1254,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Spine",
+    "share": 1.0,
+    "dist_cm": 9.4
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "pectoralis_major__l": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Sternum",
+    "share": 1.0,
+    "dist_cm": 9.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "pectoralis_major__r": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Sternum",
+    "share": 1.0,
+    "dist_cm": 9.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "pectoralis_minor__l": {
+  "skinned": true,
+  "verts": 1271,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.l",
+    "share": 1.0,
+    "dist_cm": 11.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "pectoralis_minor__r": {
+  "skinned": true,
+  "verts": 1271,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.r",
+    "share": 1.0,
+    "dist_cm": 11.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "peroneals__l": {
+  "skinned": true,
+  "verts": 1231,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "LeftFoot",
+    "share": 0.5176,
+    "dist_cm": 12.9
+   },
+   {
+    "bone": "Tibia.l",
+    "share": 0.4824,
+    "dist_cm": 26.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "peroneals__r": {
+  "skinned": true,
+  "verts": 1231,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "RightFoot",
+    "share": 0.5176,
+    "dist_cm": 12.9
+   },
+   {
+    "bone": "Tibia.r",
+    "share": 0.4824,
+    "dist_cm": 26.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "piriformis__l": {
+  "skinned": true,
+  "verts": 752,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "LeftUpLeg",
+    "share": 1.0,
+    "dist_cm": 5.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "piriformis__r": {
+  "skinned": true,
+  "verts": 752,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "RightUpLeg",
+    "share": 1.0,
+    "dist_cm": 5.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "pronators__l": {
+  "skinned": true,
+  "verts": 1273,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Ulna.l",
+    "share": 0.6098,
+    "dist_cm": 10.3
+   },
+   {
+    "bone": "Radius.l",
+    "share": 0.3677,
+    "dist_cm": 9.9
+   },
+   {
+    "bone": "LeftArm",
+    "share": 0.0225,
+    "dist_cm": 39.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "pronators__r": {
+  "skinned": true,
+  "verts": 1273,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Ulna.r",
+    "share": 0.6098,
+    "dist_cm": 10.3
+   },
+   {
+    "bone": "Radius.r",
+    "share": 0.3677,
+    "dist_cm": 9.9
+   },
+   {
+    "bone": "RightArm",
+    "share": 0.0225,
+    "dist_cm": 39.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "pterygoids__l": {
+  "skinned": true,
+  "verts": 525,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Mandible",
+    "share": 1.0,
+    "dist_cm": 3.8
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "pterygoids__r": {
+  "skinned": true,
+  "verts": 525,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Mandible",
+    "share": 1.0,
+    "dist_cm": 3.8
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "quadratus_lumborum__l": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 6,
+  "influences": [
+   {
+    "bone": "L1",
+    "share": 0.1875,
+    "dist_cm": 6.2
+   },
+   {
+    "bone": "L4",
+    "share": 0.1787,
+    "dist_cm": 6.6
+   },
+   {
+    "bone": "L2",
+    "share": 0.1754,
+    "dist_cm": 4.7
+   },
+   {
+    "bone": "L5",
+    "share": 0.1715,
+    "dist_cm": 8.7
+   },
+   {
+    "bone": "L3",
+    "share": 0.1525,
+    "dist_cm": 4.8
+   },
+   {
+    "bone": "T12",
+    "share": 0.1345,
+    "dist_cm": 8.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 4
+ },
+ "quadratus_lumborum__r": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 6,
+  "influences": [
+   {
+    "bone": "L1",
+    "share": 0.1874,
+    "dist_cm": 6.2
+   },
+   {
+    "bone": "L4",
+    "share": 0.1787,
+    "dist_cm": 6.6
+   },
+   {
+    "bone": "L2",
+    "share": 0.1754,
+    "dist_cm": 4.7
+   },
+   {
+    "bone": "L5",
+    "share": 0.1715,
+    "dist_cm": 8.7
+   },
+   {
+    "bone": "L3",
+    "share": 0.1525,
+    "dist_cm": 4.8
+   },
+   {
+    "bone": "T12",
+    "share": 0.1345,
+    "dist_cm": 8.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 4
+ },
+ "quadriceps__l": {
+  "skinned": true,
+  "verts": 1227,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "LeftUpLeg",
+    "share": 0.7699,
+    "dist_cm": 26.6
+   },
+   {
+    "bone": "Tibia.l",
+    "share": 0.2301,
+    "dist_cm": 14.5
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "quadriceps__r": {
+  "skinned": true,
+  "verts": 1227,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "RightUpLeg",
+    "share": 0.77,
+    "dist_cm": 26.6
+   },
+   {
+    "bone": "Tibia.r",
+    "share": 0.23,
+    "dist_cm": 14.5
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "rectus_abdominis__l": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.6446,
+    "dist_cm": 21.3
+   },
+   {
+    "bone": "T5",
+    "share": 0.3554,
+    "dist_cm": 29.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "rectus_abdominis__r": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.6446,
+    "dist_cm": 21.3
+   },
+   {
+    "bone": "T5",
+    "share": 0.3554,
+    "dist_cm": 29.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "rectus_femoris__l": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "LeftUpLeg",
+    "share": 0.6834,
+    "dist_cm": 20.7
+   },
+   {
+    "bone": "Hips",
+    "share": 0.1593,
+    "dist_cm": 30.2
+   },
+   {
+    "bone": "Tibia.l",
+    "share": 0.1573,
+    "dist_cm": 20.7
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "rectus_femoris__r": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "RightUpLeg",
+    "share": 0.6834,
+    "dist_cm": 20.7
+   },
+   {
+    "bone": "Hips",
+    "share": 0.1593,
+    "dist_cm": 30.2
+   },
+   {
+    "bone": "Tibia.r",
+    "share": 0.1573,
+    "dist_cm": 20.7
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "rhomboids__l": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.l",
+    "share": 1.0,
+    "dist_cm": 14.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "rhomboids__r": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.r",
+    "share": 1.0,
+    "dist_cm": 14.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "rotator_cuff__l": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "LeftArm",
+    "share": 1.0,
+    "dist_cm": 5.7
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "rotator_cuff__r": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "RightArm",
+    "share": 1.0,
+    "dist_cm": 5.7
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "scalenes__l": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "C4",
+    "share": 1.0,
+    "dist_cm": 5.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "scalenes__r": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "C4",
+    "share": 1.0,
+    "dist_cm": 5.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "serratus_anterior__l": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.l",
+    "share": 1.0,
+    "dist_cm": 12.4
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "serratus_anterior__r": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.r",
+    "share": 1.0,
+    "dist_cm": 12.4
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "soleus__l": {
+  "skinned": true,
+  "verts": 1244,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Tibia.l",
+    "share": 0.8166,
+    "dist_cm": 17.7
+   },
+   {
+    "bone": "LeftFoot",
+    "share": 0.1834,
+    "dist_cm": 21.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "soleus__r": {
+  "skinned": true,
+  "verts": 1244,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Tibia.r",
+    "share": 0.8166,
+    "dist_cm": 17.7
+   },
+   {
+    "bone": "RightFoot",
+    "share": 0.1834,
+    "dist_cm": 21.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "splenius__l": {
+  "skinned": true,
+  "verts": 1243,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 15.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "splenius__r": {
+  "skinned": true,
+  "verts": 1243,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 15.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "sternocleidomastoid__l": {
+  "skinned": true,
+  "verts": 1247,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 12.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "sternocleidomastoid__r": {
+  "skinned": true,
+  "verts": 1247,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 12.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "suboccipitals__l": {
+  "skinned": true,
+  "verts": 1173,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 5.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "suboccipitals__r": {
+  "skinned": true,
+  "verts": 1173,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 5.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "supinator__l": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Ulna.l",
+    "share": 0.875,
+    "dist_cm": 5.8
+   },
+   {
+    "bone": "Radius.l",
+    "share": 0.125,
+    "dist_cm": 4.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "supinator__r": {
+  "skinned": true,
+  "verts": 1252,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Ulna.r",
+    "share": 0.875,
+    "dist_cm": 5.8
+   },
+   {
+    "bone": "Radius.r",
+    "share": 0.125,
+    "dist_cm": 4.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "temporalis__l": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 7.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "temporalis__r": {
+  "skinned": true,
+  "verts": 1250,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Head",
+    "share": 1.0,
+    "dist_cm": 7.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "tfl__l": {
+  "skinned": true,
+  "verts": 933,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "LeftUpLeg",
+    "share": 0.5544,
+    "dist_cm": 6.5
+   },
+   {
+    "bone": "Hips",
+    "share": 0.4456,
+    "dist_cm": 15.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "tfl__r": {
+  "skinned": true,
+  "verts": 933,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "RightUpLeg",
+    "share": 0.5544,
+    "dist_cm": 6.5
+   },
+   {
+    "bone": "Hips",
+    "share": 0.4456,
+    "dist_cm": 15.3
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "tibialis_anterior__l": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Tibia.l",
+    "share": 0.6092,
+    "dist_cm": 22.6
+   },
+   {
+    "bone": "LeftFoot",
+    "share": 0.3908,
+    "dist_cm": 16.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "tibialis_anterior__r": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Tibia.r",
+    "share": 0.6092,
+    "dist_cm": 22.6
+   },
+   {
+    "bone": "RightFoot",
+    "share": 0.3908,
+    "dist_cm": 16.0
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "tibialis_posterior__l": {
+  "skinned": true,
+  "verts": 1233,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "LeftFoot",
+    "share": 0.6248,
+    "dist_cm": 8.8
+   },
+   {
+    "bone": "Tibia.l",
+    "share": 0.3752,
+    "dist_cm": 29.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "tibialis_posterior__r": {
+  "skinned": true,
+  "verts": 1233,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "RightFoot",
+    "share": 0.6248,
+    "dist_cm": 8.8
+   },
+   {
+    "bone": "Tibia.r",
+    "share": 0.3752,
+    "dist_cm": 29.6
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "transversus_abdominis__l": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.5109,
+    "dist_cm": 17.1
+   },
+   {
+    "bone": "T10",
+    "share": 0.4891,
+    "dist_cm": 16.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "transversus_abdominis__r": {
+  "skinned": true,
+  "verts": 1251,
+  "n_bones": 2,
+  "influences": [
+   {
+    "bone": "Hips",
+    "share": 0.5108,
+    "dist_cm": 17.1
+   },
+   {
+    "bone": "T10",
+    "share": 0.4892,
+    "dist_cm": 16.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "triceps_brachii__l": {
+  "skinned": true,
+  "verts": 1253,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "LeftArm",
+    "share": 0.7078,
+    "dist_cm": 17.7
+   },
+   {
+    "bone": "Ulna.l",
+    "share": 0.1898,
+    "dist_cm": 12.2
+   },
+   {
+    "bone": "Scapula.l",
+    "share": 0.1024,
+    "dist_cm": 21.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "triceps_brachii__r": {
+  "skinned": true,
+  "verts": 1253,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "RightArm",
+    "share": 0.7078,
+    "dist_cm": 17.7
+   },
+   {
+    "bone": "Ulna.r",
+    "share": 0.1898,
+    "dist_cm": 12.2
+   },
+   {
+    "bone": "Scapula.r",
+    "share": 0.1024,
+    "dist_cm": 21.1
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "upper_trapezius__l": {
+  "skinned": true,
+  "verts": 1247,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.l",
+    "share": 1.0,
+    "dist_cm": 16.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "upper_trapezius__r": {
+  "skinned": true,
+  "verts": 1247,
+  "n_bones": 1,
+  "influences": [
+   {
+    "bone": "Scapula.r",
+    "share": 1.0,
+    "dist_cm": 16.9
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 1
+ },
+ "wrist_extensors__l": {
+  "skinned": true,
+  "verts": 1268,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Radius.l",
+    "share": 0.6827,
+    "dist_cm": 10.4
+   },
+   {
+    "bone": "Proximal carpal bones-Flexion.l",
+    "share": 0.2107,
+    "dist_cm": 14.8
+   },
+   {
+    "bone": "LeftArm",
+    "share": 0.1065,
+    "dist_cm": 40.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "wrist_extensors__r": {
+  "skinned": true,
+  "verts": 1268,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Radius.r",
+    "share": 0.6827,
+    "dist_cm": 10.4
+   },
+   {
+    "bone": "Proximal carpal bones-Flexion.r",
+    "share": 0.2107,
+    "dist_cm": 14.8
+   },
+   {
+    "bone": "RightArm",
+    "share": 0.1065,
+    "dist_cm": 40.2
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "wrist_flexors__l": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Ulna.l",
+    "share": 0.5275,
+    "dist_cm": 15.6
+   },
+   {
+    "bone": "Proximal carpal bones-Flexion.l",
+    "share": 0.4499,
+    "dist_cm": 10.2
+   },
+   {
+    "bone": "LeftArm",
+    "share": 0.0226,
+    "dist_cm": 44.5
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ },
+ "wrist_flexors__r": {
+  "skinned": true,
+  "verts": 1248,
+  "n_bones": 3,
+  "influences": [
+   {
+    "bone": "Ulna.r",
+    "share": 0.5275,
+    "dist_cm": 15.6
+   },
+   {
+    "bone": "Proximal carpal bones-Flexion.r",
+    "share": 0.4499,
+    "dist_cm": 10.2
+   },
+   {
+    "bone": "RightArm",
+    "share": 0.0226,
+    "dist_cm": 44.5
+   }
+  ],
+  "weight_sum_min": 1.0,
+  "weight_sum_max": 1.0,
+  "max_influences_per_vertex": 2
+ }
+}

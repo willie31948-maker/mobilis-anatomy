@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mobilis — movement assessment & corrective programmes</title>
+<style>
+  :root{
+    --bg:#0f1417; --panel:#161d21; --panel2:#1c2429; --line:#2a343a;
+    --ink:#e8eef1; --dim:#94a5ae; --accent:#4fd1c5; --warn:#f6ad55; --danger:#fc8181;
+    --short:#f6ad55; --weak:#63b3ed;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+  header{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  h1{font-size:19px;margin:0;letter-spacing:.2px}
+  .tag{font-size:12px;color:var(--dim)}
+  nav{display:flex;gap:4px;padding:0 22px;border-bottom:1px solid var(--line);background:var(--panel)}
+  nav button{background:none;border:0;color:var(--dim);padding:12px 16px;cursor:pointer;font-size:14px;border-bottom:2px solid transparent}
+  nav button.on{color:var(--accent);border-bottom-color:var(--accent)}
+  main{padding:22px;max-width:1500px;margin:0 auto}
+  .grid{display:grid;grid-template-columns:minmax(320px,1fr) minmax(340px,420px);gap:20px}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  .card h2{font-size:15px;margin:0 0 12px;letter-spacing:.3px}
+  .card h3{font-size:13px;margin:14px 0 8px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px}
+  svg{width:100%;height:auto;display:block}
+  .m{fill:#3d4a52;stroke:#222c31;stroke-width:.6;cursor:pointer;transition:fill .15s}
+  .m:hover{fill:#5a6b75}
+  .m.sel{fill:var(--accent)}
+  .m.short{fill:var(--short)}
+  .m.weak{fill:var(--weak)}
+  .body-outline{fill:#1a2226;stroke:#2a343a;stroke-width:1}
+  .viewtabs{display:flex;gap:6px;margin-bottom:10px}
+  .viewtabs button{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--dim);padding:7px;border-radius:6px;cursor:pointer;font-size:13px}
+  .viewtabs button.on{color:var(--ink);border-color:var(--accent)}
+  label{display:block;font-size:13px;color:var(--dim);margin:10px 0 4px}
+  input,select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:8px;border-radius:6px;font-size:14px}
+  .chk{display:flex;gap:9px;align-items:flex-start;padding:8px;border-radius:6px;cursor:pointer;font-size:13.5px;line-height:1.45}
+  .chk:hover{background:var(--panel2)}
+  .chk input{width:auto;margin-top:3px;flex:0 0 auto}
+  button.go{background:var(--accent);color:#08282a;border:0;padding:11px 18px;border-radius:7px;font-weight:600;cursor:pointer;font-size:14px;width:100%;margin-top:14px}
+  button.go:hover{filter:brightness(1.1)}
+  button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;margin-right:5px}
+  .pill.short{background:rgba(246,173,85,.18);color:var(--short)}
+  .pill.weak{background:rgba(99,179,237,.18);color:var(--weak)}
+  .pill.mode{background:var(--panel2);color:var(--dim)}
+  .hyp{border-left:3px solid var(--line);padding:10px 12px;margin-bottom:10px;background:var(--panel2);border-radius:0 7px 7px 0}
+  .hyp.short{border-left-color:var(--short)}
+  .hyp.weak{border-left-color:var(--weak)}
+  .hyp .nm{font-weight:600;font-size:14px}
+  .bar{height:5px;background:#243036;border-radius:3px;margin:7px 0;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent)}
+  .why{font-size:12.5px;color:var(--dim);margin-top:6px}
+  .why div{margin:3px 0;padding-left:11px;border-left:2px solid var(--line)}
+  .alert{background:rgba(252,129,129,.1);border:1px solid var(--danger);border-radius:8px;padding:14px;margin-bottom:14px}
+  .alert h2{color:var(--danger);margin-top:0}
+  .notice{background:rgba(246,173,85,.08);border:1px solid rgba(246,173,85,.35);border-radius:8px;padding:12px;font-size:13px;color:#e8d3b0;margin-bottom:14px}
+  .ex{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px}
+  .ex .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .ex .nm{font-weight:600;font-size:14px}
+  .ex .dose{font-size:12px;color:var(--accent);white-space:nowrap}
+  .ex ul{margin:8px 0 0;padding-left:17px;font-size:13px;color:var(--dim)}
+  .ex .rat{font-size:12.5px;color:var(--dim);font-style:italic;margin-top:7px}
+  .ex .ci{font-size:12px;color:var(--warn);margin-top:7px}
+  .muted{color:var(--dim);font-size:13px}
+  .pair{background:var(--panel2);border-radius:7px;padding:11px;margin-bottom:9px;font-size:13px}
+  .pair b{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--dim);font-weight:500;font-size:12px}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--dim);margin-top:8px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+  .v3dwrap{position:relative}
+  #v3d,#v3d2{width:100%;height:520px;border-radius:8px;overflow:hidden;background:#0f1417}
+  #v3d-label{position:absolute;left:10px;bottom:10px;background:rgba(15,20,23,.88);border:1px solid var(--line);
+    padding:5px 11px;border-radius:6px;font-size:13px;opacity:0;transition:opacity .12s;pointer-events:none}
+  /* Floating reset-camera control, inside the viewport so it travels with it. */
+  .camreset{position:absolute;right:10px;top:10px;z-index:5;display:flex;align-items:center;gap:6px;
+    background:rgba(15,20,23,.86);border:1px solid var(--line);color:var(--fg);
+    padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;line-height:1}
+  .camreset:hover{background:rgba(31,191,180,.18);border-color:#1fbfb4}
+  .camreset svg{width:13px;height:13px;display:block}
+  /* Playback bar. Deliberately minimal: one toggle, two speeds, one track. */
+  .playbar{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .playbar button{padding:5px 11px;font-size:12px}
+  .playbar .spd{display:flex;gap:4px}
+  .playbar .spd button.on{background:#1fbfb4;border-color:#1fbfb4;color:#06231f}
+  /* A native range input is the right control here: it already handles
+     keyboard, touch drag and accessibility, which a hand-rolled div track
+     would all have to reimplement badly. */
+  #libScrub{flex:1;min-width:80px;accent-color:#1fbfb4;cursor:pointer}
+  #libTime{font-variant-numeric:tabular-nums;font-size:12px;color:var(--dim);min-width:64px;text-align:right}
+  .hint{font-size:12px;color:var(--dim);margin-top:8px}
+  footer{padding:18px 22px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);margin-top:20px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Mobilis</h1>
+  <span class="tag">movement assessment &amp; corrective exercise — prototype</span>
+</header>
+<nav>
+  <button class="on" data-tab="assess">Assess</button>
+  <button data-tab="anatomy">Anatomy</button>
+  <button data-tab="library">Exercise library</button>
+  <button data-tab="program">Programme</button>
+  <button data-tab="saved">Saved</button>
+</nav>
+<main>
+
+<section id="tab-assess">
+  <div class="notice">
+    This tool <b>interprets what you report</b> and returns ranked possibilities with its reasoning.
+    It does not diagnose. Anything painful, worsening or unexplained needs a physiotherapist or doctor.
+  </div>
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>1. Safety screen</h2>
+        <p class="muted">Answer honestly. Any &ldquo;yes&rdquo; stops the assessment and sends you to a clinician — that is the correct outcome, not a failure of the app.</p>
+        <div id="redflags"></div>
+      </div>
+      <div class="card">
+        <h2>2. Movement screen</h2>
+        <p class="muted">Tick what you observe. A mirror or a phone video is enough for most of these.</p>
+        <div id="screens"></div>
+      </div>
+      <div class="card">
+        <h2>3. Where do you feel it?</h2>
+        <div id="regions"></div>
+        <label>Pain right now (0 = none, 10 = worst)</label>
+        <input type="range" id="pain" min="0" max="10" value="2" oninput="painOut.textContent=this.value">
+        <span class="muted">Level: <b id="painOut">2</b></span>
+        <button class="go" onclick="runAssess()">Analyse</button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2>Body map</h2>
+        <div class="viewtabs">
+          <button class="on" onclick="setMode('2d',this)">2D map</button>
+          <button onclick="setMode('3d',this)">3D anatomy</button>
+        </div>
+        <div id="wrap2d">
+          <div class="viewtabs">
+            <button class="on" onclick="setView('front',this)">Front</button>
+            <button onclick="setView('back',this)">Back</button>
+          </div>
+          <div id="bodymap"></div>
+        </div>
+        <div id="wrap3d" hidden>
+          <div class="v3dwrap"><div id="v3d"></div><div id="v3d-label"></div><button class="camreset" onclick="resetCam('assess')" title="Reset camera to full body"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Full body</button></div>
+          <label class="chk" style="margin-top:6px"><input type="checkbox" id="bonestoggle" checked onchange="toggleBones(this.checked)"><span>Show skeleton (skull, arm and hand bones)</span></label>
+          <p class="hint">Drag to rotate, scroll to zoom, click a muscle to inspect it. Real anatomy meshes (Z-Anatomy, CC BY-SA 4.0).</p>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--short)"></i>short / overactive</span>
+          <span><i style="background:var(--weak)"></i>long / underactive</span>
+          <span><i style="background:#3d4a52"></i>not implicated</span>
+        </div>
+      </div>
+      <div class="card" id="results"><h2>Results</h2><p class="muted">Complete the screen and press Analyse.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="tab-anatomy" hidden>
+  <div class="grid">
+    <div class="card">
+      <h2>Interactive map</h2>
+      <div class="viewtabs">
+        <button class="on" onclick="setMode('2d',this)">2D map</button>
+        <button onclick="setMode('3d',this)">3D anatomy</button>
+      </div>
+      <div id="wrap2db">
+        <div class="viewtabs">
+          <button class="on" onclick="setView('front',this)">Front</button>
+          <button onclick="setView('back',this)">Back</button>
+        </div>
+        <div id="bodymap2"></div>
+      </div>
+      <div id="wrap3db" hidden>
+        <div class="v3dwrap"><div id="v3d2"></div><button class="camreset" onclick="resetCam('anatomy')" title="Reset camera to full body"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Full body</button></div>
+        <label class="chk" style="margin-top:6px"><input type="checkbox" id="bonestoggle2" checked onchange="toggleBones(this.checked)"><span>Show skeleton</span></label>
+        <p class="hint">Real anatomy meshes. Click any muscle. Bones are context only and are not clickable.</p>
+      </div>
+      <p class="muted" style="margin-top:10px">Click any region to inspect it. Or search below.</p>
+      <input id="msearch" placeholder="Search muscles, joints, ligaments…" oninput="renderList()">
+      <div id="mlist" style="max-height:330px;overflow:auto;margin-top:10px"></div>
+    </div>
+    <div class="card" id="detail"><h2>Detail</h2><p class="muted">Select a structure.</p></div>
+  </div>
+</section>
+
+<section id="tab-library" hidden>
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>Find exercises by muscle</h2>
+        <label>Muscle</label>
+        <select id="libMuscle" onchange="libLoad()"></select>
+        <label>Show</label>
+        <select id="libMode" onchange="libLoad()">
+          <option value="">Everything that works it</option>
+          <option value="strengthen">Strengthen</option>
+          <option value="activate">Activate</option>
+          <option value="lengthen">Lengthen / stretch</option>
+          <option value="mobilise">Mobilise</option>
+          <option value="release">Release</option>
+        </select>
+        <div id="libList" style="margin-top:12px"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2 id="libTitle">Demonstration</h2>
+        <div class="v3dwrap"><div id="v3dx"></div><div id="v3d-label2"></div><button class="camreset" onclick="resetCam('library')" title="Reset camera to full body"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Full body</button></div>
+        <div class="playbar">
+          <button id="btnPlay" onclick="libPlayPause()">Pause</button>
+          <div class="spd">
+            <button id="spd05" onclick="libSpeed(0.5,this)">0.5x</button>
+            <button id="spd10" class="on" onclick="libSpeed(1,this)">1x</button>
+          </div>
+          <input id="libScrub" type="range" min="0" max="1000" value="0" step="1"
+                 aria-label="Scrub through the repetition">
+          <span id="libTime">0% · 0.0s</span>
+        </div>
+        <div class="legend">
+          <span><i style="background:#ef4444"></i>primary muscle</span>
+          <span><i style="background:#fbbf24"></i>secondary / assisting</span>
+          <span><i style="background:#3d4a52"></i>not involved</span>
+        </div>
+        <div id="libDetail" style="margin-top:12px"><p class="muted">Pick a muscle, then an exercise.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tab-program" hidden>
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>Build a programme</h2>
+        <label>Programme name</label>
+        <input id="pname" value="My programme">
+        <label>Stage</label>
+        <select id="pstage">
+          <option value="acute">Acute — recent, sore, irritable</option>
+          <option value="subacute" selected>Subacute — settling, tolerates gentle load</option>
+          <option value="chronic">Chronic / prevention — no acute pain</option>
+        </select>
+        <label>Days per week</label>
+        <select id="pdays"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
+        <label>Minutes per session</label>
+        <select id="pmins"><option>15</option><option selected>25</option><option>40</option><option>60</option></select>
+        <label>Equipment available</label>
+        <select id="pequip">
+          <option value="all" selected>Everything</option>
+          <option value="minimal">Bodyweight + wall only</option>
+          <option value="band">Bodyweight + band</option>
+        </select>
+        <button class="go" onclick="buildProg()">Generate from last assessment</button>
+        <p class="muted" style="margin-top:10px">Uses your most recent Analyse run.</p>
+      </div>
+    </div>
+    <div class="card" id="progout"><h2>Programme</h2><p class="muted">Run an assessment first, then generate.</p></div>
+  </div>
+</section>
+
+<section id="tab-saved">
+  <div class="card"><h2>Saved programmes</h2><div id="savedlist"><p class="muted">None yet.</p></div></div>
+</section>
+
+</main>
+<footer>
+  Prototype. Generates general exercise guidance from a self-reported screen — not a diagnosis, not treatment,
+  and not a substitute for a qualified clinician. Seek urgent care for the red-flag symptoms listed in the safety screen.
+  <br><br>
+  3D anatomy derived from <a href="https://www.z-anatomy.com/" style="color:var(--accent)">Z-Anatomy</a>
+  (from BodyParts3D, &copy; Database Center for Life Science), licensed
+  <a href="https://creativecommons.org/licenses/by-sa/4.0/" style="color:var(--accent)">CC BY-SA 4.0</a>.
+  Meshes were joined, renamed, decimated and converted to glTF; modified meshes remain under CC BY-SA 4.0.
+</footer>
+
+<script type="module">
+import { AnatomyViewer } from './viewer3d.js';
+let DATA={muscles:[],joints:[],ligaments:[]}, SCREENS=[], REDFLAGS=[], REGIONS=[];
+let lastAssessment=null, lastInput=null, view='front', selected=null;
+let viewer=null, viewer2=null, viewMode='2d';
+const ALL_REGIONS=['hip','thigh','trunk','shoulder','neck','lowerleg','arm','forearm','hand','jaw','context'];
+
+// The 3D layer honours exactly the same contract as the 2D map: meshes are
+// named "<muscle_id>.l/.r", clicks resolve to a muscle id, and states colour
+// them. Nothing in the assessment engine knows which renderer is on screen.
+window.muscleName=id=>{const m=DATA.muscles.find(x=>x.id===id);return m?m.name:id;};
+
+async function ensureViewer(which){
+  if(which==='assess'&&!viewer){
+    viewer=new AnatomyViewer(document.getElementById('v3d'),{onSelect:id=>showDetail(id)});
+    window.__viewer=viewer;
+    await viewer.loadRegions(ALL_REGIONS);
+    applyStates();
+  }
+  if(which==='anatomy'&&!viewer2){
+    viewer2=new AnatomyViewer(document.getElementById('v3d2'),{onSelect:id=>showDetail(id)});
+    await viewer2.loadRegions(ALL_REGIONS);
+    applyStates();
+  }
+}
+function setMode(m,btn){
+  viewMode=m;
+  [...btn.parentNode.children].forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  const onAssess=!document.getElementById('tab-assess').hidden;
+  if(onAssess){
+    document.getElementById('wrap2d').hidden=(m!=='2d');
+    document.getElementById('wrap3d').hidden=(m!=='3d');
+    if(m==='3d')ensureViewer('assess');
+  }else{
+    document.getElementById('wrap2db').hidden=(m!=='2d');
+    document.getElementById('wrap3db').hidden=(m!=='3d');
+    if(m==='3d')ensureViewer('anatomy');
+  }
+}
+window.setMode=setMode;
+// ---- Exercise library + animated demonstration -------------------------
+let libViewer=null, libClips=[], libCurrent=null, libPlaying=true;
+
+async function libInit(){
+  const sel=document.getElementById('libMuscle');
+  if(!sel.options.length){
+    const ms=[...DATA.muscles].sort((a,b)=>a.name.localeCompare(b.name));
+    sel.innerHTML=ms.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('');
+    sel.value='gluteus_maximus';
+  }
+  if(!libViewer){
+    // Clicking a muscle mid-demonstration used to switch the dropdown and
+    // reload the whole exercise list, which threw away the exercise you were
+    // watching. Highlight and frame it instead, and let the panel tell you
+    // what it is -- navigation is what the dropdown is for.
+    libViewer=new AnatomyViewer(document.getElementById('v3dx'),{onSelect:id=>{
+      libViewer.select(id);
+      libViewer.focusOn(id);
+      libInspect(id);
+    }});
+    libClips=await libViewer.loadAnimated();
+    window.__libv=libViewer;
+    libBindScrub();
+  }
+  libLoad();
+}
+window.libInit=libInit;
+
+async function libLoad(){
+  const muscle=document.getElementById('libMuscle').value;
+  const mode=document.getElementById('libMode').value;
+  const q=new URLSearchParams({involves:muscle}); if(mode)q.set('mode',mode);
+  const d=await fetch('/api/exercises?'+q).then(r=>r.json());
+  const el=document.getElementById('libList');
+  if(!d.count){el.innerHTML='<p class="muted">No exercises in the library work this muscle in that way yet.</p>';return;}
+  const prim=d.exercises.filter(e=>e.primary.includes(muscle));
+  const sec=d.exercises.filter(e=>!e.primary.includes(muscle));
+  const row=e=>`<div class="chk" onclick="libShow('${e.id}')"><span><b>${esc(e.name)}</b>
+     <span class="pill mode">${esc(e.mode)}</span><br><span class="muted">${esc(e.dose)}</span></span></div>`;
+  el.innerHTML=(prim.length?`<h3>Works it directly (${prim.length})</h3>`+prim.map(row).join(''):'')
+    +(sec.length?`<h3>Works it as an assistant (${sec.length})</h3>`+sec.map(row).join(''):'');
+  if(d.exercises.length) libShow(d.exercises[0].id);
+}
+window.libLoad=libLoad;
+
+async function libShow(id){
+  const e=await fetch('/api/exercise/'+id).then(r=>r.json());
+  libCurrent=e;
+  document.getElementById('libTitle').textContent=e.name;
+  const roles={}; e.primary.forEach(m=>roles[m]='primary'); e.secondary.forEach(m=>{if(!roles[m])roles[m]='secondary';});
+  if(libViewer){
+    libViewer.setRoles(roles);
+    const played=libViewer.playClip(e.clip);
+    libPlaying=played;
+    document.getElementById('btnPlay').textContent=played?'Pause':'Play';
+    // Reset the scrubber to the start of the new clip and disable it for the
+    // static exercises that genuinely have no animation, rather than leaving
+    // a live-looking control that does nothing.
+    const r=document.getElementById('libScrub');
+    if(r){r.value=0;r.disabled=!played;}
+    libScrubLabel(0);
+    document.getElementById('btnPlay').disabled=!played;
+  }
+  const nm=id=>{const m=DATA.muscles.find(x=>x.id===id);return m?m.name:id;};
+  document.getElementById('libDetail').innerHTML=`
+    <p><span class="pill mode">${esc(e.mode)}</span> <span class="dose" style="color:var(--accent)">${esc(e.dose)}</span></p>
+    ${e.postureLabel?`<p><b>Starting position:</b> ${esc(e.postureLabel)}</p>`:''}
+    <h3>Primary</h3><p>${e.primary.map(m=>`<span class="pill" style="background:rgba(239,68,68,.18);color:#ef4444">${esc(nm(m))}</span>`).join(' ')}</p>
+    <h3>Secondary</h3><p>${e.secondary.length?e.secondary.map(m=>`<span class="pill" style="background:rgba(251,191,36,.18);color:#fbbf24">${esc(nm(m))}</span>`).join(' '):'<span class="muted">none recorded</span>'}</p>
+    ${e.muscleNote?`<p class="muted">${esc(e.muscleNote)}</p>`:''}
+    ${!e.clip?'<p class="muted"><b>No animation for this one.</b> It is a static hold, a release technique or a breathing drill — showing a moving body would misrepresent it.</p>':''}
+    ${e.clip?'<p class="muted"><b>About the demonstration.</b> It shows the joint path and which muscles work, at real range of motion — not exercise technique. Muscles move with their bones rather than bulging, the model pivots about its hips instead of holding a foot planted, and arm movements start from the anatomical arms-out pose. Read the cues for how to actually perform it.</p>':''}
+    <h3>How to do it</h3><ul class="muted">${e.cues.map(c=>`<li>${esc(c)}</li>`).join('')}</ul>
+    ${e.contraindications.length?`<p class="ci" style="color:var(--warn)">Avoid if: ${e.contraindications.map(esc).join('; ')}</p>`:''}`;
+}
+window.libShow=libShow;
+
+// ---- playback bar -------------------------------------------------------
+// Pause/resume now pauses the ACTION rather than stopping and restarting it.
+// The old version called playClip(null) to pause, which tore the action down:
+// resuming restarted the rep from frame 0 and re-framed the camera, so you
+// could never pause to look at a position and then carry on from it.
+function libPlayPause(){
+  if(!libViewer||!libCurrent)return;
+  const btn=document.getElementById('btnPlay');
+  if(!libViewer.clipDuration()){
+    const ok=libViewer.playClip(libCurrent.clip);
+    libPlaying=ok; btn.textContent=ok?'Pause':'Play'; return;
+  }
+  libPlaying=!libPlaying;
+  libViewer.setPaused(!libPlaying);
+  btn.textContent=libPlaying?'Pause':'Play';
+}
+window.libPlayPause=libPlayPause;
+
+function libSpeed(x,btn){
+  if(libViewer)libViewer.setSpeed(x);
+  if(btn){[...btn.parentNode.children].forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+}
+window.libSpeed=libSpeed;
+
+// Scrubbing. Dragging pauses playback for the duration of the drag and
+// restores whatever the play state was afterwards -- yanking the model out of
+// a running animation and leaving it paused is the kind of surprise that
+// makes a control feel broken.
+let scrubWasPlaying=null;
+function libScrubStart(){
+  if(!libViewer||!libViewer.clipDuration())return;
+  scrubWasPlaying=libPlaying;
+  libViewer.setPaused(true);
+}
+function libScrubMove(v){
+  if(!libViewer||!libViewer.clipDuration())return;
+  libViewer.scrubTo(v/1000);
+  libScrubLabel(v/1000);
+}
+function libScrubEnd(){
+  if(!libViewer)return;
+  if(scrubWasPlaying){libViewer.setPaused(false);libPlaying=true;}
+  else{libPlaying=false;}
+  document.getElementById('btnPlay').textContent=libPlaying?'Pause':'Play';
+  scrubWasPlaying=null;
+}
+function libScrubLabel(frac){
+  const d=libViewer?libViewer.clipDuration():0;
+  const el=document.getElementById('libTime');
+  if(el)el.textContent=`${Math.round(frac*100)}% · ${(frac*d).toFixed(1)}s`;
+}
+function libBindScrub(){
+  const r=document.getElementById('libScrub');
+  if(!r||r.dataset.bound)return;
+  r.dataset.bound='1';
+  r.addEventListener('pointerdown',libScrubStart);
+  r.addEventListener('input',e=>libScrubMove(+e.target.value));
+  r.addEventListener('pointerup',libScrubEnd);
+  r.addEventListener('pointercancel',libScrubEnd);
+  // Keyboard arrows fire input without a pointer press, so nothing would
+  // ever restore play state for a keyboard user.
+  r.addEventListener('keydown',()=>{if(scrubWasPlaying===null)libScrubStart();});
+  r.addEventListener('keyup',()=>{if(scrubWasPlaying!==null)libScrubEnd();});
+  // Reflect playback back into the slider while it runs, but never while the
+  // user is holding it -- fighting the user for control of a slider is the
+  // classic version of this bug.
+  setInterval(()=>{
+    if(!libViewer||scrubWasPlaying!==null||!libPlaying)return;
+    const d=libViewer.clipDuration();
+    if(!d)return;
+    const f=libViewer.clipProgress();
+    r.value=Math.round(f*1000);
+    libScrubLabel(f);
+  },80);
+}
+
+// Clinical note for a muscle clicked in the 3D viewport, shown without
+// leaving the demonstration. It also says what role that muscle plays in the
+// exercise on screen, which is the question you are actually asking when you
+// click something mid-rep.
+async function libInspect(id){
+  const el=document.getElementById('libDetail'); if(!el)return;
+  const d=await fetch('/api/anatomy/muscle/'+id).then(r=>r.json()).catch(()=>null);
+  if(!d||!d.name)return;
+  let role='';
+  if(libCurrent&&libCurrent.primary){
+    if(libCurrent.primary.includes(id))role='<span class="pill short">works directly in this exercise</span>';
+    else if((libCurrent.secondary||[]).includes(id))role='<span class="pill weak">assists in this exercise</span>';
+    else role='<span class="muted">not involved in this exercise</span>';
+  }
+  el.innerHTML=`<h2>${esc(d.name)}</h2><p>${role}</p>
+    <p class="muted">${esc(d.region)} · ${esc(d.group)}</p>
+    <h3>Origin</h3><p>${esc(d.origin)}</p>
+    <h3>Insertion</h3><p>${esc(d.insertion)}</p>
+    <h3>Actions</h3><ul>${d.actions.map(a=>`<li>${esc(a)}</li>`).join('')}</ul>
+    <p class="hint">Pick an exercise from the list to go back to its demonstration notes.</p>`;
+}
+window.libInspect=libInspect;
+
+// ---- camera ------------------------------------------------------------
+function resetCam(which){
+  const v=which==='library'?libViewer:which==='anatomy'?viewer2:viewer;
+  if(v)v.resetCamera();
+}
+window.resetCam=resetCam;
+
+function toggleBones(on){
+  if(viewer)viewer.setBonesVisible(on);
+  if(viewer2)viewer2.setBonesVisible(on);
+  const a=document.getElementById('bonestoggle'),b=document.getElementById('bonestoggle2');
+  if(a)a.checked=on; if(b)b.checked=on;
+}
+window.toggleBones=toggleBones;
+function applyStates(){
+  const st={};
+  if(lastAssessment&&lastAssessment.hypotheses)lastAssessment.hypotheses.forEach(h=>st[h.muscleId]=h.state);
+  if(viewer){viewer.paintStates(st);if(selected)viewer.select(selected);}
+  if(viewer2){viewer2.paintStates(st);if(selected)viewer2.select(selected);}
+}
+
+// Focus framing. Called on selection, not on paint: paint runs on every
+// assessment re-render, and re-triggering a camera move from there had the
+// camera lurching every time a checkbox changed.
+function focusSelected(){
+  if(!selected)return;
+  if(viewer&&!document.getElementById('tab-assess').hidden)viewer.focusOn(selected);
+  if(viewer2&&!document.getElementById('tab-anatomy').hidden)viewer2.focusOn(selected);
+}
+
+// Schematic body map. Each region is a clickable polygon bound to a muscle id.
+// This is intentionally a simple 2D schematic: it makes the whole app work end
+// to end today, and it is the layer designed to be swapped for a real 3D model
+// (see MODELS.md) without touching the reasoning engine.
+const MAP={
+ front:[
+  {id:'deep_neck_flexors',d:'M96,52 h18 v13 h-18 z',label:'deep neck flexors'},
+  {id:'upper_trapezius',d:'M70,60 L96,52 L96,66 L74,74 z',label:'upper trap L'},
+  {id:'upper_trapezius',d:'M140,60 L114,52 L114,66 L136,74 z',label:'upper trap R'},
+  {id:'pectoralis_major',d:'M76,76 L104,72 L104,102 L78,98 z',label:'pec major L'},
+  {id:'pectoralis_major',d:'M134,76 L106,72 L106,102 L132,98 z',label:'pec major R'},
+  {id:'pectoralis_minor',d:'M84,80 L98,78 L98,90 L86,88 z',label:'pec minor L'},
+  {id:'pectoralis_minor',d:'M126,80 L112,78 L112,90 L124,88 z',label:'pec minor R'},
+  {id:'rotator_cuff',d:'M64,74 a11,11 0 1,0 .1,0',label:'cuff L'},
+  {id:'rotator_cuff',d:'M146,74 a11,11 0 1,0 .1,0',label:'cuff R'},
+  {id:'serratus_anterior',d:'M74,100 L86,98 L86,116 L76,114 z',label:'serratus L'},
+  {id:'serratus_anterior',d:'M136,100 L124,98 L124,116 L134,114 z',label:'serratus R'},
+  {id:'rectus_abdominis',d:'M96,104 h18 v44 h-18 z',label:'rectus abdominis'},
+  {id:'transversus_abdominis',d:'M80,120 L96,118 L96,150 L82,146 z',label:'TrA L'},
+  {id:'transversus_abdominis',d:'M130,120 L114,118 L114,150 L128,146 z',label:'TrA R'},
+  {id:'iliopsoas',d:'M88,148 L102,148 L100,172 L90,170 z',label:'iliopsoas L'},
+  {id:'iliopsoas',d:'M122,148 L108,148 L110,172 L120,170 z',label:'iliopsoas R'},
+  {id:'tfl',d:'M76,152 L88,152 L86,170 L76,168 z',label:'TFL L'},
+  {id:'tfl',d:'M134,152 L122,152 L124,170 L134,168 z',label:'TFL R'},
+  {id:'adductor_group',d:'M96,172 L104,172 L102,208 L94,206 z',label:'adductors L'},
+  {id:'adductor_group',d:'M114,172 L106,172 L108,208 L116,206 z',label:'adductors R'},
+  {id:'rectus_femoris',d:'M82,174 L94,174 L92,220 L82,218 z',label:'rectus fem L'},
+  {id:'rectus_femoris',d:'M128,174 L116,174 L118,220 L128,218 z',label:'rectus fem R'},
+  {id:'quadriceps',d:'M74,180 L82,180 L82,224 L74,220 z',label:'quads L'},
+  {id:'quadriceps',d:'M136,180 L128,180 L128,224 L136,220 z',label:'quads R'},
+  {id:'tibialis_anterior',d:'M80,244 L88,244 L86,286 L79,284 z',label:'tib ant L'},
+  {id:'tibialis_anterior',d:'M130,244 L122,244 L124,286 L131,284 z',label:'tib ant R'},
+  {id:'peroneals',d:'M73,248 L79,248 L78,284 L72,282 z',label:'peroneals L'},
+  {id:'peroneals',d:'M137,248 L131,248 L132,284 L138,282 z',label:'peroneals R'},
+ ],
+ back:[
+  {id:'suboccipitals',d:'M96,46 h18 v10 h-18 z',label:'suboccipitals'},
+  {id:'levator_scapulae',d:'M84,58 L96,56 L96,74 L86,72 z',label:'levator L'},
+  {id:'levator_scapulae',d:'M126,58 L114,56 L114,74 L124,72 z',label:'levator R'},
+  {id:'upper_trapezius',d:'M70,62 L96,56 L96,72 L74,78 z',label:'upper trap L'},
+  {id:'upper_trapezius',d:'M140,62 L114,56 L114,72 L136,78 z',label:'upper trap R'},
+  {id:'rhomboids',d:'M86,80 L104,78 L104,102 L88,100 z',label:'rhomboids L'},
+  {id:'rhomboids',d:'M124,80 L106,78 L106,102 L122,100 z',label:'rhomboids R'},
+  {id:'rotator_cuff',d:'M64,76 a11,11 0 1,0 .1,0',label:'cuff L'},
+  {id:'rotator_cuff',d:'M146,76 a11,11 0 1,0 .1,0',label:'cuff R'},
+  {id:'lower_trapezius',d:'M92,104 L108,104 L104,132 L96,132 z',label:'lower trap'},
+  {id:'latissimus_dorsi',d:'M74,100 L90,98 L88,140 L76,134 z',label:'lat L'},
+  {id:'latissimus_dorsi',d:'M136,100 L120,98 L122,140 L134,134 z',label:'lat R'},
+  {id:'erector_spinae',d:'M96,104 h6 v56 h-6 z',label:'erectors L'},
+  {id:'erector_spinae',d:'M108,104 h6 v56 h-6 z',label:'erectors R'},
+  {id:'multifidus',d:'M103,120 h4 v40 h-4 z',label:'multifidus'},
+  {id:'quadratus_lumborum',d:'M86,138 L96,136 L96,162 L88,160 z',label:'QL L'},
+  {id:'quadratus_lumborum',d:'M124,138 L114,136 L114,162 L122,160 z',label:'QL R'},
+  {id:'gluteus_medius',d:'M78,158 L94,156 L92,176 L78,174 z',label:'glute med L'},
+  {id:'gluteus_medius',d:'M132,158 L116,156 L118,176 L132,174 z',label:'glute med R'},
+  {id:'gluteus_maximus',d:'M80,174 L104,172 L104,200 L82,198 z',label:'glute max L'},
+  {id:'gluteus_maximus',d:'M130,174 L106,172 L106,200 L128,198 z',label:'glute max R'},
+  {id:'piriformis',d:'M88,168 L100,166 L99,176 L89,175 z',label:'piriformis L'},
+  {id:'piriformis',d:'M122,168 L110,166 L111,176 L121,175 z',label:'piriformis R'},
+  {id:'hamstrings',d:'M82,202 L102,200 L100,240 L84,238 z',label:'hamstrings L'},
+  {id:'hamstrings',d:'M128,202 L108,200 L110,240 L126,238 z',label:'hamstrings R'},
+  {id:'gastrocnemius',d:'M84,246 L100,244 L98,276 L86,274 z',label:'gastroc L'},
+  {id:'gastrocnemius',d:'M126,246 L110,244 L112,276 L124,274 z',label:'gastroc R'},
+  {id:'soleus',d:'M87,276 L97,275 L96,296 L88,295 z',label:'soleus L'},
+  {id:'soleus',d:'M123,276 L113,275 L114,296 L122,295 z',label:'soleus R'},
+  {id:'tibialis_posterior',d:'M99,268 L104,268 L103,292 L99,291 z',label:'tib post L'},
+  {id:'tibialis_posterior',d:'M111,268 L106,268 L107,292 L111,291 z',label:'tib post R'},
+ ]
+};
+
+const OUTLINE='M105,20 a14,14 0 1,0 .1,0 M92,44 h26 l20,12 v50 l-8,44 h-4 l-4,50 v40 l-6,50 h-11 l-3,-46 h-4 l-3,46 h-11 l-6,-50 v-40 l-4,-50 h-4 l-8,-44 v-50 z';
+
+async function boot(){
+  const [a,s]=await Promise.all([fetch('/api/anatomy').then(r=>r.json()),fetch('/api/screens').then(r=>r.json())]);
+  DATA=a; SCREENS=s.screens; REDFLAGS=s.redFlags; REGIONS=s.regions;
+  document.getElementById('redflags').innerHTML=REDFLAGS.map(f=>
+    `<label class="chk"><input type="checkbox" data-rf="${f.id}"><span>${esc(f.q)}</span></label>`).join('');
+  document.getElementById('screens').innerHTML=SCREENS.map(s=>
+    `<label class="chk"><input type="checkbox" data-sc="${s.id}"><span>${esc(s.name)}</span></label>`).join('');
+  document.getElementById('regions').innerHTML=REGIONS.map(r=>
+    `<label class="chk" style="display:inline-flex;width:auto;margin-right:6px"><input type="checkbox" data-rg="${r}"><span>${esc(r)}</span></label>`).join('');
+  drawBody(); renderList(); loadSaved();
+}
+
+function drawBody(){
+  const regions=MAP[view];
+  const svg=`<svg viewBox="0 0 210 320" xmlns="http://www.w3.org/2000/svg">
+    <path class="body-outline" d="${OUTLINE}"/>
+    ${regions.map((r,i)=>`<path class="m" data-mid="${r.id}" data-i="${i}" d="${r.d}"><title>${esc(nameOf(r.id))}</title></path>`).join('')}
+  </svg>`;
+  ['bodymap','bodymap2'].forEach(id=>{const el=document.getElementById(id); if(el) el.innerHTML=svg;});
+  document.querySelectorAll('path.m').forEach(p=>p.onclick=()=>showDetail(p.dataset.mid));
+  paint();
+}
+function nameOf(id){const m=DATA.muscles.find(x=>x.id===id);return m?m.name:id;}
+function setView(v,btn){view=v;[...btn.parentNode.children].forEach(b=>b.classList.remove('on'));btn.classList.add('on');drawBody();}
+
+function paint(){
+  if(!lastAssessment||!lastAssessment.hypotheses) return;
+  const st={}; lastAssessment.hypotheses.forEach(h=>st[h.muscleId]=h.state);
+  document.querySelectorAll('path.m').forEach(p=>{
+    p.classList.remove('short','weak','sel');
+    const s=st[p.dataset.mid]; if(s) p.classList.add(s);
+    if(selected===p.dataset.mid) p.classList.add('sel');
+  });
+  applyStates();
+}
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+async function runAssess(){
+  const redFlagAnswers={}; document.querySelectorAll('[data-rf]').forEach(c=>{if(c.checked)redFlagAnswers[c.dataset.rf]=true;});
+  const findings=[...document.querySelectorAll('[data-sc]')].filter(c=>c.checked).map(c=>c.dataset.sc);
+  const symptomRegions=[...document.querySelectorAll('[data-rg]')].filter(c=>c.checked).map(c=>c.dataset.rg);
+  const painLevel=+document.getElementById('pain').value;
+  lastInput={findings,symptomRegions,painLevel,redFlagAnswers};
+  const r=await fetch('/api/assess',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lastInput)});
+  lastAssessment=await r.json();
+  renderResults(); paint();
+}
+
+function renderResults(){
+  const el=document.getElementById('results'); const a=lastAssessment;
+  if(!a.safe){
+    el.innerHTML=`<div class="alert"><h2>Stop — see a clinician first</h2>
+      <p>${esc(a.redFlags.action)}</p>
+      ${a.redFlags.triggered.map(t=>`<p style="font-size:13px"><b>${esc(t.q)}</b><br><span class="muted">${esc(t.why)}</span></p>`).join('')}
+      <p class="muted">No exercise programme will be generated. That is deliberate.</p></div>`;
+    return;
+  }
+  if(!a.hypotheses.length){el.innerHTML='<h2>Results</h2><p class="muted">Nothing ticked — no findings to interpret.</p>';return;}
+  el.innerHTML=`<h2>Ranked findings</h2>
+    <p class="muted">${esc(a.disclaimer)}</p>
+    ${a.imbalancePairs.length?`<h3>Imbalance patterns</h3>${a.imbalancePairs.map(p=>
+      `<div class="pair"><b>${esc(p.short)}</b> (short) &harr; <b>${esc(p.weak)}</b> (weak)<br><span class="muted">${esc(p.explanation)}</span></div>`).join('')}`:''}
+    <h3>Individual muscles</h3>
+    ${a.hypotheses.map(h=>`<div class="hyp ${h.state}">
+      <div class="nm">${esc(h.muscle)} <span class="pill ${h.state}">${esc(h.stateLabel)}</span></div>
+      <div class="bar"><i style="width:${h.confidence}%"></i></div>
+      <div class="muted">confidence ${h.confidence}% (${esc(h.confidenceLabel)})</div>
+      <div class="why">${h.reasons.map(r=>`<div><b>${esc(r.source)}</b><br>${esc(r.because)}</div>`).join('')}</div>
+      ${h.note?`<div class="why" style="margin-top:6px">${esc(h.note)}</div>`:''}
+    </div>`).join('')}`;
+}
+
+async function buildProg(){
+  if(!lastInput){alert('Run an assessment first.');return;}
+  const eq=document.getElementById('pequip').value;
+  const equipment= eq==='minimal'?['none','wall','towel','strap or towel','doorway','bench or chair']
+    : eq==='band'?['none','wall','towel','strap or towel','doorway','resistance band','bench or chair']
+    : undefined;
+  const options={name:document.getElementById('pname').value,stage:document.getElementById('pstage').value,
+    daysPerWeek:+document.getElementById('pdays').value,minutesPerSession:+document.getElementById('pmins').value};
+  if(equipment)options.equipment=equipment;
+  const r=await fetch('/api/program',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({assessment:lastInput,options})});
+  const d=await r.json();
+  renderProgram(d); loadSaved();
+  document.querySelector('[data-tab="program"]').click();
+}
+
+function renderProgram(d){
+  const el=document.getElementById('progout'); const p=d.program;
+  if(!p.ok){
+    el.innerHTML=`<div class="alert"><h2>No programme generated</h2><p>${esc(p.message)}</p></div>`;
+    return;
+  }
+  el.innerHTML=`<h2>${esc(document.getElementById('pname').value)}</h2>
+    <p class="muted">${p.exercises.length} exercises &middot; ~${p.estimatedMinutes} min &middot; ${p.daysPerWeek}x/week &middot; ${esc(p.stage)} stage</p>
+    ${p.imbalanceFocus.length?`<h3>Primary focus</h3>${p.imbalanceFocus.map(f=>`<div class="pair"><b>${esc(f.short)}</b> needs length &middot; <b>${esc(f.weak)}</b> needs strength</div>`).join('')}`:''}
+    <h3>Session (in this order)</h3>
+    ${p.exercises.map((e,i)=>`<div class="ex">
+      <div class="top"><span class="nm">${i+1}. ${esc(e.name)} <span class="pill mode">${esc(e.mode)}</span></span><span class="dose">${esc(e.dose)}</span></div>
+      <div class="rat">${esc(e.rationale)}</div>
+      <ul>${e.cues.map(c=>`<li>${esc(c)}</li>`).join('')}</ul>
+      ${e.contraindications.length?`<div class="ci">Avoid if: ${e.contraindications.map(esc).join('; ')}</div>`:''}
+    </div>`).join('')}
+    ${p.droppedForTime?`<p class="muted">${p.droppedForTime} more exercise(s) were dropped to fit your time budget.</p>`:''}
+    ${p.unaddressed.length?`<h3>Not covered</h3>${p.unaddressed.map(u=>`<p class="muted">${esc(u.muscle)} (${esc(u.state)}) — ${esc(u.why)}</p>`).join('')}`:''}
+    <h3>Weekly schedule</h3>
+    <table><tr><th>Day</th><th>Emphasis</th><th>Items</th></tr>
+    ${(d.schedule||[]).map(s=>`<tr><td>${esc(s.day)}</td><td>${esc(s.emphasis)}</td><td>${s.exercises.length}</td></tr>`).join('')}</table>
+    <h3>Progression</h3>
+    <table>${p.progression.steps.map(s=>`<tr><td style="white-space:nowrap"><b>Week ${esc(s.weeks)}</b></td><td>${esc(s.focus)}</td></tr>`).join('')}</table>
+    <h3>How to run it</h3>
+    <ul class="muted">${p.guidance.map(g=>`<li>${esc(g)}</li>`).join('')}</ul>
+    <p class="muted" style="margin-top:12px"><b>${esc(p.disclaimer)}</b></p>`;
+}
+
+function renderList(){
+  const q=(document.getElementById('msearch')?.value||'').toLowerCase();
+  const items=[...DATA.muscles.map(m=>({...m,kind:'muscle'})),...DATA.joints.map(j=>({...j,kind:'joint'})),...DATA.ligaments.map(l=>({...l,kind:'ligament'}))]
+    .filter(x=>!q||x.name.toLowerCase().includes(q)||(x.region||'').toLowerCase().includes(q));
+  const el=document.getElementById('mlist'); if(!el)return;
+  el.innerHTML=items.map(x=>`<div class="chk" onclick="showDetail('${x.id}')"><span><b>${esc(x.name)}</b> <span class="muted">${esc(x.kind)}${x.region?' · '+esc(x.region):''}</span></span></div>`).join('');
+}
+
+async function showDetail(id){
+  selected=id; paint(); focusSelected();
+  const el=document.getElementById('detail'); if(!el)return;
+  document.querySelector('[data-tab="anatomy"]').click();
+  const m=DATA.muscles.find(x=>x.id===id);
+  if(m){
+    const r=await fetch('/api/anatomy/muscle/'+id); const d=await r.json();
+    el.innerHTML=`<h2>${esc(d.name)}</h2>
+      <p><span class="pill ${d.tendency==='tonic'?'short':'weak'}">${d.tendency}</span>
+      <span class="muted">${esc(d.region)} · ${esc(d.group)}</span></p>
+      <h3>Origin</h3><p>${esc(d.origin)}</p>
+      <h3>Insertion</h3><p>${esc(d.insertion)}</p>
+      <h3>Actions</h3><ul>${d.actions.map(a=>`<li>${esc(a)}</li>`).join('')}</ul>
+      <h3>Referral pattern</h3><p>${esc(d.referral)}</p>
+      ${d.antagonistDetail.length?`<h3>Antagonists</h3><p>${d.antagonistDetail.map(a=>`<a href="#" onclick="showDetail('${a.id}');return false" style="color:var(--accent)">${esc(a.name)}</a>`).join(', ')}</p>`:''}
+      <h3>Clinical note</h3><p class="muted">${esc(d.notes)}</p>
+      <h3>Exercises (${d.exercises.length})</h3>
+      ${d.exercises.map(e=>`<div class="ex"><div class="top"><span class="nm">${esc(e.name)} <span class="pill mode">${esc(e.mode)}</span></span><span class="dose">${esc(e.dose)}</span></div></div>`).join('')||'<p class="muted">None yet.</p>'}`;
+    return;
+  }
+  const j=DATA.joints.find(x=>x.id===id);
+  if(j){el.innerHTML=`<h2>${esc(j.name)}</h2><p class="muted">${esc(j.type)} · ${esc(j.region)}</p>
+    <h3>Normal range</h3><table>${Object.entries(j.normalRom).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v}&deg;</td></tr>`).join('')}</table>
+    <h3>Stabilisers</h3><p>${j.stabilisers.map(esc).join(', ')}</p>
+    <h3>Note</h3><p class="muted">${esc(j.notes)}</p>`;return;}
+  const l=DATA.ligaments.find(x=>x.id===id);
+  if(l){el.innerHTML=`<h2>${esc(l.name)}</h2><p class="muted">${esc(l.joint)}</p><h3>Restrains</h3><p>${esc(l.restrains)}</p><h3>Note</h3><p class="muted">${esc(l.notes)}</p>`;}
+}
+
+async function loadSaved(){
+  const d=await fetch('/api/programs').then(r=>r.json());
+  const el=document.getElementById('savedlist');
+  el.innerHTML=d.programs.length?d.programs.map(p=>
+    `<div class="chk"><span><b>${esc(p.name)}</b> <span class="muted">${p.exercises} exercises · ${new Date(p.createdAt).toLocaleString()}</span></span>
+     <button class="ghost" onclick="openSaved('${p.id}')">Open</button></div>`).join(''):'<p class="muted">None yet.</p>';
+}
+async function openSaved(id){
+  const d=await fetch('/api/programs/'+id).then(r=>r.json());
+  lastAssessment=d.assessment; renderProgram(d); renderResults(); paint();
+  document.querySelector('[data-tab="program"]').click();
+}
+
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  ['assess','anatomy','library','program','saved'].forEach(t=>document.getElementById('tab-'+t).hidden=(t!==b.dataset.tab));
+  if(b.dataset.tab==='library')libInit();
+  drawBody();
+});
+Object.assign(window,{setView,runAssess,buildProg,showDetail,renderList,openSaved,toggleBones,libInit,libLoad,libShow,libPlayPause,libSpeed,resetCam,libInspect});
+document.getElementById('tab-saved').hidden=true;
+document.getElementById('tab-library').hidden=true;
+boot();
+</script>
+</body>
+</html>

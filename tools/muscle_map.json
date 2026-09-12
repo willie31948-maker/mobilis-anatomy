@@ -1,0 +1,245 @@
+{
+  "_comment": "Maps Mobilis muscle ids (data/anatomy.js) to Z-Anatomy mesh base names. Each entry lists the anatomical parts that compose that functional muscle group. The extractor appends .l/.r for the two sides. This file is the ENTIRE coupling between the 3D asset and the reasoning engine \u2014 swap the asset, rewrite only this file.",
+  "_source": "Z-Anatomy (github.com/Z-Anatomy/Models-of-human-anatomy), CC BY-SA 4.0, derived from BodyParts3D / Database Center for Life Science, Japan.",
+  "map": {
+    "iliopsoas": [
+      "Psoas major",
+      "Iliacus muscle"
+    ],
+    "gluteus_maximus": [
+      "Gluteus maximus muscle"
+    ],
+    "gluteus_medius": [
+      "Gluteus medius muscle"
+    ],
+    "tfl": [
+      "Tensor fasciae latae"
+    ],
+    "adductor_group": [
+      "Adductor magnus",
+      "Adductor longus",
+      "Adductor brevis",
+      "Gracilis muscle"
+    ],
+    "piriformis": [
+      "Piriformis muscle"
+    ],
+    "hamstrings": [
+      "Long head of biceps femoris",
+      "Short head of biceps femoris",
+      "Semitendinosus muscle",
+      "Semimembranosus muscle"
+    ],
+    "rectus_femoris": [
+      "Rectus femoris muscle"
+    ],
+    "quadriceps": [
+      "Vastus lateralis muscle",
+      "Vastus medialis muscle",
+      "Vastus intermedius muscle"
+    ],
+    "erector_spinae": [
+      "Longissimus thoracis muscle",
+      "Iliocostalis lumborum muscle",
+      "Iliocostalis thoracis muscle",
+      "Spinalis thoracis muscle"
+    ],
+    "multifidus": [
+      "Multifidus lumborum muscle",
+      "Multifidus colli muscle"
+    ],
+    "transversus_abdominis": [
+      "Transversus abdominis muscle"
+    ],
+    "quadratus_lumborum": [
+      "Quadratus lumborum muscle"
+    ],
+    "rectus_abdominis": [
+      "Rectus abdominis muscle"
+    ],
+    "pectoralis_major": [
+      "Sternocostal head of pectoralis major muscle",
+      "Clavicular head of pectoralis major muscle"
+    ],
+    "pectoralis_minor": [
+      "Pectoralis minor muscle"
+    ],
+    "rhomboids": [
+      "Rhomboid major muscle",
+      "Rhomboid minor muscle"
+    ],
+    "lower_trapezius": [
+      "Ascending part of trapezius muscle"
+    ],
+    "upper_trapezius": [
+      "Descending part of trapezius muscle"
+    ],
+    "serratus_anterior": [
+      "Serratus anterior muscle"
+    ],
+    "rotator_cuff": [
+      "Supraspinatus muscle",
+      "Infraspinatus muscle",
+      "Teres minor muscle",
+      "Subscapularis muscle"
+    ],
+    "levator_scapulae": [
+      "Levator scapulae"
+    ],
+    "deep_neck_flexors": [
+      "Longus colli muscle",
+      "Longus capitis muscle"
+    ],
+    "suboccipitals": [
+      "Rectus posterior major capitis muscle",
+      "Rectus posterior minor capitis muscle",
+      "Obliquus superior capitis muscle",
+      "Obliquus inferior capitis muscle"
+    ],
+    "latissimus_dorsi": [
+      "Latissimus dorsi muscle"
+    ],
+    "gastrocnemius": [
+      "Lateral head of gastrocnemius",
+      "Medial head of gastrocnemius"
+    ],
+    "soleus": [
+      "Soleus muscle"
+    ],
+    "tibialis_anterior": [
+      "Tibialis anterior muscle"
+    ],
+    "tibialis_posterior": [
+      "Tibialis posterior muscle"
+    ],
+    "peroneals": [
+      "Fibularis longus muscle",
+      "Fibularis brevis muscle"
+    ],
+    "deltoid": [
+      "Acromial part of deltoid muscle",
+      "Clavicular part of deltoid muscle",
+      "Scapular spinal part of deltoid muscle"
+    ],
+    "biceps_brachii": [
+      "Long head of biceps brachii",
+      "Short head of biceps brachii"
+    ],
+    "triceps_brachii": [
+      "Long head of triceps brachii",
+      "Lateral head of triceps brachii",
+      "Medial head of triceps brachii"
+    ],
+    "brachialis": [
+      "Brachialis muscle"
+    ],
+    "brachioradialis": [
+      "Brachioradialis muscle"
+    ],
+    "wrist_extensors": [
+      "Extensor carpi radialis longus",
+      "Extensor carpi radialis brevis",
+      "Humeral head of extensor carpi ulnaris",
+      "Ulnar head of extensor carpi ulnaris"
+    ],
+    "wrist_flexors": [
+      "Flexor carpi radialis",
+      "Humeral head of flexor carpi ulnaris",
+      "Ulnar head of flexor carpi ulnaris",
+      "Palmaris longus muscle"
+    ],
+    "finger_flexors": [
+      "Humero-ulnar head of flexor digitorum superficialis",
+      "Radial head of flexor digitorum superficialis",
+      "Flexor digitorum profundus",
+      "Flexor pollicis longus"
+    ],
+    "finger_extensors": [
+      "Extensor digitorum",
+      "Extensor digiti minimi",
+      "Extensor pollicis longus",
+      "Extensor pollicis brevis",
+      "Abductor pollicis longus",
+      "Extensor indicis"
+    ],
+    "hand_intrinsics": [
+      "Abductor pollicis brevis",
+      "Opponens pollicis muscle",
+      "Superficial head of flexor pollicis brevis",
+      "Oblique head of adductor pollicis",
+      "Transverse head of adductor pollicis",
+      "Abductor digiti minimi of hand",
+      "Palmar interossei muscles",
+      "Dorsal interossei muscles of hand",
+      "Lumbrical muscles of hand"
+    ],
+    "pronators": [
+      "Superficial head of pronator teres",
+      "Deep head of pronator teres",
+      "Pronator quadratus"
+    ],
+    "supinator": [
+      "Supinator"
+    ],
+    "sternocleidomastoid": [
+      "Sternocleidomastoid muscle"
+    ],
+    "scalenes": [
+      "Scalenus anterior muscle",
+      "Scalenus medius muscle",
+      "Scalenus posterior muscle"
+    ],
+    "splenius": [
+      "Splenius capitis muscle",
+      "Splenius colli muscle"
+    ],
+    "masseter": [
+      "Superficial part of masseter",
+      "Deep part of masseter"
+    ],
+    "temporalis": [
+      "Temporalis muscle"
+    ],
+    "pterygoids": [
+      "Medial pterygoid muscle",
+      "Superior head of lateral pterygoid muscle",
+      "Inferior head of lateral pterygoid muscle"
+    ],
+    "digastric": [
+      "Anterior belly of digastric muscle",
+      "Posterior belly of digastric muscle",
+      "Mylohyoid muscle",
+      "Geniohyoid muscle"
+    ]
+  },
+  "context": {
+    "_comment": "Bones rendered as inert pale geometry so the arms, hands and head read as a body rather than floating muscle. Not clickable, not assessable \u2014 pure visual context.",
+    "skull": [
+      "Frontal bone",
+      "Parietal bone",
+      "Occipital bone",
+      "Temporal bone",
+      "Mandible",
+      "Maxilla",
+      "Nasal bone",
+      "Zygomatic bone"
+    ],
+    "arm_bones": [
+      "Humerus",
+      "Radius",
+      "Ulna",
+      "Scapula",
+      "Clavicle"
+    ],
+    "hand_bones": [
+      "Scaphoid bone",
+      "Lunate bone",
+      "Capitate bone",
+      "First metacarpal bone",
+      "Second metacarpal bone",
+      "Third metacarpal bone",
+      "Fourth metacarpal bone",
+      "Fifth metacarpal bone"
+    ]
+  }
+}

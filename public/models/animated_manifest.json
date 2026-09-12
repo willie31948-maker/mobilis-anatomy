@@ -1,0 +1,1206 @@
+{
+  "source": "Z-Anatomy + Z-Biomechanics, CC BY-SA 4.0",
+  "file": "animated.glb",
+  "bytes": 7990116,
+  "muscles": [
+    "adductor_group",
+    "biceps_brachii",
+    "brachialis",
+    "brachioradialis",
+    "deep_neck_flexors",
+    "deltoid",
+    "digastric",
+    "erector_spinae",
+    "finger_extensors",
+    "finger_flexors",
+    "gastrocnemius",
+    "gluteus_maximus",
+    "gluteus_medius",
+    "hamstrings",
+    "hand_intrinsics",
+    "iliopsoas",
+    "latissimus_dorsi",
+    "levator_scapulae",
+    "lower_trapezius",
+    "masseter",
+    "multifidus",
+    "pectoralis_major",
+    "pectoralis_minor",
+    "peroneals",
+    "piriformis",
+    "pronators",
+    "pterygoids",
+    "quadratus_lumborum",
+    "quadriceps",
+    "rectus_abdominis",
+    "rectus_femoris",
+    "rhomboids",
+    "rotator_cuff",
+    "scalenes",
+    "serratus_anterior",
+    "soleus",
+    "splenius",
+    "sternocleidomastoid",
+    "suboccipitals",
+    "supinator",
+    "temporalis",
+    "tfl",
+    "tibialis_anterior",
+    "tibialis_posterior",
+    "transversus_abdominis",
+    "triceps_brachii",
+    "upper_trapezius",
+    "wrist_extensors",
+    "wrist_flexors"
+  ],
+  "meshes": [
+    "adductor_group__l",
+    "adductor_group__r",
+    "biceps_brachii__l",
+    "biceps_brachii__r",
+    "brachialis__l",
+    "brachialis__r",
+    "brachioradialis__l",
+    "brachioradialis__r",
+    "deep_neck_flexors__l",
+    "deep_neck_flexors__r",
+    "deltoid__l",
+    "deltoid__r",
+    "digastric__l",
+    "digastric__r",
+    "erector_spinae__l",
+    "erector_spinae__r",
+    "finger_extensors__l",
+    "finger_extensors__r",
+    "finger_flexors__l",
+    "finger_flexors__r",
+    "gastrocnemius__l",
+    "gastrocnemius__r",
+    "gluteus_maximus__l",
+    "gluteus_maximus__r",
+    "gluteus_medius__l",
+    "gluteus_medius__r",
+    "hamstrings__l",
+    "hamstrings__r",
+    "hand_intrinsics__l",
+    "hand_intrinsics__r",
+    "iliopsoas__l",
+    "iliopsoas__r",
+    "latissimus_dorsi__l",
+    "latissimus_dorsi__r",
+    "levator_scapulae__l",
+    "levator_scapulae__r",
+    "lower_trapezius__l",
+    "lower_trapezius__r",
+    "masseter__l",
+    "masseter__r",
+    "multifidus__l",
+    "multifidus__r",
+    "pectoralis_major__l",
+    "pectoralis_major__r",
+    "pectoralis_minor__l",
+    "pectoralis_minor__r",
+    "peroneals__l",
+    "peroneals__r",
+    "piriformis__l",
+    "piriformis__r",
+    "pronators__l",
+    "pronators__r",
+    "pterygoids__l",
+    "pterygoids__r",
+    "quadratus_lumborum__l",
+    "quadratus_lumborum__r",
+    "quadriceps__l",
+    "quadriceps__r",
+    "rectus_abdominis__l",
+    "rectus_abdominis__r",
+    "rectus_femoris__l",
+    "rectus_femoris__r",
+    "rhomboids__l",
+    "rhomboids__r",
+    "rotator_cuff__l",
+    "rotator_cuff__r",
+    "scalenes__l",
+    "scalenes__r",
+    "serratus_anterior__l",
+    "serratus_anterior__r",
+    "soleus__l",
+    "soleus__r",
+    "splenius__l",
+    "splenius__r",
+    "sternocleidomastoid__l",
+    "sternocleidomastoid__r",
+    "suboccipitals__l",
+    "suboccipitals__r",
+    "supinator__l",
+    "supinator__r",
+    "temporalis__l",
+    "temporalis__r",
+    "tfl__l",
+    "tfl__r",
+    "tibialis_anterior__l",
+    "tibialis_anterior__r",
+    "tibialis_posterior__l",
+    "tibialis_posterior__r",
+    "transversus_abdominis__l",
+    "transversus_abdominis__r",
+    "triceps_brachii__l",
+    "triceps_brachii__r",
+    "upper_trapezius__l",
+    "upper_trapezius__r",
+    "wrist_extensors__l",
+    "wrist_extensors__r",
+    "wrist_flexors__l",
+    "wrist_flexors__r"
+  ],
+  "missing": [],
+  "bound": 98,
+  "rigid_fallback": [],
+  "attachments": {
+    "iliopsoas": {
+      "origin": "L3",
+      "insertion": "{upleg}"
+    },
+    "gluteus_maximus": {
+      "origin": "Hips",
+      "insertion": "{upleg}"
+    },
+    "gluteus_medius": {
+      "origin": "Hips",
+      "insertion": "{upleg}"
+    },
+    "tfl": {
+      "origin": "Hips",
+      "insertion": "{upleg}"
+    },
+    "adductor_group": {
+      "origin": "Hips",
+      "insertion": "{upleg}"
+    },
+    "piriformis": {
+      "origin": "{upleg}",
+      "insertion": "{upleg}"
+    },
+    "hamstrings": {
+      "origin": "Hips",
+      "insertion": "{tibia}"
+    },
+    "rectus_femoris": {
+      "origin": "Hips",
+      "insertion": "{tibia}"
+    },
+    "quadriceps": {
+      "origin": "{upleg}",
+      "insertion": "{tibia}"
+    },
+    "gastrocnemius": {
+      "origin": "{upleg}",
+      "insertion": "{foot}"
+    },
+    "soleus": {
+      "origin": "{tibia}",
+      "insertion": "{foot}"
+    },
+    "tibialis_anterior": {
+      "origin": "{tibia}",
+      "insertion": "{foot}"
+    },
+    "tibialis_posterior": {
+      "origin": "{tibia}",
+      "insertion": "{foot}"
+    },
+    "peroneals": {
+      "origin": "{tibia}",
+      "insertion": "{foot}"
+    },
+    "erector_spinae": {
+      "origin": "Hips",
+      "insertion": "T1"
+    },
+    "multifidus": {
+      "origin": "Spine",
+      "insertion": "Spine"
+    },
+    "quadratus_lumborum": {
+      "origin": "L3",
+      "insertion": "T12"
+    },
+    "transversus_abdominis": {
+      "origin": "Hips",
+      "insertion": "T10"
+    },
+    "rectus_abdominis": {
+      "origin": "Hips",
+      "insertion": "T5"
+    },
+    "latissimus_dorsi": {
+      "origin": "Spine1",
+      "insertion": "Spine1"
+    },
+    "pectoralis_major": {
+      "origin": "Sternum",
+      "insertion": "Sternum"
+    },
+    "pectoralis_minor": {
+      "origin": "{scapula}",
+      "insertion": "{scapula}"
+    },
+    "serratus_anterior": {
+      "origin": "{scapula}",
+      "insertion": "{scapula}"
+    },
+    "rhomboids": {
+      "origin": "{scapula}",
+      "insertion": "{scapula}"
+    },
+    "lower_trapezius": {
+      "origin": "{scapula}",
+      "insertion": "{scapula}"
+    },
+    "upper_trapezius": {
+      "origin": "{scapula}",
+      "insertion": "{scapula}"
+    },
+    "levator_scapulae": {
+      "origin": "{scapula}",
+      "insertion": "{scapula}"
+    },
+    "rotator_cuff": {
+      "origin": "{arm}",
+      "insertion": "{arm}"
+    },
+    "deltoid": {
+      "origin": "Clavicle-Z.{s}",
+      "insertion": "{arm}"
+    },
+    "biceps_brachii": {
+      "origin": "{scapula}",
+      "insertion": "{radius}"
+    },
+    "triceps_brachii": {
+      "origin": "{scapula}",
+      "insertion": "{ulna}"
+    },
+    "brachialis": {
+      "origin": "{arm}",
+      "insertion": "{ulna}"
+    },
+    "brachioradialis": {
+      "origin": "{arm}",
+      "insertion": "{radius}"
+    },
+    "pronators": {
+      "origin": "{arm}",
+      "insertion": "{radius}"
+    },
+    "supinator": {
+      "origin": "{ulna}",
+      "insertion": "{radius}"
+    },
+    "wrist_flexors": {
+      "origin": "{arm}",
+      "insertion": "{carpal}"
+    },
+    "wrist_extensors": {
+      "origin": "{arm}",
+      "insertion": "{carpal}"
+    },
+    "finger_flexors": {
+      "origin": "{ulna}",
+      "insertion": "{hand}"
+    },
+    "finger_extensors": {
+      "origin": "{ulna}",
+      "insertion": "{hand}"
+    },
+    "hand_intrinsics": {
+      "origin": "{hand}",
+      "insertion": "{hand}"
+    },
+    "sternocleidomastoid": {
+      "origin": "Head",
+      "insertion": "Head"
+    },
+    "scalenes": {
+      "origin": "C4",
+      "insertion": "C4"
+    },
+    "splenius": {
+      "origin": "Head",
+      "insertion": "Head"
+    },
+    "deep_neck_flexors": {
+      "origin": "Head",
+      "insertion": "Head"
+    },
+    "suboccipitals": {
+      "origin": "Head",
+      "insertion": "Head"
+    },
+    "masseter": {
+      "origin": "Mandible",
+      "insertion": "Mandible"
+    },
+    "temporalis": {
+      "origin": "Head",
+      "insertion": "Head"
+    },
+    "pterygoids": {
+      "origin": "Mandible",
+      "insertion": "Mandible"
+    },
+    "digastric": {
+      "origin": "Mandible",
+      "insertion": "Mandible"
+    }
+  },
+  "postures": [
+    "half_kneeling",
+    "prone",
+    "quadruped",
+    "seated",
+    "side_lying",
+    "standing",
+    "supine"
+  ],
+  "clips": [
+    {
+      "name": "squat",
+      "label": "Squat",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 7,
+      "bones": [
+        "Hips",
+        "LeftUpLeg",
+        "Neck-Start",
+        "Neck1",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Closed-chain like the hinge: hips and knees fold while the feet stay flat.",
+      "missing_bones": [],
+      "baked_channels": 570,
+      "dropped_channels": 1900
+    },
+    {
+      "name": "hinge",
+      "label": "Hip hinge / Romanian deadlift",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 7,
+      "bones": [
+        "Hips",
+        "LeftUpLeg",
+        "Neck-Start",
+        "Neck1",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "60 degrees of hip flexion, which is what lengthens the hamstrings (they run pelvis->tibia). The rig is pelvis-rooted, so the body pivots about the hips rather than keeping the heels planted -- holding a ground contact through this range needs a real IK solve, not a joint-angle clip. Counter-rotating Hips to fake it does not work: Hips is the rig root and carries the spine, arms and head with it, which visibly tore the body apart.",
+      "missing_bones": [],
+      "baked_channels": 571,
+      "dropped_channels": 1899
+    },
+    {
+      "name": "lunge",
+      "label": "Lunge / split squat",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 5,
+      "bones": [
+        "LeftUpLeg",
+        "RightUpLeg",
+        "Spine",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 532,
+      "dropped_channels": 1938
+    },
+    {
+      "name": "bridge",
+      "label": "Glute bridge",
+      "frames": 48,
+      "posture": "supine",
+      "tracks_applied": 5,
+      "bones": [
+        "Hips",
+        "LeftUpLeg",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Supine. The pelvis rises through hip extension while the shoulders and feet stay down; on a pelvis-rooted rig that is a Hips rotation plus femur swing. An earlier revision dropped the Hips track and left only 20 degrees of femur motion -- which reproduced the original 'just sways the legs' complaint via a fix for something else.",
+      "missing_bones": [],
+      "baked_channels": 524,
+      "dropped_channels": 1946
+    },
+    {
+      "name": "hip_thrust",
+      "label": "Hip thrust",
+      "frames": 48,
+      "posture": "supine",
+      "tracks_applied": 5,
+      "bones": [
+        "Hips",
+        "LeftUpLeg",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Supine. The pelvis rises through hip extension while the shoulders and feet stay down; on a pelvis-rooted rig that is a Hips rotation plus femur swing. An earlier revision dropped the Hips track and left only 20 degrees of femur motion -- which reproduced the original 'just sways the legs' complaint via a fix for something else.",
+      "missing_bones": [],
+      "baked_channels": 525,
+      "dropped_channels": 1945
+    },
+    {
+      "name": "hip_abduction",
+      "label": "Side-lying hip abduction",
+      "frames": 48,
+      "posture": "side_lying",
+      "tracks_applied": 2,
+      "bones": [
+        "LHipJoint",
+        "LeftUpLeg"
+      ],
+      "notes": "Side-lying: with the pelvis rolled 90 degrees the abduction axis becomes x, not z. Measured 61cm of foot travel on x versus 10cm on y.",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    },
+    {
+      "name": "leg_raise",
+      "label": "Supine straight-leg raise",
+      "frames": 48,
+      "posture": "supine",
+      "tracks_applied": 7,
+      "bones": [
+        "Hips",
+        "LeftUpLeg",
+        "Neck-Start",
+        "Neck1",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Supine hamstring stretch: hip flexes to 80 with the knee locked straight.",
+      "missing_bones": [],
+      "baked_channels": 571,
+      "dropped_channels": 1899
+    },
+    {
+      "name": "clamshell",
+      "label": "Clamshell",
+      "frames": 48,
+      "posture": "side_lying",
+      "tracks_applied": 2,
+      "bones": [
+        "LeftUpLeg",
+        "Tibia.l"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    },
+    {
+      "name": "single_leg_stance",
+      "label": "Single-leg stance",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 4,
+      "bones": [
+        "Hips",
+        "RightUpLeg",
+        "Spine",
+        "Tibia.r"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 544,
+      "dropped_channels": 1926
+    },
+    {
+      "name": "heel_raise",
+      "label": "Standing heel raise",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 4,
+      "bones": [
+        "LeftFoot",
+        "LeftToeBase",
+        "RightFoot",
+        "RightToeBase"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 402,
+      "dropped_channels": 2068
+    },
+    {
+      "name": "ankle_dorsiflexion",
+      "label": "Ankle dorsiflexion",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 2,
+      "bones": [
+        "LeftFoot",
+        "Tibia.l"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    },
+    {
+      "name": "nordic",
+      "label": "Nordic hamstring curl (eccentric)",
+      "frames": 48,
+      "posture": "quadruped",
+      "tracks_applied": 6,
+      "bones": [
+        "LeftArm",
+        "LeftUpLeg",
+        "RightArm",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Kneeling, body lowers forward as the knees extend under eccentric hamstring load.",
+      "missing_bones": [],
+      "baked_channels": 404,
+      "dropped_channels": 2066
+    },
+    {
+      "name": "dead_bug",
+      "label": "Dead bug",
+      "frames": 48,
+      "posture": "supine",
+      "tracks_applied": 9,
+      "bones": [
+        "Hips",
+        "LeftArm",
+        "LeftUpLeg",
+        "Neck-Start",
+        "Neck1",
+        "RightArm",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Supine, opposite arm and leg extend away from a braced trunk.",
+      "missing_bones": [],
+      "baked_channels": 575,
+      "dropped_channels": 1895
+    },
+    {
+      "name": "bird_dog",
+      "label": "Bird dog",
+      "frames": 48,
+      "posture": "quadruped",
+      "tracks_applied": 6,
+      "bones": [
+        "LeftArm",
+        "LeftUpLeg",
+        "RightArm",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 404,
+      "dropped_channels": 2066
+    },
+    {
+      "name": "side_plank",
+      "label": "Side plank",
+      "frames": 48,
+      "posture": "side_lying",
+      "tracks_applied": 2,
+      "bones": [
+        "Hips",
+        "LeftArm"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 549,
+      "dropped_channels": 1921
+    },
+    {
+      "name": "copenhagen",
+      "label": "Copenhagen plank",
+      "frames": 48,
+      "posture": "side_lying",
+      "tracks_applied": 1,
+      "bones": [
+        "LeftUpLeg"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 399,
+      "dropped_channels": 2071
+    },
+    {
+      "name": "quad_setting",
+      "label": "Quadriceps setting",
+      "frames": 48,
+      "posture": "seated",
+      "tracks_applied": 4,
+      "bones": [
+        "LeftUpLeg",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Long-sitting knee extension: the terminal-range contraction that activates VMO.",
+      "missing_bones": [],
+      "baked_channels": 401,
+      "dropped_channels": 2069
+    },
+    {
+      "name": "spine_flexion",
+      "label": "Cat-cow",
+      "frames": 48,
+      "posture": "quadruped",
+      "tracks_applied": 9,
+      "bones": [
+        "Hips",
+        "LeftArm",
+        "LeftUpLeg",
+        "Neck-Start",
+        "Neck1",
+        "RightArm",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Quadruped, not standing. Segmental flexion summed along 14 vertebral bones reaches real cat-cow range.",
+      "missing_bones": [],
+      "baked_channels": 575,
+      "dropped_channels": 1895
+    },
+    {
+      "name": "spine_extension",
+      "label": "Thoracic extension",
+      "frames": 48,
+      "posture": "supine",
+      "tracks_applied": 4,
+      "bones": [
+        "Head",
+        "LowerBack",
+        "Spine",
+        "Spine1"
+      ],
+      "notes": "Supine over a roller, extending the thoracic spine.",
+      "missing_bones": [],
+      "baked_channels": 562,
+      "dropped_channels": 1908
+    },
+    {
+      "name": "side_bend",
+      "label": "Standing side bend",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 4,
+      "bones": [
+        "LeftArm",
+        "LowerBack",
+        "Spine",
+        "Spine1"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 566,
+      "dropped_channels": 1904
+    },
+    {
+      "name": "hip_flexor_stretch",
+      "label": "Half-kneeling hip flexor stretch",
+      "frames": 48,
+      "posture": "half_kneeling",
+      "tracks_applied": 6,
+      "bones": [
+        "Hips",
+        "LeftUpLeg",
+        "RightUpLeg",
+        "Spine",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Half-kneeling setup, then the rear hip drives into extension -- that IS the stretch.",
+      "missing_bones": [],
+      "baked_channels": 545,
+      "dropped_channels": 1925
+    },
+    {
+      "name": "couch_stretch",
+      "label": "Couch stretch",
+      "frames": 48,
+      "posture": "half_kneeling",
+      "tracks_applied": 6,
+      "bones": [
+        "LeftUpLeg",
+        "LowerBack",
+        "RightUpLeg",
+        "Spine",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 551,
+      "dropped_channels": 1919
+    },
+    {
+      "name": "shoulder_abduction",
+      "label": "Shoulder abduction",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 3,
+      "bones": [
+        "Clavicle-Z.l",
+        "LeftArm",
+        "Scapula.l"
+      ],
+      "notes": "Full 160 with scapular upward rotation -- shoulder abduction is never purely glenohumeral.",
+      "missing_bones": [],
+      "baked_channels": 401,
+      "dropped_channels": 2069
+    },
+    {
+      "name": "shoulder_flexion",
+      "label": "Shoulder flexion / overhead reach",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 2,
+      "bones": [
+        "LeftArm",
+        "RightArm"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    },
+    {
+      "name": "shoulder_rotation",
+      "label": "Shoulder external rotation",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 2,
+      "bones": [
+        "LeftArm",
+        "LeftForeArm"
+      ],
+      "notes": "Elbow held at 90 (the setup) while the humerus rotates externally through 70.",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    },
+    {
+      "name": "row",
+      "label": "Row / face pull",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 10,
+      "bones": [
+        "Hips",
+        "LeftArm",
+        "LeftUpLeg",
+        "LowerBack",
+        "Neck-Start",
+        "Neck1",
+        "RightArm",
+        "RightUpLeg",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "Starts with the arm reached forward and pulls back -- v4 authored it from a dead-hang, so nothing read as a row.",
+      "missing_bones": [],
+      "baked_channels": 573,
+      "dropped_channels": 1897
+    },
+    {
+      "name": "prone_y_raise",
+      "label": "Prone Y raise",
+      "frames": 48,
+      "posture": "prone",
+      "tracks_applied": 4,
+      "bones": [
+        "LeftArm",
+        "RightArm",
+        "Scapula.l",
+        "Scapula.r"
+      ],
+      "notes": "Prone, arms lifting off the floor into a Y.",
+      "missing_bones": [],
+      "baked_channels": 402,
+      "dropped_channels": 2068
+    },
+    {
+      "name": "wall_slide",
+      "label": "Wall slide",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 3,
+      "bones": [
+        "LeftArm",
+        "LeftForeArm",
+        "Scapula.l"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 401,
+      "dropped_channels": 2069
+    },
+    {
+      "name": "serratus_punch",
+      "label": "Supine serratus punch",
+      "frames": 48,
+      "posture": "supine",
+      "tracks_applied": 3,
+      "bones": [
+        "Clavicle-X.l",
+        "LeftArm",
+        "Scapula.l"
+      ],
+      "notes": "Supine with the arm vertical; the movement is scapular protraction, not arm motion.",
+      "missing_bones": [],
+      "baked_channels": 401,
+      "dropped_channels": 2069
+    },
+    {
+      "name": "elbow_flexion",
+      "label": "Elbow flexion (curl)",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 2,
+      "bones": [
+        "LeftArm",
+        "LeftForeArm"
+      ],
+      "notes": "Full 135 degrees of elbow flexion.",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    },
+    {
+      "name": "elbow_extension",
+      "label": "Overhead triceps extension",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 2,
+      "bones": [
+        "LeftArm",
+        "LeftForeArm"
+      ],
+      "notes": "Arm stays overhead (the setup); the elbow extends from 130 to nearly straight.",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    },
+    {
+      "name": "forearm_rotation",
+      "label": "Supination / pronation",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 1,
+      "bones": [
+        "LeftForeArm"
+      ],
+      "notes": "Pronation/supination is LeftForeArm.z on this rig, not .y (measured: y moves the hand 2.4cm, z moves it 36cm). Radius.l is DAMPED_TRACK-driven by LeftForeArm, so keyframing the radius directly does nothing at all.",
+      "missing_bones": [],
+      "baked_channels": 399,
+      "dropped_channels": 2071
+    },
+    {
+      "name": "wrist_flexion",
+      "label": "Wrist flexion",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 3,
+      "bones": [
+        "Distal carpal bones.l",
+        "LeftHand",
+        "Proximal carpal bones-Flexion.l"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 402,
+      "dropped_channels": 2068
+    },
+    {
+      "name": "wrist_extension",
+      "label": "Wrist extension",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 3,
+      "bones": [
+        "Distal carpal bones.l",
+        "LeftHand",
+        "Proximal carpal bones-Flexion.l"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 402,
+      "dropped_channels": 2068
+    },
+    {
+      "name": "lat_stretch",
+      "label": "Kneeling lat stretch",
+      "frames": 48,
+      "posture": "quadruped",
+      "tracks_applied": 8,
+      "bones": [
+        "LeftArm",
+        "LeftUpLeg",
+        "RightArm",
+        "RightUpLeg",
+        "Scapula.l",
+        "Spine",
+        "Tibia.l",
+        "Tibia.r"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 545,
+      "dropped_channels": 1925
+    },
+    {
+      "name": "sleeper_stretch",
+      "label": "Posterior shoulder (sleeper) stretch",
+      "frames": 48,
+      "posture": "side_lying",
+      "tracks_applied": 2,
+      "bones": [
+        "LeftArm",
+        "LeftForeArm"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    },
+    {
+      "name": "doorway_pec_stretch",
+      "label": "Doorway pec stretch",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 4,
+      "bones": [
+        "Clavicle-X.l",
+        "LeftArm",
+        "Scapula.l"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 402,
+      "dropped_channels": 2068
+    },
+    {
+      "name": "nerve_glide",
+      "label": "Median nerve glide",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 4,
+      "bones": [
+        "Head",
+        "LeftArm",
+        "LeftForeArm",
+        "Proximal carpal bones-Flexion.l"
+      ],
+      "notes": "Nerve glides deliberately combine one lengthening end with one slackening end.",
+      "missing_bones": [],
+      "baked_channels": 404,
+      "dropped_channels": 2066
+    },
+    {
+      "name": "grip",
+      "label": "Grip / release",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 16,
+      "bones": [
+        "Distal phalanx of hand-1st finger.l",
+        "Distal phalanx of hand-2nd finger.l",
+        "Distal phalanx of hand-3rd finger.l",
+        "Distal phalanx of hand-4th finger.l",
+        "Distal phalanx of hand-5th finger.l",
+        "LeftHand",
+        "LeftThumb",
+        "Middle phalanx of hand-2nd finger.l",
+        "Middle phalanx of hand-3rd finger.l",
+        "Middle phalanx of hand-4th finger.l",
+        "Middle phalanx of hand-5th finger.l",
+        "Proximal carpal bones-Flexion.l",
+        "Proximal phalanx of hand-1st finger.l",
+        "Proximal phalanx of hand-2nd finger.l",
+        "Proximal phalanx of hand-4th finger.l",
+        "Proximal phalanx of hand-5th finger.l"
+      ],
+      "notes": "Full fist closure across every phalanx.",
+      "missing_bones": [],
+      "baked_channels": 415,
+      "dropped_channels": 2055
+    },
+    {
+      "name": "finger_extension",
+      "label": "Finger extension",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 14,
+      "bones": [
+        "Distal phalanx of hand-1st finger.l",
+        "Distal phalanx of hand-2nd finger.l",
+        "Distal phalanx of hand-3rd finger.l",
+        "Distal phalanx of hand-4th finger.l",
+        "Distal phalanx of hand-5th finger.l",
+        "LeftThumb",
+        "Middle phalanx of hand-2nd finger.l",
+        "Middle phalanx of hand-3rd finger.l",
+        "Middle phalanx of hand-4th finger.l",
+        "Middle phalanx of hand-5th finger.l",
+        "Proximal phalanx of hand-1st finger.l",
+        "Proximal phalanx of hand-2nd finger.l",
+        "Proximal phalanx of hand-4th finger.l",
+        "Proximal phalanx of hand-5th finger.l"
+      ],
+      "notes": "Starts from a closed fist and opens -- the reverse of grip.",
+      "missing_bones": [],
+      "baked_channels": 412,
+      "dropped_channels": 2058
+    },
+    {
+      "name": "thumb_opposition",
+      "label": "Thumb opposition",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 2,
+      "bones": [
+        "LeftThumb"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    },
+    {
+      "name": "neck_flexion",
+      "label": "Chin tuck",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 3,
+      "bones": [
+        "Head",
+        "Neck-Start",
+        "Neck1"
+      ],
+      "notes": "Chin tuck: upper cervical (Head) flexes while the lower segments stay long. Driven through Neck-Start/Neck1/Head -- keyframing C1..C7 directly does nothing, they are ARMATURE-constraint children of these.",
+      "missing_bones": [],
+      "baked_channels": 492,
+      "dropped_channels": 1978
+    },
+    {
+      "name": "neck_side_bend",
+      "label": "Neck side bend",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 3,
+      "bones": [
+        "Head",
+        "Neck-Start",
+        "Neck1"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 490,
+      "dropped_channels": 1980
+    },
+    {
+      "name": "neck_rotation",
+      "label": "Neck rotation",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 3,
+      "bones": [
+        "Head",
+        "Neck-Start",
+        "Neck1"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 511,
+      "dropped_channels": 1959
+    },
+    {
+      "name": "neck_extension",
+      "label": "Neck extension",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 3,
+      "bones": [
+        "Head",
+        "Neck-Start",
+        "Neck1"
+      ],
+      "notes": "",
+      "missing_bones": [],
+      "baked_channels": 500,
+      "dropped_channels": 1970
+    },
+    {
+      "name": "jaw_open",
+      "label": "Jaw opening",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 2,
+      "bones": [
+        "Hyoid",
+        "Mandible"
+      ],
+      "notes": "30 degrees of mandibular depression -- roughly 40mm interincisal, a normal full opening.",
+      "missing_bones": [],
+      "baked_channels": 401,
+      "dropped_channels": 2069
+    },
+    {
+      "name": "breathing",
+      "label": "Diaphragmatic breathing",
+      "frames": 48,
+      "posture": "supine",
+      "tracks_applied": 5,
+      "bones": [
+        "Rib5.l",
+        "Rib5.r",
+        "Rib7.l",
+        "Rib7.r",
+        "Sternum-Offset"
+      ],
+      "notes": "Rib expansion is genuinely a few degrees -- flagged small_range so the range-of-motion test cannot be satisfied by a weak angle here.",
+      "missing_bones": [],
+      "baked_channels": 402,
+      "dropped_channels": 2068
+    },
+    {
+      "name": "ankle_eversion",
+      "label": "Ankle eversion",
+      "frames": 48,
+      "posture": "standing",
+      "tracks_applied": 2,
+      "bones": [
+        "LeftFoot",
+        "LeftToeBase"
+      ],
+      "notes": "Peroneals evert the foot; distinct from dorsiflexion, which is why banded eversion needed its own clip.",
+      "missing_bones": [],
+      "baked_channels": 400,
+      "dropped_channels": 2070
+    }
+  ]
+}

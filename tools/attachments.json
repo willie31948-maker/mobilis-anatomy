@@ -1,0 +1,259 @@
+{
+ "_comment": "Anatomical attachment map: for each muscle, the rig bone its ORIGIN sits on and the rig bone its INSERTION sits on. This drives a deterministic two-bone skin (see build_animated.py :: bind_two_bone) instead of Blender's automatic weights.",
+ "_why": "Automatic weights blend each vertex across whichever bones happen to be nearby, which is anatomically meaningless: it welded parts of the hamstrings to the pelvis and parts to the femur mid-belly, so at a real 80-degree hip flexion the mesh stretched 28x and visibly tore. Distance-based pruning made it WORSE (measured), because pruning removes the far attachment -- which is the one a muscle spanning a joint actually needs. A muscle is a strap between two bones; weighting it as a gradient from origin bone to insertion bone is both correct and stable, and it holds to 1.95x worst case at full range.",
+ "_sides": "Bone names use {s} for the .l/.r suffix and {L}/{R}-style placeholders resolved in code: {upleg} {leg} {arm} {forearm} {hand} {foot} {scapula} {tibia} {radius} {ulna}. Unsuffixed bones (spine, ribs, skull) are shared by both sides.",
+ "attachments": {
+  "iliopsoas": {
+   "origin": "L3",
+   "insertion": "{upleg}"
+  },
+  "gluteus_maximus": {
+   "origin": "Hips",
+   "insertion": "{upleg}"
+  },
+  "gluteus_medius": {
+   "origin": "Hips",
+   "insertion": "{upleg}",
+   "bias": 0.7
+  },
+  "tfl": {
+   "origin": "Hips",
+   "insertion": "{upleg}",
+   "bias": 0.7
+  },
+  "adductor_group": {
+   "origin": "Hips",
+   "insertion": "{upleg}"
+  },
+  "piriformis": {
+   "origin": "{upleg}",
+   "insertion": "{upleg}",
+   "rigid": true
+  },
+  "hamstrings": {
+   "origin": "Hips",
+   "insertion": "{tibia}"
+  },
+  "rectus_femoris": {
+   "origin": "Hips",
+   "insertion": "{tibia}",
+   "via": [
+    "{upleg}"
+   ]
+  },
+  "quadriceps": {
+   "origin": "{upleg}",
+   "insertion": "{tibia}"
+  },
+  "gastrocnemius": {
+   "origin": "{upleg}",
+   "insertion": "{foot}",
+   "via": [
+    "{tibia}"
+   ]
+  },
+  "soleus": {
+   "origin": "{tibia}",
+   "insertion": "{foot}"
+  },
+  "tibialis_anterior": {
+   "origin": "{tibia}",
+   "insertion": "{foot}"
+  },
+  "tibialis_posterior": {
+   "origin": "{tibia}",
+   "insertion": "{foot}"
+  },
+  "peroneals": {
+   "origin": "{tibia}",
+   "insertion": "{foot}"
+  },
+  "erector_spinae": {
+   "origin": "Hips",
+   "insertion": "T1"
+  },
+  "multifidus": {
+   "origin": "Spine",
+   "insertion": "Spine",
+   "rigid": true
+  },
+  "quadratus_lumborum": {
+   "origin": "L3",
+   "insertion": "T12"
+  },
+  "transversus_abdominis": {
+   "origin": "Hips",
+   "insertion": "T10"
+  },
+  "rectus_abdominis": {
+   "origin": "Hips",
+   "insertion": "T5"
+  },
+  "latissimus_dorsi": {
+   "origin": "Spine1",
+   "insertion": "Spine1",
+   "rigid": true
+  },
+  "pectoralis_major": {
+   "origin": "Sternum",
+   "insertion": "Sternum",
+   "rigid": true
+  },
+  "pectoralis_minor": {
+   "origin": "{scapula}",
+   "insertion": "{scapula}",
+   "rigid": true
+  },
+  "serratus_anterior": {
+   "origin": "{scapula}",
+   "insertion": "{scapula}",
+   "rigid": true
+  },
+  "rhomboids": {
+   "origin": "{scapula}",
+   "insertion": "{scapula}",
+   "rigid": true
+  },
+  "lower_trapezius": {
+   "origin": "{scapula}",
+   "insertion": "{scapula}",
+   "rigid": true
+  },
+  "upper_trapezius": {
+   "origin": "{scapula}",
+   "insertion": "{scapula}",
+   "rigid": true
+  },
+  "levator_scapulae": {
+   "origin": "{scapula}",
+   "insertion": "{scapula}",
+   "rigid": true
+  },
+  "rotator_cuff": {
+   "origin": "{arm}",
+   "insertion": "{arm}",
+   "rigid": true
+  },
+  "deltoid": {
+   "origin": "Clavicle-Z.{s}",
+   "via": [
+    "{scapula}"
+   ],
+   "insertion": "{arm}"
+  },
+  "biceps_brachii": {
+   "origin": "{scapula}",
+   "insertion": "{radius}",
+   "via": [
+    "{arm}"
+   ]
+  },
+  "triceps_brachii": {
+   "origin": "{scapula}",
+   "insertion": "{ulna}",
+   "via": [
+    "{arm}"
+   ]
+  },
+  "brachialis": {
+   "origin": "{arm}",
+   "insertion": "{ulna}"
+  },
+  "brachioradialis": {
+   "origin": "{arm}",
+   "insertion": "{radius}",
+   "via": [
+    "{ulna}"
+   ]
+  },
+  "pronators": {
+   "origin": "{arm}",
+   "insertion": "{radius}",
+   "via": [
+    "{ulna}"
+   ]
+  },
+  "supinator": {
+   "origin": "{ulna}",
+   "insertion": "{radius}"
+  },
+  "wrist_flexors": {
+   "origin": "{arm}",
+   "insertion": "{carpal}",
+   "via": [
+    "{ulna}"
+   ]
+  },
+  "wrist_extensors": {
+   "origin": "{arm}",
+   "insertion": "{carpal}",
+   "via": [
+    "{radius}"
+   ]
+  },
+  "finger_flexors": {
+   "origin": "{ulna}",
+   "insertion": "{hand}"
+  },
+  "finger_extensors": {
+   "origin": "{ulna}",
+   "insertion": "{hand}"
+  },
+  "hand_intrinsics": {
+   "origin": "{hand}",
+   "insertion": "{hand}",
+   "rigid": true
+  },
+  "sternocleidomastoid": {
+   "origin": "Head",
+   "insertion": "Head",
+   "rigid": true
+  },
+  "scalenes": {
+   "origin": "C4",
+   "insertion": "C4",
+   "rigid": true
+  },
+  "splenius": {
+   "origin": "Head",
+   "insertion": "Head",
+   "rigid": true
+  },
+  "deep_neck_flexors": {
+   "origin": "Head",
+   "insertion": "Head",
+   "rigid": true
+  },
+  "suboccipitals": {
+   "origin": "Head",
+   "insertion": "Head",
+   "rigid": true
+  },
+  "masseter": {
+   "origin": "Mandible",
+   "insertion": "Mandible",
+   "rigid": true
+  },
+  "temporalis": {
+   "origin": "Head",
+   "insertion": "Head",
+   "rigid": true
+  },
+  "pterygoids": {
+   "origin": "Mandible",
+   "insertion": "Mandible",
+   "rigid": true
+  },
+  "digastric": {
+   "origin": "Mandible",
+   "insertion": "Mandible",
+   "rigid": true
+  }
+ },
+ "_rigid": "rigid:true binds the whole mesh to one bone. Correct for short muscles whose two attachment bones rotate very differently: the suboccipitals span C2 to the skull, and on a gradient skin a full head turn stretched that 4cm muscle by 5x. A muscle that does not cross a large joint excursion loses nothing by riding one bone, and gains not shattering. v7 additions: rotator_cuff and hand_intrinsics. Both are SHORT muscles spanning a large-excursion joint (glenohumeral, carpal), which is exactly the suboccipital case -- they measured 2.3x and 3.1x local stretch on overhead and wrist clips. Riding one bone loses no visible information at this scale and stops the shearing.",
+ "_sheets": "Broad flat sheet muscles (lat, pec major, serratus, trapezius, rhomboids) are bound rigidly. A two-bone gradient treats them as a strap and fans them open into a visible membrane across a large joint excursion -- and the tear metric misses it, because a sheet fanning open barely changes its spread from its own centroid. Only looking at the render caught this.",
+ "_no_ribs": "Never weight a muscle to a Rib* bone. The rig models breathing with STRETCH_TO on the ribs, so baking writes scale (Rib5 bakes at 0.39/6.69/0.39) and any muscle riding a rib is stretched ~7x into a ribbon. The build now also strips every scale channel.",
+ "_via": "v8. `via` lists bones a muscle physically crosses BETWEEN its origin and insertion. The two-bone skin gave a two-joint muscle no influence on the bone it lies along: the triceps was Scapula 0.47 / Ulna 0.53 with zero humerus, and sheared 2.25x. Weights are a smooth partition of unity along the origin->via...->insertion chain, so each vertex is influenced only by the 2 bones bracketing its own position -- which keeps the blend narrow. Blending a vertex across MANY bones is what tore muscles in v4; this is the opposite, a chain of local 2-bone blends. MEASURED EXCLUSION: via bones HURT the flat sheets (transversus 2.16 -> 2.69, erector -> 2.02) and the finger tendon groups. A strap's belly lies along an intermediate bone; a sheet wrapping the trunk lies along no single vertebra, so a mid-span anchor splits it across two that rotate differently. via is for straps only. REMOVED from hamstrings: the femur via anchor took 67% and left the pelvic origin 5%, which broke hamstring travel in the hip hinge once v9 moved the fold into the pelvis. A via bone helps when the belly lies along it AND both ends keep real authority; here it starved the end that matters.",
+ "_anchors": "v8. Gradient anchors are JOINT ENDS, not bone midpoints. Anchoring on midpoints put 47% of the gastrocnemius's weight at a point 50cm away in the middle of the femur (it attaches at the KNEE), and the forearm muscles 40-44cm up the humerus. The weighting was smooth but anchored to the wrong places, which is precisely why muscles shear when the joint they cross rotates. Each bone now contributes at the end NEAREST the muscle.",
+ "_bias": "Per-muscle override of ANCHOR_BIAS. Short muscles sitting directly over a joint (gluteus medius, TFL: iliac crest -> greater trochanter) end up dominated by the proximal bone under a span gradient -- measured 94% pelvis / 6% femur, so a hip-abduction clip moved the muscle 0.9cm and failed its own travel test. A higher bias hands authority back to the moving bone. hamstrings 0.6: they originate on the ischial tuberosity, and the v9 pelvic hinge means the PELVIS is what now rotates in a hip hinge. At the default span bias they held only 4.5% Hips and the hinge moved them 9.2cm -- the muscle the exercise is for was barely following the bone that drives it."
+}
