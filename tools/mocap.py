@@ -405,6 +405,18 @@ def retarget(prof, frames=48, keep=("thigh_l", "thigh_r", "shank_l", "shank_r",
             p = curve(spec["parent"])
             if p is not None:
                 c = c - p
+        # Enforce anatomical limits across all active joints.
+        # Prevent backward hyperextension on knees and elbows.
+        if "Tibia" in bone:
+            if np.mean(c) < 0:
+                c = np.minimum(c, 0.0)
+            elif np.mean(c) > 0:
+                c = np.maximum(c, 0.0)
+        elif "ForeArm" in bone or "Ulna" in bone or "Radius" in bone:
+            if np.mean(c) < 0:
+                c = np.minimum(c, 0.0)
+            elif np.mean(c) > 0:
+                c = np.maximum(c, 0.0)
         emit(bone, c, spec["axis"], spec["sign"])
 
     # -------------------------------------------------------------------

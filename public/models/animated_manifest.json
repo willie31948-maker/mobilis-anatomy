@@ -1201,6 +1201,22 @@
       "missing_bones": [],
       "baked_channels": 400,
       "dropped_channels": 2070
+    },
+    {
+      "name": "leg_press",
+      "label": "45° Incline Leg Press",
+      "frames": 48,
+      "posture": "seated",
+      "tracks_applied": 3,
+      "bones": [
+        "LeftUpLeg",
+        "Tibia.l",
+        "LeftFoot"
+      ],
+      "notes": "Closed-chain 45-degree incline leg press with diamond-plate carriage contact.",
+      "missing_bones": [],
+      "baked_channels": 420,
+      "dropped_channels": 800
     }
   ]
 }

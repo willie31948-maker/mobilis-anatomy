@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mobilis — movement assessment & corrective programmes</title>
+<title>Mobilis</title>
+<meta name="description" content="Movement assessment &amp; corrective programmes with 3D biomechanical visualization">
+<meta property="og:title" content="Mobilis">
+<meta property="og:description" content="Movement assessment &amp; corrective programmes with 3D biomechanical visualization">
 <style>
   :root{
     --bg:#0f1417; --panel:#161d21; --panel2:#1c2429; --line:#2a343a;
@@ -227,6 +230,7 @@
                  aria-label="Scrub through the repetition">
           <span id="libTime">0% · 0.0s</span>
         </div>
+        <label class="chk" style="margin-top:6px"><input type="checkbox" id="bonestoggle3" checked onchange="toggleBones(this.checked)"><span>Show skeleton & apparatus</span></label>
         <div class="legend">
           <span><i style="background:#ef4444"></i>primary muscle</span>
           <span><i style="background:#fbbf24"></i>secondary / assisting</span>
@@ -510,8 +514,9 @@ window.resetCam=resetCam;
 function toggleBones(on){
   if(viewer)viewer.setBonesVisible(on);
   if(viewer2)viewer2.setBonesVisible(on);
-  const a=document.getElementById('bonestoggle'),b=document.getElementById('bonestoggle2');
-  if(a)a.checked=on; if(b)b.checked=on;
+  if(libViewer)libViewer.setBonesVisible(on);
+  const a=document.getElementById('bonestoggle'),b=document.getElementById('bonestoggle2'),c=document.getElementById('bonestoggle3');
+  if(a)a.checked=on; if(b)b.checked=on; if(c)c.checked=on;
 }
 window.toggleBones=toggleBones;
 function applyStates(){

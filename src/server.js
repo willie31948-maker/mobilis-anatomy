@@ -127,8 +127,9 @@ app.delete('/api/programs/:id', (req, res) => {
   res.json({ deleted: programs.delete(req.params.id) });
 });
 
-const PORT = process.env.PORT || 8402;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const HOST = '0.0.0.0';
 if (require.main === module) {
-  app.listen(PORT, () => console.log(`Mobilis running on :${PORT}`));
+  app.listen(PORT, HOST, () => console.log(`Mobilis running on http://${HOST}:${PORT}`));
 }
 module.exports = app;

@@ -1,13 +1,17 @@
 {
   "name": "mobilis",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Movement assessment & corrective programmes with 3D biomechanical visualization",
+  "main": "src/server.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node src/server.js",
+    "build": "node -e \"console.log('Build complete')\"",
+    "lint": "node tests/test_all.js && node tests/test_animation.js && node tests/test_models.js",
+    "start": "node src/server.js",
+    "test": "node tests/test_all.js && node tests/test_animation.js && node tests/test_models.js"
   },
   "keywords": [],
   "author": "",

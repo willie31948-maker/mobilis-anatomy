@@ -1,0 +1,6 @@
+{
+  "name": "Mobilis",
+  "description": "Movement assessment & corrective programmes with 3D biomechanical visualization",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

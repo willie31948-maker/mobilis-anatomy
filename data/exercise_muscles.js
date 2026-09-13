@@ -22,7 +22,7 @@ const EXERCISE_MUSCLES = {
   // ---- Hip ---------------------------------------------------------------
   half_kneeling_hip_flexor_stretch: { primary: ['iliopsoas'], secondary: ['rectus_femoris', 'gluteus_maximus'], clip: 'hip_flexor_stretch', note: 'The back glute squeeze is what makes the stretch real, so it works too.' },
   couch_stretch: { primary: ['rectus_femoris'], secondary: ['iliopsoas', 'gluteus_maximus'], clip: 'couch_stretch' },
-  glute_bridge: { primary: ['gluteus_maximus'], secondary: ['hamstrings', 'erector_spinae', 'transversus_abdominis'], clip: 'bridge' },
+  glute_bridge: { primary: ['gluteus_maximus', 'hamstrings'], secondary: ['erector_spinae', 'transversus_abdominis'], clip: 'bridge' },
   hip_thrust: { primary: ['gluteus_maximus'], secondary: ['hamstrings', 'quadriceps', 'transversus_abdominis'], clip: 'hip_thrust' },
   side_lying_hip_abduction: { primary: ['gluteus_medius'], secondary: ['tfl', 'quadratus_lumborum'], clip: 'hip_abduction', note: 'Rotating the top hip slightly back keeps TFL from taking over.' },
   copenhagen_plank: { primary: ['adductor_group'], secondary: ['transversus_abdominis', 'quadratus_lumborum'], clip: 'copenhagen' },
@@ -91,6 +91,7 @@ const EXERCISE_MUSCLES = {
   band_eversion: { primary: ['peroneals'], secondary: ['tibialis_anterior'], clip: 'ankle_eversion' },
   single_leg_balance: { primary: ['peroneals', 'gluteus_medius'], secondary: ['soleus', 'tibialis_posterior', 'tibialis_anterior'], clip: 'single_leg_stance' },
   tib_raise: { primary: ['tibialis_anterior'], secondary: ['peroneals'], clip: 'ankle_dorsiflexion' },
+  leg_press: { primary: ['quadriceps', 'gluteus_maximus'], secondary: ['hamstrings', 'adductor_group', 'gastrocnemius', 'soleus'], clip: 'leg_press' },
 };
 
 module.exports = { EXERCISE_MUSCLES };

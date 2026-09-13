@@ -732,6 +732,22 @@ const EXERCISES = [
     cues: ['Band behind the knees, sit back.', 'Shins stay vertical.', 'Usually well tolerated in patellar tendon pain.'],
     contraindications: [],
   },
+  {
+    id: 'leg_press',
+    name: '45° Incline leg press',
+    mode: 'strengthen',
+    targets: ['quadriceps', 'gluteus_maximus'],
+    stage: ['subacute', 'chronic'],
+    equipment: 'leg press machine',
+    dose: '3-4 sets x 8-12 reps',
+    cues: [
+      'Position feet shoulder-width on the diamond-plate carriage, toes angled 10-15° out.',
+      'Maintain full contact between the lower back/sacrum and the backrest pad; avoid pelvic tucking.',
+      'Control the eccentric descent until knees reach 90° flexion.',
+      'Drive powerfully through the midfoot and heels, extending knees and hips smoothly without snapping into knee hyperextension.',
+    ],
+    contraindications: ['Acute meniscal tear in deep flexion', 'Unstable patellofemoral subluxation'],
+  },
 ];
 
 module.exports = { EXERCISES };

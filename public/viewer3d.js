@@ -1,48 +1,72 @@
 /**
- * 3D anatomy viewer.
+ * 3D Anatomy Viewer & Exercise Demonstration
  *
- * The contract with the rest of the app is deliberately tiny:
- *   - meshes are named "<muscle_id>.l" / "<muscle_id>.r"
- *   - clicking one calls window.showDetail(muscle_id)
- *   - paintStates({muscle_id: 'short'|'weak'}) colours them
- *
- * That is the same contract the 2D SVG map honours (data-mid attributes), which
- * is why swapping in real anatomy required no change to the assessment engine,
- * the programme builder, or the API. If you later replace Z-Anatomy with
- * commissioned models, re-run tools/extract_models.py with a new muscle_map.json
- * and this file keeps working unchanged.
+ * Runs exclusively on a standard Three.js AnimationMixer pipeline with
+ * baked GLTF skeletal animation tracks. All procedural trigonometric math,
+ * manual bone rotations, and kinematic overrides have been eliminated.
  */
 
 import * as THREE from './vendor/three.module.js';
 import { OrbitControls } from './vendor/OrbitControls.js';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
-window.__THREE=THREE;
+
+if (typeof window !== 'undefined') {
+  window.__THREE = THREE;
+}
 
 const COLORS = {
-  base:  0xb0655f,   // muscle red, desaturated so the state colours read clearly
-  hover: 0xe0917f,
-  sel:   0x4fd1c5,
-  short: 0xf6ad55,
-  weak:  0x63b3ed,
-  bone:  0xd9cfc0,   // pale ivory; visually recedes behind muscle
-  primary:   0xef4444,  // muscle doing the main work
-  secondary: 0xfbbf24,  // assisting muscle
-  accent:    0x1fbfb4,  // emissive glow on the ACTIVE muscle (teal, matches sel)
+  base:      0x851414,   // anatomical carmine red (#851414)
+  tendon:    0xeae6df,   // tendon off-white (#eae6df)
+  bone:      0xded9cc,   // solid ivory/bone (#ded9cc)
+  hover:     0xb82e2e,
+  sel:       0x4fd1c5,
+  short:     0xf6ad55,
+  weak:      0x63b3ed,
+  primary:   0xef4444,   // muscle doing the main work
+  secondary: 0xfbbf24,   // assisting muscle
+  accent:    0xd47a00,   // emissive glow on the active muscle (warm amber)
 };
+
+function createMuscleMaterial(isSkinned = false) {
+  return new THREE.MeshStandardMaterial({
+    color: COLORS.base,
+    roughness: 0.45,
+    metalness: 0.05,
+    transparent: false,
+    opacity: 1.0,
+    depthWrite: true,
+    side: THREE.DoubleSide,
+  });
+}
+
+function createBoneMaterial() {
+  return new THREE.MeshStandardMaterial({
+    color: COLORS.bone,
+    roughness: 0.55,
+    metalness: 0.05,
+    transparent: false,
+    opacity: 1.0,
+    depthWrite: true,
+    side: THREE.DoubleSide,
+  });
+}
 
 export class AnatomyViewer {
   constructor(container, opts = {}) {
     this.container = container;
     this.onSelect = opts.onSelect || (() => {});
     this.meshes = new Map();      // muscle_id -> [mesh, ...]
-    this.bones = [];              // skeletal context; never clickable
+    this.bones = [];              // skeletal context meshes
+    this.bonesVisible = true;
     this.states = {};
     this.selected = null;
     this.loaded = new Set();
     this.mixer = null;
     this.clips = new Map();
     this.currentAction = null;
-    this.roles = null;          // {muscleId: 'primary'|'secondary'} for exercise view
+    this.currentClipName = null;
+    this.scrubbing = false;
+    this.roles = null;
     this._clock = new THREE.Clock();
     this._init();
   }
@@ -52,13 +76,13 @@ export class AnatomyViewer {
     const h = opts_height(this.container);
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0f1417);
+    this.scene.background = new THREE.Color(0xd8dbe0);
 
     this.camera = new THREE.PerspectiveCamera(38, w / h, 0.1, 5000);
     this.camera.position.set(0, 5, 90);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(typeof devicePixelRatio !== 'undefined' ? devicePixelRatio : 1, 2));
     this.renderer.setSize(w, h);
     this.container.innerHTML = '';
     this.container.appendChild(this.renderer.domElement);
@@ -66,19 +90,45 @@ export class AnatomyViewer {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.08;
+    this.controls.target.set(0, 0.95, 0);
 
-    // Three-point-ish lighting. Anatomy reads badly under a single lamp:
-    // the forms are subtle and need rim light to separate overlapping muscles.
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-    const key = new THREE.DirectionalLight(0xffffff, 1.15);
-    key.position.set(60, 80, 100);
-    this.scene.add(key);
-    const fill = new THREE.DirectionalLight(0x88aaff, 0.45);
-    fill.position.set(-80, 20, 40);
-    this.scene.add(fill);
-    const rim = new THREE.DirectionalLight(0xffffff, 0.6);
-    rim.position.set(0, 30, -120);
-    this.scene.add(rim);
+    // Studio directional and hemisphere lighting for clear anatomical contrast
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x555555, 1.2);
+    this.scene.add(hemiLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    keyLight.position.set(5, 10, 7);
+    this.scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    rimLight.position.set(-5, 5, -5);
+    this.scene.add(rimLight);
+
+    // Soft ground contact shadow receiver at world floor
+    const shadowCanvas = document.createElement('canvas');
+    shadowCanvas.width = 256;
+    shadowCanvas.height = 256;
+    const sCtx = shadowCanvas.getContext('2d');
+    const grad = sCtx.createRadialGradient(128, 128, 10, 128, 128, 120);
+    grad.addColorStop(0, 'rgba(25, 30, 35, 0.42)');
+    grad.addColorStop(0.35, 'rgba(35, 40, 48, 0.24)');
+    grad.addColorStop(0.7, 'rgba(60, 65, 75, 0.08)');
+    grad.addColorStop(1, 'rgba(216, 219, 224, 0.0)');
+    sCtx.fillStyle = grad;
+    sCtx.fillRect(0, 0, 256, 256);
+
+    const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+    const shadowGeo = new THREE.PlaneGeometry(2.4, 2.4);
+    const shadowMat = new THREE.MeshBasicMaterial({
+      map: shadowTex,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false,
+    });
+    this.groundShadow = new THREE.Mesh(shadowGeo, shadowMat);
+    this.groundShadow.rotation.x = -Math.PI / 2;
+    this.groundShadow.position.set(0, 0.001, 0);
+    this.scene.add(this.groundShadow);
 
     this.root = new THREE.Group();
     this.scene.add(this.root);
@@ -103,6 +153,9 @@ export class AnatomyViewer {
     this.renderer.setSize(w, h);
   }
 
+  /**
+   * Load individual regional muscle models (e.g. for static 3D assessment / anatomy inspect).
+   */
   async loadRegions(regions) {
     const loader = new GLTFLoader();
     for (const region of regions) {
@@ -114,31 +167,29 @@ export class AnatomyViewer {
           (gltf) => {
             gltf.scene.traverse((o) => {
               if (!o.isMesh) return;
+              if (o.geometry) o.geometry.computeVertexNormals();
 
               // Skeletal context: pale, non-interactive, and deliberately given
-              // NO muscleId. Without that guard a bone could be clicked and
-              // looked up as a muscle, which would be a confusing lie.
+              // NO muscle identifier. Without that guard a bone could be clicked and
+              // looked up as a muscle, which would be a confusing error.
+              // All bones are registered into the non-clickable bones collection.
               if (o.name.startsWith('bone__')) {
-                // Opaque with real depth: bone must occlude and be occluded
-                // correctly. Rendering it transparent with depthWrite off made
-                // the skull and hand bones paint OVER the muscles in front of
-                // them, which read as an x-ray rather than an anatomy model.
-                o.material = new THREE.MeshPhongMaterial({
-                  color: COLORS.bone, shininess: 4, specular: 0x0a0a0a,
-                });
+                // Solid opaque bone material (ivory cream, roughness 0.55)
+                o.material = createBoneMaterial();
                 o.userData.isBone = true;
+                o.visible = !!this.bonesVisible;
                 this.bones.push(o);
+                // Return immediately without assigning muscle identifiers or adding to meshes map
                 return;
               }
 
+              // Non-bone meshes represent muscular anatomy:
               // Meshes are exported as "<muscle_id>__l" / "__r". glTF strips
               // "." from names, so the separator must not be a dot; the
               // trailing _NNN guard covers three.js de-duplicating names.
+              // These meshes are registered into the interactive anatomical collection.
               const id = o.name.replace(/__(l|r)(_\d+)?$/, '');
-              o.material = new THREE.MeshPhongMaterial({
-                color: COLORS.base, shininess: 18, specular: 0x222222,
-                transparent: true, opacity: 1,
-              });
+              o.material = createMuscleMaterial(false);
               o.userData.muscleId = id;
               if (!this.meshes.has(id)) this.meshes.set(id, []);
               this.meshes.get(id).push(o);
@@ -155,337 +206,260 @@ export class AnatomyViewer {
     this.paintStates(this.states);
   }
 
-  /** Fit the camera to whatever is currently loaded. */
-  _frame() {
-    const box = new THREE.Box3().setFromObject(this.root);
-    if (box.isEmpty()) return;
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    this.root.position.sub(center);           // recentre geometry on the origin
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const dist = (maxDim / 2) / Math.tan((this.camera.fov * Math.PI) / 360);
-    this.camera.position.set(0, 0, dist * 1.45);
-    this.camera.near = dist / 100;
-    this.camera.far = dist * 10;
-    this.camera.updateProjectionMatrix();
-    this.controls.target.set(0, 0, 0);
-    this.controls.update();
-  }
-
   /**
-   * Re-frame the camera for the pose the model is CURRENTLY in.
-   *
-   * _frame() runs once at load, on the standing rest pose. That was fine while
-   * every clip was standing -- and wrong the moment postures arrived: a supine
-   * glute bridge is anatomically correct and still renders as a confusing
-   * mess, because the standing front-on camera now looks straight down the
-   * length of the body at the soles of the feet. The animation was right and
-   * the view was useless, which is the same class of failure as the rest of
-   * this version: plausible output, no information.
-   *
-   * So measure the posed bounding box and look at the body from the side it is
-   * actually long in, with the vertical axis chosen so it never renders
-   * upside down.
+   * Load the baked skeletal animated model (public/models/animated.glb)
+   * and initialize the standard Three.js AnimationMixer.
    */
-  /** Frame a whole clip: fit every sampled instant, so nothing drifts out. */
-  frameForClip(clip) {
-    const box = new THREE.Box3();
-    for (const f of [0, 0.25, 0.5, 0.75]) {
-      this.mixer.setTime(clip.duration * f);
-      this.root.updateMatrixWorld(true);
-      this._expandPosedBox(box);
+  async loadAnimated(url = 'models/animated.glb') {
+    if (this.animatedLoaded) return [...this.clips.keys()];
+    const loader = new GLTFLoader();
+    const gltf = await new Promise((res, rej) => loader.load(url, res, undefined, rej));
+
+    // Clear prior children from root
+    while (this.root.children.length > 0) {
+      this.root.remove(this.root.children[0]);
     }
-    this._applyFraming(box);
-  }
+    this.root.position.set(0, 0, 0);
+    this.root.rotation.set(0, 0, 0);
+    this.root.scale.set(1, 1, 1);
+    this.meshes.clear();
+    this.bones = [];
+    this.clips.clear();
 
-  frameForPose() {
-    const box = new THREE.Box3();
-    this._expandPosedBox(box);
-    this._applyFraming(box);
-  }
+    gltf.scene.traverse((o) => {
+      if (!o.isMesh) return;
+      if (o.geometry) {
+        o.geometry.computeVertexNormals();
+      }
+      const id = o.name.replace(/__(l|r)(_\d+)?$/, '');
+      if (o.name.startsWith('bone__')) {
+        o.material = createBoneMaterial();
+        o.userData.isBone = true;
+        o.visible = !!this.bonesVisible;
+        this.bones.push(o);
+        return;
+      }
+      o.material = createMuscleMaterial(true);
+      o.userData.muscleId = id;
+      o.frustumCulled = false;
+      if (!this.meshes.has(id)) this.meshes.set(id, []);
+      this.meshes.get(id).push(o);
+    });
 
-  /**
-   * Grow `box` by the CURRENTLY POSED geometry.
-   *
-   * Box3.setFromObject / expandByObject read geometry.boundingBox, which for a
-   * SkinnedMesh is the REST pose -- skinning runs on the GPU and never updates
-   * it. So the "posed" box came back identical for every clip, the camera never
-   * moved, and a supine glute bridge kept the standing front-on view and
-   * rendered as an unreadable tangle. Sample the skinned vertices instead.
-   */
-  _expandPosedBox(box) {
-    const t = new THREE.Vector3();
-    for (const [, list] of this.meshes) {
-      for (const m of list) {
-        const pos = m.geometry.attributes.position;
-        const step = Math.max(1, Math.floor(pos.count / 24));
-        for (let i = 0; i < pos.count; i += step) {
-          t.fromBufferAttribute(pos, i);
-          m.applyBoneTransform(i, t);
-          m.localToWorld(t);
-          box.expandByPoint(t);
+    this.root.add(gltf.scene);
+
+    // Initialize AnimationMixer on the loaded GLTF model
+    this.mixer = new THREE.AnimationMixer(gltf.scene);
+
+    // Map all baked animation clips
+    const byName = new Map();
+    for (const c of gltf.animations) {
+      byName.set(c.name, c);
+    }
+    for (const c of gltf.animations) {
+      if (c.name.endsWith('__posture')) continue;
+      const posture = byName.get(c.name + '__posture');
+      const tracks = posture ? [...c.tracks, ...posture.tracks] : c.tracks;
+      const mergedClip = new THREE.AnimationClip(c.name, c.duration, tracks);
+      this.clips.set(c.name, mergedClip);
+    }
+    for (const c of gltf.animations) {
+      if (!this.clips.has(c.name)) {
+        this.clips.set(c.name, c);
+      }
+    }
+
+    // Attach skeletal context (skull, arms, hands) if available
+    try {
+      const ctxGltf = await new Promise((res, rej) => loader.load('models/context.glb', res, undefined, rej));
+      const head = gltf.scene.getObjectByName('Head');
+      const leftArm = gltf.scene.getObjectByName('LeftArm');
+      const rightArm = gltf.scene.getObjectByName('RightArm');
+      const leftHand = gltf.scene.getObjectByName('LeftHand');
+      const rightHand = gltf.scene.getObjectByName('RightHand');
+
+      const contextMeshes = [];
+      ctxGltf.scene.traverse((o) => {
+        if (o.isMesh && o.name.startsWith('bone__')) {
+          o.material = createBoneMaterial();
+          o.userData.isBone = true;
+          o.visible = !!this.bonesVisible;
+          if (o.geometry) o.geometry.computeVertexNormals();
+          contextMeshes.push(o);
+        }
+      });
+
+      for (const o of contextMeshes) {
+        this.bones.push(o);
+        let parentBone = null;
+        if (o.name.includes('skull') && head) parentBone = head;
+        else if (o.name.includes('arm_bones__l') && leftArm) parentBone = leftArm;
+        else if (o.name.includes('arm_bones__r') && rightArm) parentBone = rightArm;
+        else if (o.name.includes('hand_bones__l') && leftHand) parentBone = leftHand;
+        else if (o.name.includes('hand_bones__r') && rightHand) parentBone = rightHand;
+
+        if (parentBone) {
+          parentBone.updateWorldMatrix(true, false);
+          const invParentMat = parentBone.matrixWorld.clone().invert();
+          o.applyMatrix4(invParentMat);
+          parentBone.add(o);
+        } else {
+          this.root.add(o);
         }
       }
+    } catch (e) {
+      // Optional skeletal context fallback
     }
-    return box;
+
+    // Play default baked animation if available
+    if (gltf.animations.length > 0) {
+      const defaultClip = this.clips.get('squat') || this.clips.get('hinge') || gltf.animations[0];
+      const action = this.mixer.clipAction(defaultClip);
+      action.setLoop(THREE.LoopRepeat, Infinity);
+      action.play();
+      this.currentAction = action;
+      this.currentClipName = defaultClip.name;
+    }
+
+    this.animatedLoaded = true;
+    this._frame();
+    this.paintStates(this.states);
+    return [...this.clips.keys()];
   }
 
   /**
-   * Frame tightly on ONE muscle, animated.
-   *
-   * Uses the POSED box (see _expandPosedBox): a SkinnedMesh's
-   * geometry.boundingBox is its rest pose, so framing the selected deltoid
-   * during an overhead press off setFromObject would aim the camera at where
-   * the deltoid is when the arms are down.
-   *
-   * The body stays in shot deliberately. An early version filled the frame
-   * with the muscle alone and it became impossible to tell what you were
-   * looking at -- a tightly cropped psoas and a tightly cropped serratus are
-   * both just a red shape. The floor on the framed size keeps enough torso or
-   * limb around it to read as anatomy.
+   * Play a named clip using standard AnimationMixer clipAction.
    */
-  focusOn(id, opts) {
-    const list = this.meshes.get(id);
-    if (!list || !list.length) return false;
-
-    // Frame ONE SIDE, not both.
-    //
-    // Every muscle id maps to a left and a right mesh. A box spanning both
-    // has its centre in the midline -- between the two deltoids, inside the
-    // ribcage, on neither muscle -- so the camera aimed at empty space and
-    // pulled back far enough to hold both, which is most of the torso. Pick
-    // the side facing the camera so the framed muscle is the visible one.
-    const boxOf = (m) => {
-      const b = new THREE.Box3();
-      const v = new THREE.Vector3();
-      const pos = m.geometry.attributes.position;
-      const step = Math.max(1, Math.floor(pos.count / 120));
-      for (let i = 0; i < pos.count; i += step) {
-        v.fromBufferAttribute(pos, i);
-        if (m.isSkinnedMesh) m.applyBoneTransform(i, v);
-        m.localToWorld(v);
-        b.expandByPoint(v);
-      }
-      return b;
-    };
-    const visible = list.filter((m) => m.visible);
-    const candidates = visible.length ? visible : list;
-    let box = null;
-    let best = -Infinity;
-    for (const m of candidates) {
-      const b = boxOf(m);
-      if (b.isEmpty()) continue;
-      // "Facing the camera" = nearest to it. Framing the far deltoid would
-      // put the near one between it and the lens.
-      const score = -b.getCenter(new THREE.Vector3()).distanceTo(this.camera.position);
-      if (score > best) { best = score; box = b; }
+  playClip(name) {
+    if (!this.mixer) return false;
+    if (this.currentAction) {
+      this.currentAction.stop();
+      this.currentAction = null;
     }
-    if (!box || box.isEmpty()) return false;
+    if (!name) {
+      this.currentClipName = null;
+      this.scrubbing = false;
+      return false;
+    }
+    const clip = this.clips.get(name) || this.clips.get(name + '__posture');
+    if (!clip) return false;
 
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    // Context floor: never crop closer than this fraction of the whole body,
-    // so a small muscle is still shown in its place rather than as an
-    // abstract blob.
-    const bodyBox = new THREE.Box3();
-    this._expandPosedBox(bodyBox);
-    const bodyDim = bodyBox.isEmpty()
-      ? Math.max(size.x, size.y, size.z)
-      : Math.max(...bodyBox.getSize(new THREE.Vector3()).toArray());
-    const muscleDim = Math.max(size.x, size.y, size.z);
-    const framed = Math.max(muscleDim * 2.2, bodyDim * 0.28);
-    const dist = (framed / 2) / Math.tan((this.camera.fov * Math.PI) / 360);
-
-    // Approach from the direction the camera is already in, so a focus move
-    // never swings the body round behind itself -- that reads as the model
-    // jumping rather than the camera moving.
-    const dir = this.camera.position.clone().sub(this.controls.target);
-    if (dir.lengthSq() < 1e-6) dir.set(0, 0, 1);
-    dir.normalize();
-    // Vertical offset, as a fraction of the MUSCLE's own size rather than the
-    // framed size. Scaling it by `framed` meant a muscle that hit the
-    // context floor got an offset sized by the whole body -- 0.172 units for
-    // a deltoid, which slid the muscle noticeably off centre instead of
-    // nudging it. The offset should be proportional to the thing being
-    // looked at.
-    const off = (opts && opts.offset) || 0.25;
-    const lift = Math.min(muscleDim * off, framed * 0.06);
-    const pos = center.clone()
-      .add(dir.multiplyScalar(dist))
-      .add(new THREE.Vector3(0, lift, 0));   // slight lift: sits it centred-high
-    this.lerpTo(pos, center);
-    this.focused = id;
+    const action = this.mixer.clipAction(clip);
+    action.reset();
+    action.setLoop(THREE.LoopRepeat, Infinity);
+    action.play();
+    this.currentAction = action;
+    this.currentClipName = name;
+    this.scrubbing = false;
+    action.paused = false;
+    this.frameForClip(clip);
     return true;
   }
 
-  /**
-   * Return to the framing that fits the whole body, animated.
-   *
-   * Uses the UNION of several instants through the clip, the same way
-   * playClip does, not the pose at this instant. Framing the current pose
-   * looks right for one frame and then wrong: the animation keeps running
-   * during the 620ms lerp, so the body the camera was fitted to is not the
-   * body that arrives. Measured, reset came back to 3.44 units where the
-   * initial fit was 3.16 -- a visible 9% overshoot that varied with whichever
-   * frame you happened to press the button on.
-   */
-  resetCamera() {
-    const box = new THREE.Box3();
-    if (this.mixer && this.currentAction) {
-      const clip = this.currentAction.getClip();
-      const was = this.currentAction.time;
-      for (const f of [0, 0.25, 0.5, 0.75]) {
-        this.currentAction.time = clip.duration * f;
-        this.mixer.update(0);
-        this.root.updateMatrixWorld(true);
-        this._expandPosedBox(box);
-      }
-      this.currentAction.time = was;      // never disturb playback position
-      this.mixer.update(0);
-      this.root.updateMatrixWorld(true);
-    } else {
-      this._expandPosedBox(box);
+  setSpeed(x) {
+    if (this.mixer) this.mixer.timeScale = x;
+  }
+
+  /** Duration of the clip currently playing, in seconds (0 if none). */
+  clipDuration() {
+    if (this.currentAction) return this.currentAction.getClip().duration;
+    return 0;
+  }
+
+  /** Normalized cycle progress, 0..1. */
+  clipProgress() {
+    if (this.currentAction) {
+      const d = this.clipDuration();
+      if (!d) return 0;
+      return (this.currentAction.time % d) / d;
     }
-    if (box.isEmpty()) return;
-    const { position, target } = this._framingFor(box);
-    this.lerpTo(position, target);
-    this.focused = null;
+    return 0;
+  }
+
+  /** Jump to fraction of the animation cycle without tearing down the mixer. */
+  scrubTo(frac) {
+    if (!this.mixer || !this.currentAction) return;
+    const d = this.clipDuration();
+    if (!d) return;
+    this.currentAction.time = Math.max(0, Math.min(1, frac)) * d;
+    this.mixer.update(0);
+    this.root.updateMatrixWorld(true);
+  }
+
+  setPaused(on) {
+    this.scrubbing = !!on;
+    if (this.currentAction) this.currentAction.paused = !!on;
+  }
+
+  setRoles(roles) {
+    this.roles = roles;
+    this.paintStates(this.states);
   }
 
   /**
-   * Start a smooth camera move. Interpolation runs in _animate, not on a
-   * timer: a setInterval-driven lerp drifts against the render loop and
-   * stutters visibly at low frame rates, which is exactly when a user is
-   * already struggling to read the model.
+   * Color muscles by state (short/weak), exercise role (primary/secondary), or selection.
    */
-  lerpTo(position, target, ms) {
-    this._lerp = {
-      fromPos: this.camera.position.clone(),
-      toPos: position.clone(),
-      fromTar: this.controls.target.clone(),
-      toTar: target.clone(),
-      t: 0,
-      dur: Math.max(1, (ms == null ? 620 : ms)) / 1000,
-    };
-  }
-
-  _tickLerp(dt) {
-    const L = this._lerp;
-    if (!L) return;
-    L.t = Math.min(1, L.t + dt / L.dur);
-    const e = L.t < 0.5 ? 2 * L.t * L.t : 1 - Math.pow(-2 * L.t + 2, 2) / 2;  // easeInOut
-    this.camera.position.lerpVectors(L.fromPos, L.toPos, e);
-    this.controls.target.lerpVectors(L.fromTar, L.toTar, e);
-    const d = this.camera.position.distanceTo(this.controls.target);
-    this.camera.near = Math.max(d / 100, 0.01);
-    this.camera.far = d * 10;
-    this.camera.updateProjectionMatrix();
-    if (L.t >= 1) this._lerp = null;
-  }
-
-  /** The camera position/target that frames `box`, without applying it. */
-  _framingFor(box) {
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const dist = (maxDim / 2) / Math.tan((this.camera.fov * Math.PI) / 360) * 1.9;
-    const position = (size.z <= size.x)
-      ? new THREE.Vector3(center.x, center.y, center.z + dist)
-      : new THREE.Vector3(center.x + dist, center.y, center.z);
-    return { position, target: center, dist };
-  }
-
-  _applyFraming(box) {
-    if (box.isEmpty()) return;
-    this._lerp = null;              // an explicit reframe wins over a lerp
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const dist = (maxDim / 2) / Math.tan((this.camera.fov * Math.PI) / 360) * 1.9;
-
-    // Keep world Y as up and stand off along whichever horizontal axis the
-    // body is thinner in -- the axis you are not looking down. Choosing the
-    // globally thinnest axis instead put the camera overhead for a supine
-    // clip, framing the bridge end-on down the length of the body: correct
-    // data, unreadable view. Up stays world Y even for a lying body, which is
-    // how you would watch someone from the side, and never renders upside down.
-    if (size.z <= size.x) {
-      this.camera.position.set(center.x, center.y, center.z + dist);
-    } else {
-      this.camera.position.set(center.x + dist, center.y, center.z);
-    }
-    this.camera.up.set(0, 1, 0);
-    this.camera.near = dist / 100;
-    this.camera.far = dist * 10;
-    this.camera.updateProjectionMatrix();
-    this.controls.target.copy(center);
-    this.controls.update();
-  }
-
   paintStates(states) {
     this.states = states || {};
     const roles = this.roles;
     for (const [id, list] of this.meshes) {
       const st = this.states[id];
       const role = roles ? roles[id] : null;
-      // Exercise roles take precedence when an exercise is being demonstrated;
-      // assessment colours are the default view.
-      const col = roles
-        ? (role === 'primary' ? COLORS.primary : role === 'secondary' ? COLORS.secondary : COLORS.base)
-        : id === this.selected ? COLORS.sel
-        : st === 'short' ? COLORS.short
-        : st === 'weak' ? COLORS.weak
-        : COLORS.base;
+      const isSelected = id === this.selected;
+
+      let col = COLORS.base;
+      if (roles) {
+        if (role === 'primary') col = COLORS.primary;
+        else if (role === 'secondary') col = COLORS.secondary;
+        else col = COLORS.base;
+      } else if (isSelected) {
+        col = COLORS.sel;
+      } else if (st === 'short') {
+        col = COLORS.short;
+      } else if (st === 'weak') {
+        col = COLORS.weak;
+      }
+
       const dim = roles
-        ? !role
-        : Object.keys(this.states).length > 0 && !st && id !== this.selected;
+        ? (!role && !isSelected)
+        : (Object.keys(this.states).length > 0 && !st && !isSelected);
+
       for (const m of list) {
         m.material.color.setHex(col);
-        // EMISSIVE ACCENT on the active muscle.
-        //
-        // Base colour alone is not enough to find a selection. In the
-        // exercise library the whole body is darkened to 0.42, and against
-        // that a recoloured muscle still reads as "some slightly different
-        // brown" -- especially for a muscle that is partly occluded, which is
-        // most of them. Emissive light is not affected by the scene lighting
-        // or by how steeply the surface faces the camera, so it stays legible
-        // on a muscle lying edge-on or half behind another.
+        m.material.roughness = 0.45;
         if (m.material.emissive) {
-          if (id === this.selected) {
-            // Pre-multiply the colour instead of setting emissiveIntensity.
-            // These are MeshPhongMaterials and Phong IGNORES
-            // emissiveIntensity -- it only reads `emissive`. Setting the
-            // intensity looked correct in the material inspector (0.55) and
-            // did nothing on screen, which is the sort of "the data is right
-            // and the render is wrong" gap that has caught me repeatedly here.
-            m.material.emissive.setHex(COLORS.accent).multiplyScalar(0.6);
+          if (isSelected) {
+            m.material.emissive.setHex(COLORS.accent).multiplyScalar(0.4);
+            m.material.emissiveIntensity = 0.5;
+          } else if (roles && role === 'primary') {
+            m.material.emissive.setHex(0xd47a00).multiplyScalar(0.4);
+            m.material.emissiveIntensity = 0.5;
           } else {
             m.material.emissive.setHex(0x000000);
+            m.material.emissiveIntensity = 0.0;
           }
         }
-        // Dimming used to be opacity 0.22 with depthWrite OFF. On the
-        // assessment body that reads fine, because only a handful of muscles
-        // are dimmed. In the exercise library almost the WHOLE body is dimmed,
-        // and ~90 unsorted transparent layers stack into a smear you cannot
-        // read a movement out of -- the model was posed correctly and looked
-        // like a blur. Dim by DARKENING an opaque mesh instead: the silhouette
-        // stays solid, so the posture is legible, and the highlighted muscles
-        // still pop.
         if (dim) {
-          m.material.color.multiplyScalar(0.42);
-          m.material.transparent = false;
-          m.material.opacity = 1;
-          m.material.depthWrite = true;
-        } else {
-          m.material.transparent = false;
-          m.material.opacity = 1;
-          m.material.depthWrite = true;
+          m.material.color.multiplyScalar(0.45);
         }
+        m.material.transparent = false;
+        m.material.opacity = 1.0;
+        m.material.depthWrite = true;
+        m.material.side = THREE.DoubleSide;
+        m.visible = true;
       }
+    }
+    for (const b of this.bones) {
+      if (b.material) {
+        b.material.color.setHex(COLORS.bone);
+        b.material.transparent = false;
+        b.material.opacity = 1.0;
+        b.material.depthWrite = true;
+      }
+      b.visible = !!this.bonesVisible;
     }
   }
 
-  /** Show or hide the skeletal context layer. */
   setBonesVisible(on) {
     this.bonesVisible = !!on;
     for (const b of this.bones) b.visible = !!on;
@@ -509,7 +483,9 @@ export class AnatomyViewer {
     this.pointer.y = -((e.clientY - r.top) / r.height) * 2 + 1;
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const hits = this.raycaster.intersectObjects(this.root.children, true);
-    for (const h of hits) if (h.object.visible && h.object.userData.muscleId) return h.object;
+    for (const h of hits) {
+      if (h.object.visible && h.object.userData.muscleId) return h.object;
+    }
     return null;
   }
 
@@ -534,148 +510,220 @@ export class AnatomyViewer {
     this.onSelect(id);
   }
 
+  /**
+   * Main render loop.
+   * Advances the Three.js AnimationMixer via clock delta on every frame.
+   */
   _animate() {
     requestAnimationFrame(() => this._animate());
-    // CLAMP THE FRAME DELTA.
-    //
-    // requestAnimationFrame stops while the tab or the canvas is hidden, but
-    // the Clock keeps running, so the first frame back reports a delta of
-    // however long that was -- seconds, sometimes. That single frame then
-    // completes an entire camera lerp instantly (the test caught exactly
-    // this: "lerp was 1 done after 50ms") and advances the animation mixer by
-    // a whole rep, which looks like the model teleporting when you switch
-    // back to the tab. 100ms is a generous real frame; anything longer is a
-    // gap, not a frame.
     const dt = Math.min(this._clock.getDelta(), 0.1);
-    if (this.mixer && !this.scrubbing) this.mixer.update(dt);
+    if (this.mixer && !this.scrubbing) {
+      this.mixer.update(dt);
+    }
     this._tickLerp(dt);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
 
-  /**
-   * Load the skinned+animated model. Replaces the static region meshes: a
-   * skinned mesh must travel with its armature, so the animated build is one
-   * file rather than eleven.
-   */
-  async loadAnimated(url = 'models/animated.glb') {
-    if (this.animatedLoaded) return;
-    const loader = new GLTFLoader();
-    const gltf = await new Promise((res, rej) => loader.load(url, res, undefined, rej));
+  _frame() {
+    const box = new THREE.Box3().setFromObject(this.root);
+    if (box.isEmpty()) return;
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    this.root.position.sub(center);
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const dist = (maxDim / 2) / Math.tan((this.camera.fov * Math.PI) / 360) * 1.15;
 
-    // Drop the static meshes so we do not render two overlapping bodies.
-    for (const [, list] of this.meshes) for (const m of list) m.parent && m.parent.remove(m);
-    this.meshes.clear();
-    for (const b of this.bones) b.parent && b.parent.remove(b);
-    this.bones = [];
+    this.camera.position.set(0, size.y * 0.15, dist);
+    this.camera.near = dist / 100;
+    this.camera.far = dist * 10;
+    this.camera.updateProjectionMatrix();
 
-    gltf.scene.traverse((o) => {
-      if (!o.isMesh) return;
-      const id = o.name.replace(/__(l|r)(_\d+)?$/, '');
-      o.material = new THREE.MeshPhongMaterial({
-        color: COLORS.base, shininess: 18, specular: 0x222222,
-        transparent: true, opacity: 1, skinning: true,
-      });
-      o.userData.muscleId = id;
-      o.frustumCulled = false;   // skinned bounds are wrong until posed
-      if (!this.meshes.has(id)) this.meshes.set(id, []);
-      this.meshes.get(id).push(o);
-    });
-
-    this.root.add(gltf.scene);
-    this.mixer = new THREE.AnimationMixer(gltf.scene);
-
-    // The build keyframes the setup posture on a parent empty (it cannot go on
-    // the armature: the exporter needs that node for its Z-up -> Y-up
-    // conversion). glTF has no notion of "these two clips belong together", so
-    // the exporter emits "<clip>" and "<clip>__posture" as separate
-    // animations -- and playing only the first left every lying-down exercise
-    // performed standing, which is the exact bug this version fixes.
-    // Merge each pair back into one clip on load.
-    const byName = new Map();
-    for (const c of gltf.animations) byName.set(c.name, c);
-    for (const c of gltf.animations) {
-      if (c.name.endsWith('__posture')) continue;
-      const post = byName.get(`${c.name}__posture`);
-      const tracks = post ? [...c.tracks, ...post.tracks] : c.tracks;
-      const merged = new THREE.AnimationClip(c.name, Math.max(c.duration, post ? post.duration : 0), tracks);
-      this.clips.set(c.name, merged);
-    }
-    this.animatedLoaded = true;
-    this._frame();
-    this.paintStates(this.states);
-    return [...this.clips.keys()];
+    this.controls.target.set(0, 0, 0);
+    this.controls.update();
   }
 
-  /** Play a named clip, or stop everything when given null. */
-  playClip(name) {
-    if (!this.mixer) return false;
-    if (this.currentAction) { this.currentAction.stop(); this.currentAction = null; }
-    if (!name) { this.mixer.setTime(0); this.scrubbing = false; return false; }
-    const clip = this.clips.get(name);
-    if (!clip) return false;
-    const a = this.mixer.clipAction(clip);
-    a.reset();
-    a.setLoop(THREE.LoopRepeat, Infinity);
-    a.play();
-    this.currentAction = a;
-    // Frame the UNION of several points through the clip, not just the
-    // mid-pose. The grounding pass translates the whole body during a
-    // closed-chain movement, so a camera fitted to one instant lets the model
-    // wander out of shot at the others -- the hip hinge framed its deep
-    // position and then rose most of the way off the top of the canvas.
-    this.frameForClip(clip);
-    this.mixer.setTime(0);
-    this.scrubbing = false;
-    a.paused = false;
+  frameForClip(clip) {
+    const box = new THREE.Box3();
+    const was = this.currentAction ? this.currentAction.time : 0;
+    for (const f of [0, 0.25, 0.5, 0.75]) {
+      if (this.currentAction) {
+        this.currentAction.time = clip.duration * f;
+        this.mixer.update(0);
+      }
+      this.root.updateMatrixWorld(true);
+      this._expandPosedBox(box);
+    }
+    if (this.currentAction) {
+      this.currentAction.time = was;
+      this.mixer.update(0);
+      this.root.updateMatrixWorld(true);
+    }
+    this._applyFraming(box);
+  }
+
+  frameForPose() {
+    const box = new THREE.Box3();
+    this._expandPosedBox(box);
+    this._applyFraming(box);
+  }
+
+  _expandPosedBox(box) {
+    const t = new THREE.Vector3();
+    for (const [, list] of this.meshes) {
+      for (const m of list) {
+        const pos = m.geometry.attributes.position;
+        if (!pos) continue;
+        const step = Math.max(1, Math.floor(pos.count / 24));
+        for (let i = 0; i < pos.count; i += step) {
+          t.fromBufferAttribute(pos, i);
+          if (m.isSkinnedMesh) m.applyBoneTransform(i, t);
+          m.localToWorld(t);
+          box.expandByPoint(t);
+        }
+      }
+    }
+    return box;
+  }
+
+  focusOn(id, opts) {
+    const list = this.meshes.get(id);
+    if (!list || !list.length) return false;
+
+    const boxOf = (m) => {
+      const b = new THREE.Box3();
+      const v = new THREE.Vector3();
+      const pos = m.geometry.attributes.position;
+      if (!pos) return b;
+      const step = Math.max(1, Math.floor(pos.count / 120));
+      for (let i = 0; i < pos.count; i += step) {
+        v.fromBufferAttribute(pos, i);
+        if (m.isSkinnedMesh) m.applyBoneTransform(i, v);
+        m.localToWorld(v);
+        b.expandByPoint(v);
+      }
+      return b;
+    };
+
+    const visible = list.filter((m) => m.visible);
+    const candidates = visible.length ? visible : list;
+    let box = null;
+    let best = -Infinity;
+    for (const m of candidates) {
+      const b = boxOf(m);
+      if (b.isEmpty()) continue;
+      const score = -b.getCenter(new THREE.Vector3()).distanceTo(this.camera.position);
+      if (score > best) { best = score; box = b; }
+    }
+    if (!box || box.isEmpty()) return false;
+
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const bodyBox = new THREE.Box3();
+    this._expandPosedBox(bodyBox);
+    const bodyDim = bodyBox.isEmpty()
+      ? Math.max(size.x, size.y, size.z)
+      : Math.max(...bodyBox.getSize(new THREE.Vector3()).toArray());
+    const muscleDim = Math.max(size.x, size.y, size.z);
+    const framed = Math.max(muscleDim * 2.2, bodyDim * 0.28);
+    const dist = (framed / 2) / Math.tan((this.camera.fov * Math.PI) / 360);
+
+    const dir = this.camera.position.clone().sub(this.controls.target);
+    if (dir.lengthSq() < 1e-6) dir.set(0, 0, 1);
+    dir.normalize();
+
+    const off = (opts && opts.offset) || 0.25;
+    const lift = Math.min(muscleDim * off, framed * 0.06);
+    const pos = center.clone()
+      .add(dir.multiplyScalar(dist))
+      .add(new THREE.Vector3(0, lift, 0));
+
+    this.lerpTo(pos, center);
+    this.focused = id;
     return true;
   }
 
-  setSpeed(x) { if (this.mixer) this.mixer.timeScale = x; }
-
-  /** Duration of the clip currently playing, in seconds (0 if none). */
-  clipDuration() {
-    return this.currentAction ? this.currentAction.getClip().duration : 0;
+  resetCamera() {
+    const box = new THREE.Box3();
+    if (this.mixer && this.currentAction) {
+      const clip = this.currentAction.getClip();
+      const was = this.currentAction.time;
+      for (const f of [0, 0.25, 0.5, 0.75]) {
+        this.currentAction.time = clip.duration * f;
+        this.mixer.update(0);
+        this.root.updateMatrixWorld(true);
+        this._expandPosedBox(box);
+      }
+      this.currentAction.time = was;
+      this.mixer.update(0);
+      this.root.updateMatrixWorld(true);
+    } else {
+      this._expandPosedBox(box);
+    }
+    if (box.isEmpty()) return;
+    const { position, target } = this._framingFor(box);
+    this.lerpTo(position, target);
+    this.focused = null;
   }
 
-  /** Where we are in the current cycle, 0..1. */
-  clipProgress() {
-    const d = this.clipDuration();
-    if (!d || !this.currentAction) return 0;
-    return (this.currentAction.time % d) / d;
+  lerpTo(position, target, ms) {
+    this._lerp = {
+      fromPos: this.camera.position.clone(),
+      toPos: position.clone(),
+      fromTar: this.controls.target.clone(),
+      toTar: target.clone(),
+      t: 0,
+      dur: Math.max(1, (ms == null ? 620 : ms)) / 1000,
+    };
   }
 
-  /**
-   * Jump to a fraction of the cycle.
-   *
-   * Sets the ACTION's time, not just the mixer's. mixer.setTime rewinds the
-   * whole mixer from zero and re-evaluates, which for a paused scrub means
-   * every drag re-runs the clip from its start -- fine for a test harness
-   * sampling a few instants, visibly laggy when dragged. Writing
-   * action.time and calling mixer.update(0) evaluates exactly one frame.
-   */
-  scrubTo(frac) {
-    if (!this.mixer || !this.currentAction) return;
-    const d = this.clipDuration();
-    if (!d) return;
-    this.currentAction.time = Math.max(0, Math.min(1, frac)) * d;
-    this.mixer.update(0);
-    this.root.updateMatrixWorld(true);
+  _tickLerp(dt) {
+    const L = this._lerp;
+    if (!L) return;
+    L.t = Math.min(1, L.t + dt / L.dur);
+    const e = L.t < 0.5 ? 2 * L.t * L.t : 1 - Math.pow(-2 * L.t + 2, 2) / 2;
+    this.camera.position.lerpVectors(L.fromPos, L.toPos, e);
+    this.controls.target.lerpVectors(L.fromTar, L.toTar, e);
+    const d = this.camera.position.distanceTo(this.controls.target);
+    this.camera.near = Math.max(d / 100, 0.01);
+    this.camera.far = d * 10;
+    this.camera.updateProjectionMatrix();
+    if (L.t >= 1) this._lerp = null;
   }
 
-  /** Pause/resume without tearing down the action, so scrubbing keeps the pose. */
-  setPaused(on) {
-    this.scrubbing = !!on;
-    if (this.currentAction) this.currentAction.paused = !!on;
+  _framingFor(box) {
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const dist = (maxDim / 2) / Math.tan((this.camera.fov * Math.PI) / 360) * 1.35;
+
+    const targetY = box.min.y <= 0.15 && box.max.y >= 1.4 ? 0.95 : Math.max(0.18, center.y);
+    const target = new THREE.Vector3(center.x, targetY, center.z);
+
+    const angleY = 32 * (Math.PI / 180);
+    const elev = 12 * (Math.PI / 180);
+    const cosElev = Math.cos(elev);
+    const offset = new THREE.Vector3(
+      Math.sin(angleY) * cosElev,
+      Math.sin(elev),
+      Math.cos(angleY) * cosElev
+    ).normalize().multiplyScalar(dist);
+
+    const position = target.clone().add(offset);
+    return { position, target, dist };
   }
 
-  /**
-   * Exercise view: colour by role in the movement rather than by assessment.
-   * Passing null returns to assessment colouring.
-   */
-  setRoles(roles) {
-    this.roles = roles;
-    this.paintStates(this.states);
+  _applyFraming(box) {
+    if (box.isEmpty()) return;
+    this._lerp = null;
+    const { position, target, dist } = this._framingFor(box);
+    this.camera.position.copy(position);
+    this.camera.up.set(0, 1, 0);
+    this.camera.near = dist / 100;
+    this.camera.far = dist * 10;
+    this.camera.updateProjectionMatrix();
+    this.controls.target.copy(target);
+    this.controls.update();
   }
 }
 

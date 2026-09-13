@@ -75,6 +75,12 @@ check('postures are all defined', (()=>{
   const defined=new Set(Object.keys(JSON.parse(fs.readFileSync(clipFile,'utf8')).postures||{}));
   return [...clipNames].every(n=>defined.has(clips[n].posture));})());
 
+check('every clip declares a valid biomechanical archetype', (()=>{
+  const VALID_ARCHETYPES = new Set(['OPEN_CHAIN_UPRIGHT', 'CLOSED_CHAIN_STANDING', 'SUPINE_FLOOR', 'QUADRUPED']);
+  const bad = [...clipNames].filter(n => !clips[n].archetype || !VALID_ARCHETYPES.has(clips[n].archetype));
+  return bad.length === 0;
+})(), [...clipNames].filter(n => !clips[n].archetype).join(', '));
+
 // The v4 failure in one assertion: a demonstration needs real range of motion.
 // A Romanian deadlift authored at 15 degrees of hip flexion is not an RDL, and
 // the old tests could not tell the difference.
