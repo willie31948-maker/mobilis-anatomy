@@ -14,8 +14,7 @@ if (typeof window !== 'undefined') {
   window.__THREE = THREE;
 }
 
-// Module-level clock for global frame delta timing
-const clock = new THREE.Clock();
+let lastTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
 
 const COLORS = {
   base:      0x851414,   // anatomical carmine red (#851414)
@@ -70,7 +69,15 @@ export class AnatomyViewer {
     this.currentClipName = null;
     this.scrubbing = false;
     this.roles = null;
-    this._clock = clock;
+    this._lastTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    this._clock = {
+      getDelta: () => {
+        const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+        const dt = (now - this._lastTime) * 0.001;
+        this._lastTime = now;
+        return dt;
+      }
+    };
     this._init();
   }
 
@@ -216,7 +223,8 @@ export class AnatomyViewer {
   async loadAnimated(url = 'models/animated.glb') {
     if (this.animatedLoaded) return [...this.clips.keys()];
     const loader = new GLTFLoader();
-    const gltf = await new Promise((res, rej) => loader.load(url, res, undefined, rej));
+    const loadUrl = url.includes('?') ? url : `${url}?v=${Date.now()}`;
+    const gltf = await new Promise((res, rej) => loader.load(loadUrl, res, undefined, rej));
 
     // Clear prior children from root
     while (this.root.children.length > 0) {
@@ -315,15 +323,19 @@ export class AnatomyViewer {
       // Optional skeletal context fallback
     }
 
-    // Find and start the baked clip
+    // Find and guarantee animation playback
+    console.log('Available clips:', gltf.animations ? gltf.animations.map(a => a.name) : []);
     if (gltf.animations && gltf.animations.length > 0) {
-      const defaultClip = this.clips.get('hinge') || this.clips.get('squat') || gltf.animations[0];
-      const action = this.mixer.clipAction(defaultClip);
+      if (this.mixer) this.mixer.stopAllAction();
+      this.mixer = new THREE.AnimationMixer(gltf.scene);
+
+      // Play the baked retarget track directly
+      const action = this.mixer.clipAction(gltf.animations[0]);
       action.setLoop(THREE.LoopRepeat);
-      action.clampWhenFinished = false;
+      action.reset();
       action.play();
       this.currentAction = action;
-      this.currentClipName = defaultClip.name;
+      this.currentClipName = gltf.animations[0].name;
     }
 
     this.animatedLoaded = true;
@@ -518,16 +530,20 @@ export class AnatomyViewer {
 
   /**
    * Main render loop.
-   * Advances the Three.js AnimationMixer via clock delta on every frame.
+   * Advances the Three.js AnimationMixer via timestamp delta on every frame.
    */
   _animate() {
-    requestAnimationFrame(() => this._animate());
-    const delta = Math.min(this._clock.getDelta(), 0.1);
-    if (this.mixer && !this.scrubbing) {
+    requestAnimationFrame((t) => this._animate(t));
+    const currentTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const rawDelta = (currentTime - lastTime) * 0.001;
+    lastTime = currentTime;
+    const delta = Math.min(this._clock.getDelta ? this._clock.getDelta() : rawDelta, 0.1);
+
+    if (this.mixer && !this.scrubbing && delta > 0) {
       this.mixer.update(delta);
     }
     this._tickLerp(delta);
-    this.controls.update();
+    if (this.controls) this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
 
