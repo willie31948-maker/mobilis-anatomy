@@ -14,6 +14,9 @@ if (typeof window !== 'undefined') {
   window.__THREE = THREE;
 }
 
+// Module-level clock for global frame delta timing
+const clock = new THREE.Clock();
+
 const COLORS = {
   base:      0x851414,   // anatomical carmine red (#851414)
   tendon:    0xeae6df,   // tendon off-white (#eae6df)
@@ -67,7 +70,7 @@ export class AnatomyViewer {
     this.currentClipName = null;
     this.scrubbing = false;
     this.roles = null;
-    this._clock = new THREE.Clock();
+    this._clock = clock;
     this._init();
   }
 
@@ -246,9 +249,10 @@ export class AnatomyViewer {
       this.meshes.get(id).push(o);
     });
 
+    // Add gltf.scene to scene root
     this.root.add(gltf.scene);
 
-    // Initialize AnimationMixer on the loaded GLTF model
+    // Instantiate AnimationMixer on the loaded GLTF model scene
     this.mixer = new THREE.AnimationMixer(gltf.scene);
 
     // Map all baked animation clips
@@ -311,11 +315,12 @@ export class AnatomyViewer {
       // Optional skeletal context fallback
     }
 
-    // Play default baked animation if available
-    if (gltf.animations.length > 0) {
-      const defaultClip = this.clips.get('squat') || this.clips.get('hinge') || gltf.animations[0];
+    // Find and start the baked clip
+    if (gltf.animations && gltf.animations.length > 0) {
+      const defaultClip = this.clips.get('hinge') || this.clips.get('squat') || gltf.animations[0];
       const action = this.mixer.clipAction(defaultClip);
-      action.setLoop(THREE.LoopRepeat, Infinity);
+      action.setLoop(THREE.LoopRepeat);
+      action.clampWhenFinished = false;
       action.play();
       this.currentAction = action;
       this.currentClipName = defaultClip.name;
@@ -346,7 +351,8 @@ export class AnatomyViewer {
 
     const action = this.mixer.clipAction(clip);
     action.reset();
-    action.setLoop(THREE.LoopRepeat, Infinity);
+    action.setLoop(THREE.LoopRepeat);
+    action.clampWhenFinished = false;
     action.play();
     this.currentAction = action;
     this.currentClipName = name;
@@ -516,11 +522,11 @@ export class AnatomyViewer {
    */
   _animate() {
     requestAnimationFrame(() => this._animate());
-    const dt = Math.min(this._clock.getDelta(), 0.1);
+    const delta = Math.min(this._clock.getDelta(), 0.1);
     if (this.mixer && !this.scrubbing) {
-      this.mixer.update(dt);
+      this.mixer.update(delta);
     }
-    this._tickLerp(dt);
+    this._tickLerp(delta);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
