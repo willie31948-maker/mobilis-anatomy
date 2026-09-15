@@ -2,8 +2,8 @@
  * 3D Anatomy Viewer & Exercise Demonstration
  *
  * Runs exclusively on a standard Three.js AnimationMixer pipeline with
- * baked GLTF skeletal animation tracks. All procedural trigonometric math,
- * manual bone rotations, and kinematic overrides have been eliminated.
+ * baked GLTF skeletal animation tracks. Posture setups and dynamic motions
+ * are automatically merged and routed to their respective exercises.
  */
 
 import * as THREE from './vendor/three.module.js';
@@ -13,8 +13,6 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 if (typeof window !== 'undefined') {
   window.__THREE = THREE;
 }
-
-let lastTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
 
 const COLORS = {
   base:      0x851414,   // anatomical carmine red (#851414)
@@ -29,7 +27,7 @@ const COLORS = {
   accent:    0xd47a00,   // emissive glow on the active muscle (warm amber)
 };
 
-function createMuscleMaterial(isSkinned = false) {
+function createMuscleMaterial() {
   return new THREE.MeshStandardMaterial({
     color: COLORS.base,
     roughness: 0.45,
@@ -57,8 +55,8 @@ export class AnatomyViewer {
   constructor(container, opts = {}) {
     this.container = container;
     this.onSelect = opts.onSelect || (() => {});
-    this.meshes = new Map();      // muscle_id -> [mesh, ...]
-    this.bones = [];              // skeletal context meshes
+    this.meshes = new Map();
+    this.bones = [];
     this.bonesVisible = true;
     this.states = {};
     this.selected = null;
@@ -102,7 +100,6 @@ export class AnatomyViewer {
     this.controls.dampingFactor = 0.08;
     this.controls.target.set(0, 0.95, 0);
 
-    // Studio directional and hemisphere lighting for clear anatomical contrast
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x555555, 1.2);
     this.scene.add(hemiLight);
 
@@ -114,7 +111,6 @@ export class AnatomyViewer {
     rimLight.position.set(-5, 5, -5);
     this.scene.add(rimLight);
 
-    // Soft ground contact shadow receiver at world floor
     const shadowCanvas = document.createElement('canvas');
     shadowCanvas.width = 256;
     shadowCanvas.height = 256;
@@ -163,9 +159,6 @@ export class AnatomyViewer {
     this.renderer.setSize(w, h);
   }
 
-  /**
-   * Load individual regional muscle models (e.g. for static 3D assessment / anatomy inspect).
-   */
   async loadRegions(regions) {
     const loader = new GLTFLoader();
     for (const region of regions) {
@@ -179,27 +172,16 @@ export class AnatomyViewer {
               if (!o.isMesh) return;
               if (o.geometry) o.geometry.computeVertexNormals();
 
-              // Skeletal context: pale, non-interactive, and deliberately given
-              // NO muscle identifier. Without that guard a bone could be clicked and
-              // looked up as a muscle, which would be a confusing error.
-              // All bones are registered into the non-clickable bones collection.
               if (o.name.startsWith('bone__')) {
-                // Solid opaque bone material (ivory cream, roughness 0.55)
                 o.material = createBoneMaterial();
                 o.userData.isBone = true;
                 o.visible = !!this.bonesVisible;
                 this.bones.push(o);
-                // Return immediately without assigning muscle identifiers or adding to meshes map
                 return;
               }
 
-              // Non-bone meshes represent muscular anatomy:
-              // Meshes are exported as "<muscle_id>__l" / "__r". glTF strips
-              // "." from names, so the separator must not be a dot; the
-              // trailing _NNN guard covers three.js de-duplicating names.
-              // These meshes are registered into the interactive anatomical collection.
               const id = o.name.replace(/__(l|r)(_\d+)?$/, '');
-              o.material = createMuscleMaterial(false);
+              o.material = createMuscleMaterial();
               o.userData.muscleId = id;
               if (!this.meshes.has(id)) this.meshes.set(id, []);
               this.meshes.get(id).push(o);
@@ -216,17 +198,12 @@ export class AnatomyViewer {
     this.paintStates(this.states);
   }
 
-  /**
-   * Load the baked skeletal animated model (public/models/animated.glb)
-   * and initialize the standard Three.js AnimationMixer.
-   */
   async loadAnimated(url = 'models/animated.glb') {
     if (this.animatedLoaded) return [...this.clips.keys()];
     const loader = new GLTFLoader();
     const loadUrl = url.includes('?') ? url : `${url}?v=${Date.now()}`;
     const gltf = await new Promise((res, rej) => loader.load(loadUrl, res, undefined, rej));
 
-    // Clear prior children from root
     while (this.root.children.length > 0) {
       this.root.remove(this.root.children[0]);
     }
@@ -250,34 +227,68 @@ export class AnatomyViewer {
         this.bones.push(o);
         return;
       }
-      o.material = createMuscleMaterial(true);
+      o.material = createMuscleMaterial();
       o.userData.muscleId = id;
       o.frustumCulled = false;
       if (!this.meshes.has(id)) this.meshes.set(id, []);
       this.meshes.get(id).push(o);
     });
 
-    // Add gltf.scene to scene root
     this.root.add(gltf.scene);
-
-    // Instantiate AnimationMixer on the loaded GLTF model scene
     this.mixer = new THREE.AnimationMixer(gltf.scene);
 
-    // Map all baked animation clips
-    const byName = new Map();
+    // 1. Index base posture clips (e.g. 'bridge__posture.001' -> 'bridge')
+    const postureMap = new Map();
     for (const c of gltf.animations) {
-      byName.set(c.name, c);
+      if (c.name.includes('__posture')) {
+        const base = c.name.replace('__posture', '').replace(/\.\d+$/, '').trim().toLowerCase();
+        postureMap.set(base, c);
+      }
     }
+
+    // 2. Merge dynamic action tracks with posture tracks so body positions correctly in space
     for (const c of gltf.animations) {
-      if (c.name.endsWith('__posture')) continue;
-      const posture = byName.get(c.name + '__posture');
+      if (c.name.includes('__posture')) continue;
+
+      const base = c.name.replace(/\.\d+$/, '').trim().toLowerCase();
+      const posture = postureMap.get(base);
+
       const tracks = posture ? [...c.tracks, ...posture.tracks] : c.tracks;
-      const mergedClip = new THREE.AnimationClip(c.name, c.duration, tracks);
+      const duration = c.duration || (posture ? posture.duration : 1);
+      const mergedClip = new THREE.AnimationClip(c.name, duration, tracks);
+
       this.clips.set(c.name, mergedClip);
+      this.clips.set(base, mergedClip);
     }
-    for (const c of gltf.animations) {
-      if (!this.clips.has(c.name)) {
-        this.clips.set(c.name, c);
+
+    // Register standalone postures if no dynamic motion track exists
+    for (const [base, pClip] of postureMap.entries()) {
+      if (!this.clips.has(base)) {
+        this.clips.set(base, pClip);
+      }
+    }
+
+    // 3. Register the baked Mixamo Romanian deadlift retarget track
+    const retargetClip = 
+      gltf.animations.find(c => c.name === "mixamo.com.002 Retarget") ||
+      gltf.animations.find(c => c.name.toLowerCase().includes("retarget")) ||
+      gltf.animations.find(c => c.name.toLowerCase().includes("mixamo"));
+
+    if (retargetClip) {
+      const deadliftAliases = [
+        'mixamo.com.002 retarget',
+        'single_leg_romanian_deadlift',
+        'single-leg-romanian-deadlift',
+        'single_leg_deadlift',
+        'romanian_deadlift',
+        'romanian-deadlift',
+        'deadlift',
+        'rdl',
+        'hinge',
+        'singlelegromaniandeadlift'
+      ];
+      for (const alias of deadliftAliases) {
+        this.clips.set(alias, retargetClip);
       }
     }
 
@@ -319,23 +330,12 @@ export class AnatomyViewer {
           this.root.add(o);
         }
       }
-    } catch (e) {
-      // Optional skeletal context fallback
-    }
+    } catch (e) {}
 
-    // Find and guarantee animation playback
-    console.log('Available clips:', gltf.animations ? gltf.animations.map(a => a.name) : []);
-    if (gltf.animations && gltf.animations.length > 0) {
-      if (this.mixer) this.mixer.stopAllAction();
-      this.mixer = new THREE.AnimationMixer(gltf.scene);
-
-      // Play the baked retarget track directly
-      const action = this.mixer.clipAction(gltf.animations[0]);
-      action.setLoop(THREE.LoopRepeat);
-      action.reset();
-      action.play();
-      this.currentAction = action;
-      this.currentClipName = gltf.animations[0].name;
+    // Default start action
+    const startClip = retargetClip || this.clips.get('bridge') || this.clips.values().next().value;
+    if (startClip) {
+      this.playClip(startClip.name);
     }
 
     this.animatedLoaded = true;
@@ -344,32 +344,68 @@ export class AnatomyViewer {
     return [...this.clips.keys()];
   }
 
-  /**
-   * Play a named clip using standard AnimationMixer clipAction.
-   */
+  _resolveClip(name) {
+    if (!name) return null;
+    const clean = name.toLowerCase().trim();
+    const stripped = clean.replace(/[-_\s]/g, '');
+
+    // 1. Direct match
+    if (this.clips.has(name)) return this.clips.get(name);
+    if (this.clips.has(clean)) return this.clips.get(clean);
+
+    // 2. Romanian deadlift alias routing
+    if (
+      stripped.includes('deadlift') || 
+      stripped.includes('rdl') || 
+      stripped.includes('romanian') ||
+      stripped.includes('singleleg')
+    ) {
+      return this.clips.get('single_leg_romanian_deadlift') || 
+             [...this.clips.values()].find(c => c.name.toLowerCase().includes('retarget'));
+    }
+
+    // 3. Glute bridge routing
+    if (stripped.includes('bridge')) {
+      return this.clips.get('bridge') || this.clips.get('bridge.001');
+    }
+
+    // 4. Normalized key scan
+    for (const [key, clip] of this.clips.entries()) {
+      const normKey = key.toLowerCase().replace(/\.\d+$/, '').replace(/[-_\s]/g, '');
+      if (normKey === stripped || normKey.includes(stripped) || stripped.includes(normKey)) {
+        return clip;
+      }
+    }
+
+    return this.clips.get('mixamo.com.002 Retarget') || this.clips.values().next().value;
+  }
+
   playClip(name) {
     if (!this.mixer) return false;
-    if (this.currentAction) {
-      this.currentAction.stop();
-      this.currentAction = null;
-    }
-    if (!name) {
-      this.currentClipName = null;
-      this.scrubbing = false;
+
+    const clip = this._resolveClip(name);
+    if (!clip) {
+      console.warn('[viewer3d] Clip not found for:', name);
       return false;
     }
-    const clip = this.clips.get(name) || this.clips.get(name + '__posture');
-    if (!clip) return false;
+
+    if (this.currentAction) {
+      this.currentAction.stop();
+    }
 
     const action = this.mixer.clipAction(clip);
     action.reset();
-    action.setLoop(THREE.LoopRepeat);
+    action.setEffectiveTimeScale(1.0);
+    action.setEffectiveWeight(1.0);
+    action.setLoop(THREE.LoopRepeat, Infinity);
     action.clampWhenFinished = false;
     action.play();
+
     this.currentAction = action;
-    this.currentClipName = name;
+    this.currentClipName = clip.name;
     this.scrubbing = false;
     action.paused = false;
+
     this.frameForClip(clip);
     return true;
   }
@@ -378,13 +414,11 @@ export class AnatomyViewer {
     if (this.mixer) this.mixer.timeScale = x;
   }
 
-  /** Duration of the clip currently playing, in seconds (0 if none). */
   clipDuration() {
     if (this.currentAction) return this.currentAction.getClip().duration;
     return 0;
   }
 
-  /** Normalized cycle progress, 0..1. */
   clipProgress() {
     if (this.currentAction) {
       const d = this.clipDuration();
@@ -394,7 +428,6 @@ export class AnatomyViewer {
     return 0;
   }
 
-  /** Jump to fraction of the animation cycle without tearing down the mixer. */
   scrubTo(frac) {
     if (!this.mixer || !this.currentAction) return;
     const d = this.clipDuration();
@@ -414,9 +447,6 @@ export class AnatomyViewer {
     this.paintStates(this.states);
   }
 
-  /**
-   * Color muscles by state (short/weak), exercise role (primary/secondary), or selection.
-   */
   paintStates(states) {
     this.states = states || {};
     const roles = this.roles;
@@ -528,20 +558,15 @@ export class AnatomyViewer {
     this.onSelect(id);
   }
 
-  /**
-   * Main render loop.
-   * Advances the Three.js AnimationMixer via timestamp delta on every frame.
-   */
   _animate() {
     requestAnimationFrame((t) => this._animate(t));
-    const currentTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
-    const rawDelta = (currentTime - lastTime) * 0.001;
-    lastTime = currentTime;
-    const delta = Math.min(this._clock.getDelta ? this._clock.getDelta() : rawDelta, 0.1);
+
+    const delta = Math.min(this._clock.getDelta(), 0.1);
 
     if (this.mixer && !this.scrubbing && delta > 0) {
       this.mixer.update(delta);
     }
+
     this._tickLerp(delta);
     if (this.controls) this.controls.update();
     this.renderer.render(this.scene, this.camera);
