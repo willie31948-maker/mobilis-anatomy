@@ -14,6 +14,63 @@ if (typeof window !== 'undefined') {
   window.__THREE = THREE;
 }
 
+/**
+ * Three.js loader utility for GLTF/GLB assets returning { scene, animations }.
+ * Provides pure Three.js compatibility for React Three Fiber's useGLTF hook.
+ *
+ * @param {string} url - Asset path or hosted HTTPS URL (e.g. '/squat_sync.glb')
+ * @returns {Promise<{ scene: THREE.Group, animations: THREE.AnimationClip[], gltf: object }>}
+ */
+export async function useGLTF(url) {
+  const loader = new GLTFLoader();
+  return new Promise((resolve, reject) => {
+    loader.load(
+      url,
+      (gltf) => {
+        resolve({
+          scene: gltf.scene,
+          animations: gltf.animations || [],
+          gltf
+        });
+      },
+      undefined,
+      (err) => {
+        console.error(`[useGLTF] Error loading asset from ${url}:`, err);
+        reject(err);
+      }
+    );
+  });
+}
+
+/**
+ * Three.js animation controller utility compatible with useAnimations hook.
+ * Mixamo animation tracks are named differently depending on export settings
+ * (commonly mixamo.com or Armature|mixamo.com|Layer0).
+ *
+ * @param {THREE.AnimationClip[]} animations - Array of animation clips
+ * @param {THREE.Object3D} group - Root scene or group
+ * @returns {{ actions: Object.<string, THREE.AnimationAction>, names: string[], mixer: THREE.AnimationMixer }}
+ */
+export function useAnimations(animations = [], group) {
+  const mixer = new THREE.AnimationMixer(group);
+  const actions = {};
+  const names = [];
+
+  if (Array.isArray(animations)) {
+    for (const clip of animations) {
+      names.push(clip.name);
+      actions[clip.name] = mixer.clipAction(clip);
+    }
+  }
+
+  return { actions, names, mixer };
+}
+
+if (typeof window !== 'undefined') {
+  window.useGLTF = useGLTF;
+  window.useAnimations = useAnimations;
+}
+
 const COLORS = {
   base:      0x851414,   // anatomical carmine red (#851414)
   tendon:    0xeae6df,   // tendon off-white (#eae6df)
@@ -39,6 +96,81 @@ function createMuscleMaterial() {
   });
 }
 
+export const LAYER1_MUSCLES = new Set([
+  'gluteus_maximus',
+  'gluteus_medius',
+  'tfl',
+  'hamstrings',
+  'rectus_femoris',
+  'quadriceps',
+  'rectus_abdominis',
+  'latissimus_dorsi',
+  'pectoralis_major',
+  'deltoid',
+  'upper_trapezius',
+  'lower_trapezius',
+  'biceps_brachii',
+  'triceps_brachii',
+  'brachioradialis',
+  'gastrocnemius',
+  'tibialis_anterior',
+  'sternocleidomastoid',
+  'masseter',
+  'temporalis'
+]);
+
+export const LAYER2_MUSCLES = new Set([
+  'iliopsoas',
+  'piriformis',
+  'adductor_group',
+  'multifidus',
+  'erector_spinae',
+  'transversus_abdominis',
+  'quadratus_lumborum',
+  'pectoralis_minor',
+  'rhomboids',
+  'serratus_anterior',
+  'rotator_cuff',
+  'levator_scapulae',
+  'deep_neck_flexors',
+  'suboccipitals',
+  'scalenes',
+  'splenius',
+  'pterygoids',
+  'digastric',
+  'brachialis',
+  'pronators',
+  'supinator',
+  'wrist_extensors',
+  'wrist_flexors',
+  'finger_flexors',
+  'finger_extensors',
+  'hand_intrinsics',
+  'soleus',
+  'tibialis_posterior',
+  'peroneals'
+]);
+
+export function isBoneMesh(name) {
+  if (!name) return false;
+  if (name.startsWith('bone__')) return true;
+  const lower = name.toLowerCase();
+  const skeletalKeywords = [
+    'vertebra', 'disc', 'sacrum', 'coccyx', 'nuchal', 'pulposus', 'spine',
+    'rib', 'sternum', 'xiphoid', 'costal',
+    'hip bone', 'ilium', 'ischium', 'pubis', 'pelvis',
+    'femur', 'patella', 'tibia', 'fibula',
+    'calcaneus', 'cuboid', 'cuneiform', 'metatarsal', 'navicular', 'talus', 'sesamoid',
+    'humerus', 'radius', 'ulna', 'clavicle', 'scapula',
+    'scaphoid', 'lunate', 'triquetrum', 'pisiform', 'trapezium', 'trapezoid', 'capitate', 'hamate', 'metacarpal',
+    'parietal', 'frontal', 'occipital', 'temporal', 'mandible', 'maxilla', 'zygomatic', 'skull', 'hyoid',
+    'skeletal', 'joints.g', 'cartilage'
+  ];
+  if (skeletalKeywords.some(k => lower.includes(k))) return true;
+  if (lower.includes('phalanx') && (lower.includes('foot') || lower.includes('hand'))) return true;
+  return false;
+}
+
 function createBoneMaterial() {
   return new THREE.MeshStandardMaterial({
     color: COLORS.bone,
@@ -58,6 +190,7 @@ export class AnatomyViewer {
     this.meshes = new Map();
     this.bones = [];
     this.bonesVisible = true;
+    this.activeLayer = 'all'; // 'all' | 'layer1' | 'layer2' | 'skeleton'
     this.states = {};
     this.selected = null;
     this.loaded = new Set();
@@ -173,13 +306,28 @@ export class AnatomyViewer {
               if (o.geometry) o.geometry.computeVertexNormals();
 
               if (o.name.startsWith('bone__')) {
+                // Skeletal context meshes: rendered with non-interactive bone material.
+                // It is critical that these skeletal context structures are deliberately given
+                // NO muscle identifier. Without that explicit barrier, a structural bone could
+                // be clicked and mistakenly looked up as an active muscle entity, which would be
+                // a major clinical and functional error in the assessment viewer.
+                // All bone geometries are strictly placed into the non-clickable bones collection
+                // so they provide spatial orientation while refusing selection events completely.
+                // Solid opaque bone material (ivory cream, roughness 0.55).
+                // They remain completely separate from interactive muscle meshes at all times.
                 o.material = createBoneMaterial();
                 o.userData.isBone = true;
                 o.visible = !!this.bonesVisible;
                 this.bones.push(o);
+                // Return immediately without assigning muscle identifiers or adding to meshes map.
                 return;
               }
 
+              // Non-bone meshes represent muscular anatomy:
+              // Meshes are exported as "<muscle_id>__l" / "__r". glTF strips
+              // "." from names, so the separator must not be a dot; the
+              // trailing _NNN guard covers three.js de-duplicating names.
+              // These meshes are registered into the interactive anatomical collection.
               const id = o.name.replace(/__(l|r)(_\d+)?$/, '');
               o.material = createMuscleMaterial();
               o.userData.muscleId = id;
@@ -198,11 +346,32 @@ export class AnatomyViewer {
     this.paintStates(this.states);
   }
 
-  async loadAnimated(url = 'models/animated.glb') {
+  async loadAnimated(url = '/squat_sync.glb') {
     if (this.animatedLoaded) return [...this.clips.keys()];
     const loader = new GLTFLoader();
-    const loadUrl = url.includes('?') ? url : `${url}?v=${Date.now()}`;
-    const gltf = await new Promise((res, rej) => loader.load(loadUrl, res, undefined, rej));
+    let gltf;
+    const cleanUrl = encodeURI(url);
+    const loadUrl = cleanUrl.includes('?') ? cleanUrl : `${cleanUrl}?v=${Date.now()}`;
+    try {
+      gltf = await new Promise((res, rej) => loader.load(loadUrl, res, undefined, rej));
+    } catch (err) {
+      const fallbacks = [
+        '/squat_sync.glb',
+        '/squat%20sync.glb',
+        '/squat_interactive-transformed.glb',
+        '/squat_interactive.glb',
+        'models/animated.glb'
+      ];
+      let loaded = false;
+      for (const fb of fallbacks) {
+        try {
+          gltf = await new Promise((res, rej) => loader.load(`${fb}?v=${Date.now()}`, res, undefined, rej));
+          loaded = true;
+          break;
+        } catch (e) {}
+      }
+      if (!loaded) throw err;
+    }
 
     while (this.root.children.length > 0) {
       this.root.remove(this.root.children[0]);
@@ -220,10 +389,10 @@ export class AnatomyViewer {
         o.geometry.computeVertexNormals();
       }
       const id = o.name.replace(/__(l|r)(_\d+)?$/, '');
-      if (o.name.startsWith('bone__')) {
+      if (isBoneMesh(o.name)) {
         o.material = createBoneMaterial();
         o.userData.isBone = true;
-        o.visible = !!this.bonesVisible;
+        o.visible = this.activeLayer === 'skeleton' || (!!this.bonesVisible);
         this.bones.push(o);
         return;
       }
@@ -235,11 +404,23 @@ export class AnatomyViewer {
     });
 
     this.root.add(gltf.scene);
-    this.mixer = new THREE.AnimationMixer(gltf.scene);
+
+    const animList = gltf.animations || [];
+    if (animList.length === 0) {
+      console.warn('[3D Viewer] Loaded GLB model, but found 0 animation clips in the file. Ensure "Animation" and "Skinning" are checked in Blender glTF export settings.');
+    } else {
+      console.log('[3D Viewer] Loaded animation clips:', animList.map(a => a.name));
+    }
+
+    // Initialize animation controller with useAnimations
+    const { actions, names, mixer } = useAnimations(animList, gltf.scene);
+    this.actions = actions;
+    this.animNames = names;
+    this.mixer = mixer;
 
     // 1. Index base posture clips (e.g. 'bridge__posture.001' -> 'bridge')
     const postureMap = new Map();
-    for (const c of gltf.animations) {
+    for (const c of animList) {
       if (c.name.includes('__posture')) {
         const base = c.name.replace('__posture', '').replace(/\.\d+$/, '').trim().toLowerCase();
         postureMap.set(base, c);
@@ -247,7 +428,7 @@ export class AnatomyViewer {
     }
 
     // 2. Merge dynamic action tracks with posture tracks so body positions correctly in space
-    for (const c of gltf.animations) {
+    for (const c of animList) {
       if (c.name.includes('__posture')) continue;
 
       const base = c.name.replace(/\.\d+$/, '').trim().toLowerCase();
@@ -332,10 +513,46 @@ export class AnatomyViewer {
       }
     } catch (e) {}
 
-    // Default start action
-    const startClip = retargetClip || this.clips.get('bridge') || this.clips.values().next().value;
-    if (startClip) {
-      this.playClip(startClip.name);
+    // Identify and prioritize the squat sync animation track from the new asset
+    const squatClip = 
+      this.clips.get('squat') ||
+      this.clips.get('squat_sync') ||
+      this.clips.get('squat sync') ||
+      this.clips.get('bodyweight_squat') ||
+      gltf.animations.find(c => c.name.toLowerCase() === 'squat') ||
+      gltf.animations.find(c => c.name.toLowerCase().includes('squat')) ||
+      gltf.animations.find(c => c.name.toLowerCase().includes('sync')) ||
+      gltf.animations.find(c => c.name.toLowerCase().includes('mixamo')) ||
+      gltf.animations.find(c => !c.name.includes('__posture')) ||
+      gltf.animations[0];
+
+    this.squatSyncClip = squatClip;
+
+    // Mixamo animation tracks are named differently depending on export settings
+    // (commonly mixamo.com or Armature|mixamo.com|Layer0):
+    // Ensure animation controller plays the first available track from the new file:
+    if (this.currentAction) {
+      this.currentAction.stop();
+    }
+
+    if (squatClip) {
+      // Stops any legacy animations and plays the new squat track
+      const action = actions[squatClip.name] || this.mixer.clipAction(squatClip);
+      action.reset().fadeIn(0.2).play();
+      this.currentAction = action;
+      this.currentClipName = squatClip.name;
+      this.frameForClip(squatClip);
+    } else if (names.length > 0) {
+      actions[names[0]]?.reset().fadeIn(0.2).play();
+      this.currentAction = actions[names[0]];
+      this.currentClipName = names[0];
+      const firstClip = gltf.animations[0];
+      if (firstClip) this.frameForClip(firstClip);
+    } else {
+      const startClip = retargetClip || this.clips.get('bridge') || this.clips.values().next().value;
+      if (startClip) {
+        this.playClip(startClip.name);
+      }
     }
 
     this.animatedLoaded = true;
@@ -348,6 +565,22 @@ export class AnatomyViewer {
     if (!name) return null;
     const clean = name.toLowerCase().trim();
     const stripped = clean.replace(/[-_\s]/g, '');
+
+    // User requested to use the new squat sync glb for all animations in the app:
+    const squatClip = 
+      this.squatSyncClip ||
+      this.clips.get('squat') ||
+      this.clips.get('squat_sync') ||
+      this.clips.get('squat sync') ||
+      this.clips.get('bodyweight_squat') ||
+      [...this.clips.values()].find(c => c.name.toLowerCase().includes('squat')) ||
+      [...this.clips.values()].find(c => c.name.toLowerCase().includes('sync')) ||
+      [...this.clips.values()].find(c => c.name.toLowerCase().includes('mixamo'));
+
+    // Universal override for all exercise animations in the app
+    if (squatClip) {
+      return squatClip;
+    }
 
     // 1. Direct match
     if (this.clips.has(name)) return this.clips.get(name);
@@ -369,7 +602,18 @@ export class AnatomyViewer {
       return this.clips.get('bridge') || this.clips.get('bridge.001');
     }
 
-    // 4. Normalized key scan
+    // 4. Squat and Mixamo animation track routing (mixamo.com, Armature|mixamo.com|Layer0, etc.)
+    if (stripped.includes('squat')) {
+      return this.clips.get('squat') ||
+             this.clips.get('bodyweight_squat') ||
+             this.clips.get('mixamo.com') ||
+             this.clips.get('Armature|mixamo.com|Layer0') ||
+             (this.animNames && this.animNames[0] ? this.clips.get(this.animNames[0]) : null) ||
+             [...this.clips.values()].find(c => c.name.toLowerCase().includes('squat')) ||
+             [...this.clips.values()].find(c => c.name.toLowerCase().includes('mixamo'));
+    }
+
+    // 5. Normalized key scan
     for (const [key, clip] of this.clips.entries()) {
       const normKey = key.toLowerCase().replace(/\.\d+$/, '').replace(/[-_\s]/g, '');
       if (normKey === stripped || normKey.includes(stripped) || stripped.includes(normKey)) {
@@ -377,11 +621,25 @@ export class AnatomyViewer {
       }
     }
 
-    return this.clips.get('mixamo.com.002 Retarget') || this.clips.values().next().value;
+    return (
+      (this.animNames && this.animNames[0] ? this.clips.get(this.animNames[0]) : null) ||
+      this.clips.get('mixamo.com.002 Retarget') ||
+      this.clips.get('mixamo.com') ||
+      this.clips.get('Armature|mixamo.com|Layer0') ||
+      this.clips.values().next().value
+    );
   }
 
   playClip(name) {
     if (!this.mixer) return false;
+
+    if (!name) {
+      if (this.currentAction) {
+        this.currentAction.stop();
+        this.currentAction = null;
+      }
+      return false;
+    }
 
     const clip = this._resolveClip(name);
     if (!clip) {
@@ -393,8 +651,9 @@ export class AnatomyViewer {
       this.currentAction.stop();
     }
 
-    const action = this.mixer.clipAction(clip);
+    const action = this.actions?.[clip.name] || this.mixer.clipAction(clip);
     action.reset();
+    action.fadeIn(0.2);
     action.setEffectiveTimeScale(1.0);
     action.setEffectiveWeight(1.0);
     action.setLoop(THREE.LoopRepeat, Infinity);
@@ -472,6 +731,18 @@ export class AnatomyViewer {
         ? (!role && !isSelected)
         : (Object.keys(this.states).length > 0 && !st && !isSelected);
 
+      const isL1 = LAYER1_MUSCLES.has(id);
+      const isL2 = LAYER2_MUSCLES.has(id) || (!isL1 && true);
+
+      let layerVisible = true;
+      if (this.activeLayer === 'layer1') {
+        layerVisible = isL1;
+      } else if (this.activeLayer === 'layer2') {
+        layerVisible = isL2;
+      } else if (this.activeLayer === 'skeleton') {
+        layerVisible = false;
+      }
+
       for (const m of list) {
         m.material.color.setHex(col);
         m.material.roughness = 0.45;
@@ -494,7 +765,7 @@ export class AnatomyViewer {
         m.material.opacity = 1.0;
         m.material.depthWrite = true;
         m.material.side = THREE.DoubleSide;
-        m.visible = true;
+        m.visible = layerVisible;
       }
     }
     for (const b of this.bones) {
@@ -504,18 +775,34 @@ export class AnatomyViewer {
         b.material.opacity = 1.0;
         b.material.depthWrite = true;
       }
-      b.visible = !!this.bonesVisible;
+      if (this.activeLayer === 'skeleton') {
+        b.visible = true;
+      } else if (this.activeLayer === 'layer2') {
+        b.visible = true;
+      } else {
+        b.visible = !!this.bonesVisible;
+      }
     }
+  }
+
+  setLayer(layer) {
+    this.activeLayer = layer || 'all';
+    this.paintStates(this.states);
   }
 
   setBonesVisible(on) {
     this.bonesVisible = !!on;
-    for (const b of this.bones) b.visible = !!on;
+    if (this.activeLayer === 'skeleton') {
+      for (const b of this.bones) b.visible = true;
+    } else {
+      for (const b of this.bones) b.visible = !!on;
+    }
   }
 
   select(id) {
     this.selected = id;
     this.paintStates(this.states);
+    this._updateDynamicHighlights();
   }
 
   isolate(ids) {
@@ -532,17 +819,49 @@ export class AnatomyViewer {
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const hits = this.raycaster.intersectObjects(this.root.children, true);
     for (const h of hits) {
-      if (h.object.visible && h.object.userData.muscleId) return h.object;
+      const name = h.object.name || '';
+      // Filter out clicks on bones or the rig
+      if (name.includes('mixamorig') || isBoneMesh(name) || h.object.userData.isBone) {
+        continue;
+      }
+      if (h.object.visible && (h.object.userData.muscleId || name)) {
+        return h.object;
+      }
     }
     return null;
   }
 
+  _updateDynamicHighlights() {
+    this.root.traverse((child) => {
+      if ((child.isSkinnedMesh || child.isMesh) && child.material && !child.userData.isBone) {
+        // Clone material instance so highlights don't bleed across all meshes
+        if (!child.userData.originalEmissive) {
+          child.material = child.material.clone();
+          child.userData.originalEmissive = child.material.emissive?.clone() || new THREE.Color(0x000000);
+        }
+
+        const id = child.userData.muscleId || child.name;
+        if (id === this.selected || child.name === this.selected) {
+          child.material.emissive.setHex(0x00ff88); // Bright highlight for selected muscle
+          child.material.emissiveIntensity = 0.6;
+        } else if (id === this.hovered || child.name === this.hovered) {
+          child.material.emissive.setHex(0x3399ff); // Subtle hover glow
+          child.material.emissiveIntensity = 0.3;
+        } else {
+          child.material.emissive.copy(child.userData.originalEmissive);
+          child.material.emissiveIntensity = 0;
+        }
+      }
+    });
+  }
+
   _onMove(e) {
     const obj = this._pick(e);
-    const id = obj ? obj.userData.muscleId : null;
+    const id = obj ? (obj.userData.muscleId || obj.name) : null;
     if (id === this.hovered) return;
     this.hovered = id;
     this.renderer.domElement.style.cursor = id ? 'pointer' : 'default';
+    this._updateDynamicHighlights();
     const label = document.getElementById('v3d-label');
     if (label) {
       label.textContent = id ? (window.muscleName ? window.muscleName(id) : id) : '';
@@ -552,10 +871,20 @@ export class AnatomyViewer {
 
   _onClick(e) {
     const obj = this._pick(e);
-    if (!obj) return;
-    const id = obj.userData.muscleId;
+    if (!obj) {
+      // onPointerMissed: Deselect when clicking empty space
+      this.select(null);
+      if (this.onSelect) this.onSelect(null);
+      return;
+    }
+    const name = obj.name || '';
+    // Filter out clicks on bones or the rig
+    if (name.includes('mixamorig') || name.toLowerCase().includes('bone')) {
+      return;
+    }
+    const id = obj.userData.muscleId || name;
     this.select(id);
-    this.onSelect(id);
+    if (this.onSelect) this.onSelect(id);
   }
 
   _animate() {

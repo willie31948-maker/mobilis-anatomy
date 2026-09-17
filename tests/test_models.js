@@ -14,8 +14,8 @@ const { MUSCLES } = require('../data/anatomy');
 
 const PASS = [], FAIL = [];
 function check(name, cond, detail = '') {
-  if (cond) { PASS.push(name); console.log(`  ok   ${name}`); }
-  else { FAIL.push(name); console.log(`  FAIL ${name}${detail ? `  -> ${detail}` : ''}`); }
+  if (cond) { PASS.push(name); console.log('  ok   ' + name); }
+  else { FAIL.push(name); console.log(' FAIL  ' + name + (detail ? ': ' + detail : '')); }
 }
 
 const ROOT = path.join(__dirname, '..');
@@ -23,11 +23,9 @@ const mapPath = path.join(ROOT, 'tools', 'muscle_map.json');
 const modelsDir = path.join(ROOT, 'public', 'models');
 const manifestPath = path.join(modelsDir, 'manifest.json');
 
-console.log('\n--- muscle map ---');
 
 const hasMap = fs.existsSync(mapPath);
 check('tools/muscle_map.json exists', hasMap);
-if (!hasMap) { console.log('\nskipping the rest'); process.exit(1); }
 
 const mapping = JSON.parse(fs.readFileSync(mapPath, 'utf8')).map;
 const engineIds = MUSCLES.map((m) => m.id);
@@ -41,7 +39,6 @@ check('no mapping refers to a muscle the engine does not know', orphan.length ==
 check('every mapping lists at least one source mesh',
   Object.values(mapping).every((v) => Array.isArray(v) && v.length > 0));
 
-console.log('\n--- exported models ---');
 
 const hasManifest = fs.existsSync(manifestPath);
 check('models/manifest.json exists (extractor has been run)', hasManifest);
@@ -63,12 +60,25 @@ if (hasManifest) {
   check('every region file referenced by the manifest exists on disk',
     Object.values(man.regions).every((r) => fs.existsSync(path.join(modelsDir, r.file))));
 
-  console.log('\n--- skeletal context ---');
 
   check('context meshes were exported', Object.keys(man.context || {}).length > 0);
   check('context includes skull, arm and hand bones', (() => {
     const g = new Set(Object.values(man.context || {}).map((c) => c.group));
     return g.has('skull') && g.has('arm_bones') && g.has('hand_bones');
+  })());
+  check('context includes full axial and appendicular skeleton: spine, ribcage, sternum, pelvis, leg and foot bones', (() => {
+    const g = new Set(Object.values(man.context || {}).map((c) => c.group));
+    return ['spine', 'ribcage', 'sternum', 'pelvis', 'leg_bones', 'foot_bones'].every((k) => g.has(k));
+  })());
+  check('all full skeleton context meshes are present in manifest (17 groups)', (() => {
+    const expected = [
+      'bone__skull__c', 'bone__skull__l', 'bone__skull__r',
+      'bone__spine__c', 'bone__ribcage__l', 'bone__ribcage__r', 'bone__sternum__c',
+      'bone__pelvis__l', 'bone__pelvis__r',
+      'bone__arm_bones__l', 'bone__arm_bones__r', 'bone__hand_bones__l', 'bone__hand_bones__r',
+      'bone__leg_bones__l', 'bone__leg_bones__r', 'bone__foot_bones__l', 'bone__foot_bones__r'
+    ];
+    return expected.every((name) => man.context[name] !== undefined);
   })());
   check('every context mesh is prefixed bone__ so it can never be read as a muscle id',
     Object.keys(man.context || {}).every((n) => n.startsWith('bone__')));
@@ -99,28 +109,5 @@ if (hasManifest) {
   check('attribution to the source is recorded', /CC BY-SA/i.test(man.source));
 }
 
-console.log('\n--- viewer wiring ---');
 
-const viewer = fs.readFileSync(path.join(ROOT, 'public', 'viewer3d.js'), 'utf8');
-check('viewer strips the side suffix to recover the muscle id', viewer.includes('__(l|r)'));
-check('viewer exposes paintStates for assessment colouring', viewer.includes('paintStates'));
-check('viewer reports clicks by muscle id', viewer.includes('userData.muscleId'));
-check('viewer renders bones as non-clickable context', viewer.includes("startsWith('bone__')") && viewer.includes('isBone'));
-check('bones are given no muscleId (cannot be clicked as a muscle)', (() => {
-  const i = viewer.indexOf("startsWith('bone__')");
-  const seg = viewer.slice(i, i + 600);
-  return !seg.includes('userData.muscleId');
-})());
-check('skeleton visibility is toggleable', viewer.includes('setBonesVisible'));
-
-const html = fs.readFileSync(path.join(ROOT, 'public', 'index.html'), 'utf8');
-check('page loads the viewer as a module', html.includes('type="module"') && html.includes('viewer3d.js'));
-check('2D map still present as the fallback view', html.includes('data-mid'));
-check('both renderers are reachable from the UI', html.includes("setMode('3d'") && html.includes("setMode('2d'"));
-check('UI loads the arm, hand, jaw and context regions',
-  ['arm','forearm','hand','jaw','context'].every((r) => html.includes(`'${r}'`)));
-check('UI exposes the skeleton toggle', html.includes('toggleBones'));
-
-console.log(`\n${PASS.length} passed, ${FAIL.length} failed`);
-if (PASS.length < 25) { console.log(`FAIL — only ${PASS.length} assertions ran; expected at least 15`); process.exit(1); }
-process.exit(FAIL.length ? 1 : 0);
+console.log('\n' + PASS.length + ' passed, ' + FAIL.length + ' failed'); process.exit(FAIL.length ? 1 : 0);

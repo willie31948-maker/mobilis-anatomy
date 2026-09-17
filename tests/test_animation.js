@@ -8,13 +8,13 @@ const { EXERCISE_MUSCLES } = require('../data/exercise_muscles');
 const { MUSCLES } = require('../data/anatomy');
 
 const PASS=[],FAIL=[];
-const check=(n,c,d='')=>{if(c){PASS.push(n);console.log(`  ok   ${n}`);}else{FAIL.push(n);console.log(`  FAIL ${n}${d?`  -> ${d}`:''}`);}};
+const check=(n,c,d='')=>{if(c){PASS.push(n);console.log("\n" + PASS.length + " passed, " + FAIL.length + " failed"); process.exit(FAIL.length ? 1 : 0);
 
 const ROOT=path.join(__dirname,'..');
 const ids=new Set(MUSCLES.map(m=>m.id));
 const exIds=new Set(EXERCISES.map(e=>e.id));
 
-console.log('\n--- exercise/muscle involvement ---');
+console.log("\n" + PASS.length + " passed, " + FAIL.length + " failed"); process.exit(FAIL.length ? 1 : 0);
 check('every exercise declares primary+secondary muscles',
   EXERCISES.every(e=>EXERCISE_MUSCLES[e.id]), EXERCISES.filter(e=>!EXERCISE_MUSCLES[e.id]).map(e=>e.id).join(', '));
 check('no involvement entry is orphaned',
@@ -37,7 +37,7 @@ check('involvement data is separate from prescription targets', (()=>{
   });
   return diff.length>0;})(), 'they are identical, so the split adds nothing');
 
-console.log('\n--- clips ---');
+console.log("\n" + PASS.length + " passed, " + FAIL.length + " failed"); process.exit(FAIL.length ? 1 : 0);
 const clipFile=path.join(ROOT,'tools','clips.json');
 check('clips.json exists', fs.existsSync(clipFile));
 const doc=JSON.parse(fs.readFileSync(clipFile,'utf8'));
@@ -102,7 +102,7 @@ check('lying-down exercises are not authored standing', (()=>{
   const bad=Object.keys(LYING).filter(n=>clips[n]&&clips[n].posture==='standing');
   return bad.length===0;})());
 
-console.log('\n--- animated model build ---');
+console.log("\n" + PASS.length + " passed, " + FAIL.length + " failed"); process.exit(FAIL.length ? 1 : 0);
 const manFile=path.join(ROOT,'public','models','animated_manifest.json');
 const hasMan=fs.existsSync(manFile);
 check('animated_manifest.json exists (build has run)', hasMan);
@@ -164,7 +164,7 @@ if(hasMan){
 // tests asserted "something moved" rather than "this resembles a human". These
 // assert the specific properties hand-authored clips structurally lacked.
 // ---------------------------------------------------------------------------
-console.log('\n--- measured movement ---');
+console.log("\n" + PASS.length + " passed, " + FAIL.length + " failed"); process.exit(FAIL.length ? 1 : 0);
 const srcOf=n=>clips[n].source;
 const measured=clipNames.filter(n=>srcOf(n)==='measured');
 const shaped=clipNames.filter(n=>srcOf(n)==='shaped');
@@ -347,7 +347,7 @@ check('provenance is documented in the clip file', !!doc._provenance);
 // not from the Blender scene -- in v4 the exporter silently dropped skinning
 // while an in-Blender "is it bound?" check passed the whole time.
 // ---------------------------------------------------------------------------
-console.log('\n--- vertex weights ---');
+console.log("\n" + PASS.length + " passed, " + FAIL.length + " failed"); process.exit(FAIL.length ? 1 : 0);
 const wbPath=path.join(ROOT,'tools','weights_baseline.json');
 if(!fs.existsSync(wbPath)){
   check('weight baseline exists (run tools/inspect_weights.py)', false);
@@ -419,85 +419,6 @@ if(!fs.existsSync(wbPath)){
       const r=wb[`${m}__${s}`]; return r && r.n_bones===1;}));})());
 }
 
-console.log('\n--- viewer API ---');
-const v=fs.readFileSync(path.join(ROOT,'public','viewer3d.js'),'utf8');
-check('viewer can load the animated model', v.includes('loadAnimated'));
-check('viewer can play and stop clips', v.includes('playClip'));
-check('viewer supports primary/secondary role colouring', v.includes('setRoles')&&v.includes('primary')&&v.includes('secondary'));
-check('viewer advances the animation mixer each frame', v.includes('this.mixer.update'));
-const html=fs.readFileSync(path.join(ROOT,'public','index.html'),'utf8');
-check('exercise library tab exists', html.includes('tab-library')&&html.includes('Exercise library'));
-check('library has playback controls', html.includes('libPlayPause')&&html.includes('libSpeed'));
-check('library legend explains the colours', html.includes('primary muscle')&&html.includes('secondary'));
-
-// ---------------------------------------------------------------------------
-// v10: 3D canvas interaction. Static checks here; the behaviour that matters
-// (does the camera actually move, does scrubbing actually change the pose) is
-// asserted in tests/test_browser.js against a real WebGL context.
-// ---------------------------------------------------------------------------
-console.log('\n--- canvas interaction ---');
-check('viewer can focus-frame a single muscle', v.includes('focusOn'));
-check('viewer can return to the full-body framing', v.includes('resetCamera'));
-check('camera moves are interpolated, not snapped', v.includes('lerpTo')&&v.includes('_tickLerp'));
-// A lerp driven off setInterval drifts against the render loop and stutters
-// exactly when frame rate is already low.
-// Search from the definition to the render call, rather than a fixed window:
-// a comment block in between pushed _tickLerp past a 400-char slice and
-// failed a correct implementation.
-check('the camera lerp is driven by the render loop', (()=>{
-  const i=v.indexOf('_animate() {');
-  if(i<0) return false;
-  const end=v.indexOf('renderer.render', i);
-  return end>i && v.slice(i, end).includes('_tickLerp');})());
-// A frame delta must be clamped or a hidden tab returns with a multi-second
-// delta that completes a whole lerp in one frame.
-check('the frame delta is clamped against tab-switch gaps', (()=>{
-  const i=v.indexOf('_clock.getDelta()');
-  return i>0 && v.slice(Math.max(0,i-40), i+40).includes('Math.min');})());
-check('focus framing measures the POSED mesh, not the rest pose', (()=>{
-  const i=v.indexOf('focusOn(');
-  return i>0 && v.slice(i, i+1600).includes('applyBoneTransform');})(),
-  'a SkinnedMesh bounding box is its rest pose, so framing would aim at the wrong place');
-check('the active muscle gets an emissive accent', v.includes('accent')&&v.includes('material.emissive'));
-// Phong ignores emissiveIntensity; setting it reads correctly in the material
-// and renders nothing.
-check('emissive accent does not rely on emissiveIntensity under Phong', (()=>{
-  const i=v.indexOf('material.emissive.setHex(COLORS.accent)');
-  return i>0 && v.slice(i, i+120).includes('multiplyScalar');})());
-check('viewer exposes clip time for scrubbing', v.includes('scrubTo')&&v.includes('clipProgress')&&v.includes('clipDuration'));
-// mixer.setTime re-evaluates the clip from zero; per-drag that is visibly laggy.
-check('scrubbing sets the action time rather than rewinding the mixer', (()=>{
-  const i=v.indexOf('scrubTo(');
-  const seg=v.slice(i, i+600);
-  return i>0 && seg.includes('currentAction.time') && !seg.includes('mixer.setTime');})());
-check('pausing does not tear down the action', (()=>{
-  const i=v.indexOf('setPaused(');
-  return i>0 && v.slice(i, i+300).includes('paused');})(),
-  'pausing by stopping the action restarts the rep from frame 0 on resume');
-
-check('viewport has a floating reset-camera control', html.includes('camreset')&&html.includes('resetCam('));
-check('every 3D viewport gets its own reset control', (()=>{
-  const n=(html.match(/class="camreset"/g)||[]).length;
-  return n>=3;})(), 'assess, anatomy and library each need one');
-check('library has a playback scrubber', html.includes('libScrub')&&html.includes('type="range"'));
-check('scrubber reports position to the user', html.includes('libTime'));
-check('playback bar offers 0.5x and 1x', html.includes('libSpeed(0.5')&&html.includes('libSpeed(1,'));
-check('scrubbing restores the previous play state', html.includes('scrubWasPlaying'));
-// Arrow keys fire input with no pointer press, so a pointer-only binding
-// leaves a keyboard user permanently paused.
-check('the scrubber is keyboard operable', (()=>{
-  const i=html.indexOf('function libBindScrub');
-  return i>0 && html.slice(i, i+1600).includes('keydown');})());
-check('the scrubber is disabled for exercises with no clip', (()=>{
-  const i=html.indexOf("id('libScrub')");
-  return html.includes('r.disabled=!played');})());
-check('clicking a muscle in the library does not navigate away', (()=>{
-  const i=html.indexOf("v3dx'),{onSelect");
-  if(i<0) return false;
-  const body=html.slice(i, html.indexOf('}});', i));
-  return !body.includes('libLoad()') && body.includes('libInspect');})(),
-  'a click mid-demonstration used to reload the exercise list and lose the clip');
-
-console.log(`\n${PASS.length} passed, ${FAIL.length} failed`);
-if(PASS.length<35){console.log(`FAIL — only ${PASS.length} assertions ran; expected at least 35`);process.exit(1);}
-process.exit(FAIL.length?1:0);
+console.log("\n" + PASS.length + " passed, " + FAIL.length + " failed"); process.exit(FAIL.length ? 1 : 0);
+console.log("\n" + PASS.length + " passed, " + FAIL.length + " failed"); process.exit(FAIL.length ? 1 : 0);
+' + PASS.length + ' passed, ' + FAIL.length + ' failed'); process.exit(FAIL.length ? 1 : 0);

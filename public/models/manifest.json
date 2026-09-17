@@ -161,15 +161,25 @@
     },
     "context": {
       "file": "context.glb",
-      "bytes": 542560,
+      "bytes": 5668836,
       "meshes": [
-        "bone__skull__l",
-        "bone__skull__r",
-        "bone__skull__c",
         "bone__arm_bones__l",
         "bone__arm_bones__r",
+        "bone__foot_bones__l",
+        "bone__foot_bones__r",
         "bone__hand_bones__l",
-        "bone__hand_bones__r"
+        "bone__hand_bones__r",
+        "bone__leg_bones__l",
+        "bone__leg_bones__r",
+        "bone__pelvis__l",
+        "bone__pelvis__r",
+        "bone__ribcage__l",
+        "bone__ribcage__r",
+        "bone__skull__c",
+        "bone__skull__l",
+        "bone__skull__r",
+        "bone__spine__c",
+        "bone__sternum__c"
       ]
     }
   },
@@ -765,40 +775,90 @@
   },
   "missing": [],
   "context": {
-    "bone__skull__l": {
-      "group": "skull",
-      "tris_before": 27398,
-      "tris_after": 4000
-    },
-    "bone__skull__r": {
-      "group": "skull",
-      "tris_before": 27292,
-      "tris_after": 4000
-    },
-    "bone__skull__c": {
-      "group": "skull",
-      "tris_before": 34145,
-      "tris_after": 4000
-    },
     "bone__arm_bones__l": {
       "group": "arm_bones",
-      "tris_before": 32844,
+      "tris_before": 4000,
       "tris_after": 4000
     },
     "bone__arm_bones__r": {
       "group": "arm_bones",
-      "tris_before": 32844,
+      "tris_before": 4000,
       "tris_after": 4000
+    },
+    "bone__foot_bones__l": {
+      "group": "foot_bones",
+      "tris_before": 12639,
+      "tris_after": 12639
+    },
+    "bone__foot_bones__r": {
+      "group": "foot_bones",
+      "tris_before": 12639,
+      "tris_after": 12639
     },
     "bone__hand_bones__l": {
       "group": "hand_bones",
-      "tris_before": 4518,
+      "tris_before": 4000,
       "tris_after": 4000
     },
     "bone__hand_bones__r": {
       "group": "hand_bones",
-      "tris_before": 4518,
+      "tris_before": 4000,
       "tris_after": 4000
+    },
+    "bone__leg_bones__l": {
+      "group": "leg_bones",
+      "tris_before": 5699,
+      "tris_after": 5699
+    },
+    "bone__leg_bones__r": {
+      "group": "leg_bones",
+      "tris_before": 5699,
+      "tris_after": 5699
+    },
+    "bone__pelvis__l": {
+      "group": "pelvis",
+      "tris_before": 716,
+      "tris_after": 716
+    },
+    "bone__pelvis__r": {
+      "group": "pelvis",
+      "tris_before": 716,
+      "tris_after": 716
+    },
+    "bone__ribcage__l": {
+      "group": "ribcage",
+      "tris_before": 86033,
+      "tris_after": 86033
+    },
+    "bone__ribcage__r": {
+      "group": "ribcage",
+      "tris_before": 86033,
+      "tris_after": 86033
+    },
+    "bone__skull__c": {
+      "group": "skull",
+      "tris_before": 3996,
+      "tris_after": 3996
+    },
+    "bone__skull__l": {
+      "group": "skull",
+      "tris_before": 4000,
+      "tris_after": 4000
+    },
+    "bone__skull__r": {
+      "group": "skull",
+      "tris_before": 4000,
+      "tris_after": 4000
+    },
+    "bone__spine__c": {
+      "group": "spine",
+      "tris_before": 61569,
+      "tris_after": 61569
+    },
+    "bone__sternum__c": {
+      "group": "sternum",
+      "tris_before": 5592,
+      "tris_after": 5592
     }
   }
 }

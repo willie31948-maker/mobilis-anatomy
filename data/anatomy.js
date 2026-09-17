@@ -18,6 +18,9 @@ const MUSCLES = [
   // ---- Hip / pelvis -----------------------------------------------------
   {
     id: 'iliopsoas',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Ligaments & Spine Attached)',
+    ligamentAttachment: 'Anterior longitudinal ligament, iliofemoral ligament capsule, lumbar intervertebral discs',
     name: 'Iliopsoas',
     region: 'hip',
     group: 'hip flexors',
@@ -34,6 +37,8 @@ const MUSCLES = [
   },
   {
     id: 'gluteus_maximus',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Gluteus maximus',
     region: 'hip',
     group: 'hip extensors',
@@ -51,6 +56,8 @@ const MUSCLES = [
   },
   {
     id: 'gluteus_medius',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Gluteus medius',
     region: 'hip',
     group: 'hip abductors',
@@ -68,6 +75,8 @@ const MUSCLES = [
   },
   {
     id: 'tfl',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Tensor fasciae latae',
     region: 'hip',
     group: 'hip abductors',
@@ -84,6 +93,9 @@ const MUSCLES = [
   },
   {
     id: 'adductor_group',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Pelvis Attached)',
+    ligamentAttachment: 'Pubic symphyseal ligaments, obturator membrane',
     name: 'Hip adductors (longus, brevis, magnus, gracilis)',
     region: 'hip',
     group: 'hip adductors',
@@ -98,6 +110,9 @@ const MUSCLES = [
   },
   {
     id: 'piriformis',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Ligament Attached)',
+    ligamentAttachment: 'Sacrotuberous ligament, anterior sacroiliac ligament, hip joint capsule',
     name: 'Piriformis',
     region: 'hip',
     group: 'deep hip rotators',
@@ -114,6 +129,8 @@ const MUSCLES = [
   },
   {
     id: 'hamstrings',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Hamstrings (biceps femoris, semitendinosus, semimembranosus)',
     region: 'thigh',
     group: 'knee flexors',
@@ -131,6 +148,8 @@ const MUSCLES = [
   },
   {
     id: 'rectus_femoris',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Rectus femoris',
     region: 'thigh',
     group: 'knee extensors',
@@ -145,6 +164,8 @@ const MUSCLES = [
   },
   {
     id: 'quadriceps',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Quadriceps (vastus lateralis, medialis, intermedius)',
     region: 'thigh',
     group: 'knee extensors',
@@ -163,6 +184,9 @@ const MUSCLES = [
   // ---- Trunk ------------------------------------------------------------
   {
     id: 'erector_spinae',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Spine & Fascia Attached)',
+    ligamentAttachment: 'Thoracolumbar fascia, sacrotuberous ligament, iliolumbar ligament',
     name: 'Erector spinae',
     region: 'spine',
     group: 'spinal extensors',
@@ -177,6 +201,9 @@ const MUSCLES = [
   },
   {
     id: 'multifidus',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Ligaments & Spine Attached)',
+    ligamentAttachment: 'Dorsal sacroiliac ligament, mamillary processes, interspinous and supraspinous ligaments',
     name: 'Multifidus',
     region: 'spine',
     group: 'deep spinal stabilisers',
@@ -193,6 +220,9 @@ const MUSCLES = [
   },
   {
     id: 'transversus_abdominis',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Ligaments & Core Attached)',
+    ligamentAttachment: 'Inguinal ligament, thoracolumbar fascia, iliac crest',
     name: 'Transversus abdominis',
     region: 'core',
     group: 'deep core',
@@ -209,6 +239,9 @@ const MUSCLES = [
   },
   {
     id: 'quadratus_lumborum',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Ligament Attached)',
+    ligamentAttachment: 'Iliolumbar ligament, lumbocostal ligament',
     name: 'Quadratus lumborum',
     region: 'spine',
     group: 'lateral trunk',
@@ -223,6 +256,8 @@ const MUSCLES = [
   },
   {
     id: 'rectus_abdominis',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Rectus abdominis',
     region: 'core',
     group: 'trunk flexors',
@@ -239,6 +274,8 @@ const MUSCLES = [
   // ---- Shoulder girdle --------------------------------------------------
   {
     id: 'pectoralis_major',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Pectoralis major',
     region: 'shoulder',
     group: 'shoulder adductors',
@@ -253,6 +290,9 @@ const MUSCLES = [
   },
   {
     id: 'pectoralis_minor',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Under Pec Major)',
+    ligamentAttachment: 'Coracoclavicular ligaments, costocoracoid membrane',
     name: 'Pectoralis minor',
     region: 'shoulder',
     group: 'scapular protractors',
@@ -269,6 +309,9 @@ const MUSCLES = [
   },
   {
     id: 'rhomboids',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Under Trapezius)',
+    ligamentAttachment: 'Ligamentum nuchae, supraspinous ligaments',
     name: 'Rhomboid major and minor',
     region: 'shoulder',
     group: 'scapular retractors',
@@ -283,6 +326,8 @@ const MUSCLES = [
   },
   {
     id: 'lower_trapezius',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Lower trapezius',
     region: 'shoulder',
     group: 'scapular depressors',
@@ -299,6 +344,8 @@ const MUSCLES = [
   },
   {
     id: 'upper_trapezius',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Upper trapezius',
     region: 'neck',
     group: 'scapular elevators',
@@ -313,6 +360,9 @@ const MUSCLES = [
   },
   {
     id: 'serratus_anterior',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Ribcage & Scapula)',
+    ligamentAttachment: 'Costoxiphoid and intercostal deep fascial slips',
     name: 'Serratus anterior',
     region: 'shoulder',
     group: 'scapular protractors',
@@ -327,6 +377,9 @@ const MUSCLES = [
   },
   {
     id: 'rotator_cuff',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Capsule & Ligaments Attached)',
+    ligamentAttachment: 'Glenohumeral joint capsule, coracohumeral ligament, transverse humeral ligament',
     name: 'Rotator cuff (supraspinatus, infraspinatus, teres minor, subscapularis)',
     region: 'shoulder',
     group: 'glenohumeral stabilisers',
@@ -343,6 +396,9 @@ const MUSCLES = [
   },
   {
     id: 'levator_scapulae',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Under Trapezius)',
+    ligamentAttachment: 'Deep cervical fascia, transverse process ligaments',
     name: 'Levator scapulae',
     region: 'neck',
     group: 'scapular elevators',
@@ -357,6 +413,9 @@ const MUSCLES = [
   },
   {
     id: 'deep_neck_flexors',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Prevertebral)',
+    ligamentAttachment: 'Anterior longitudinal ligament, prevertebral fascia',
     name: 'Deep neck flexors (longus colli, longus capitis)',
     region: 'neck',
     group: 'cervical stabilisers',
@@ -371,6 +430,9 @@ const MUSCLES = [
   },
   {
     id: 'suboccipitals',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Cranial / Ligament Attached)',
+    ligamentAttachment: 'Posterior atlanto-occipital membrane, nuchal ligament, tectorial membrane',
     name: 'Suboccipital group',
     region: 'neck',
     group: 'upper cervical extensors',
@@ -385,6 +447,8 @@ const MUSCLES = [
   },
   {
     id: 'latissimus_dorsi',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Latissimus dorsi',
     region: 'back',
     group: 'shoulder extensors',
@@ -401,6 +465,8 @@ const MUSCLES = [
   // ---- Arm --------------------------------------------------------------
   {
     id: 'deltoid',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Deltoid (anterior, lateral, posterior)',
     region: 'shoulder',
     group: 'shoulder abductors',
@@ -418,6 +484,8 @@ const MUSCLES = [
   },
   {
     id: 'biceps_brachii',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Biceps brachii',
     region: 'arm',
     group: 'elbow flexors',
@@ -434,6 +502,8 @@ const MUSCLES = [
   },
   {
     id: 'triceps_brachii',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Triceps brachii',
     region: 'arm',
     group: 'elbow extensors',
@@ -448,6 +518,9 @@ const MUSCLES = [
   },
   {
     id: 'brachialis',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Under Biceps)',
+    ligamentAttachment: 'Anterior fibrous capsule of the elbow joint, ulnar collateral ligament',
     name: 'Brachialis',
     region: 'arm',
     group: 'elbow flexors',
@@ -464,6 +537,8 @@ const MUSCLES = [
   },
   {
     id: 'brachioradialis',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Brachioradialis',
     region: 'forearm',
     group: 'elbow flexors',
@@ -478,6 +553,9 @@ const MUSCLES = [
   },
   {
     id: 'wrist_extensors',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Forearm (Ligaments & Retinaculum)',
+    ligamentAttachment: 'Extensor retinaculum, interosseous membrane',
     name: 'Wrist extensors (extensor carpi radialis longus/brevis, ulnaris)',
     region: 'forearm',
     group: 'wrist extensors',
@@ -495,6 +573,9 @@ const MUSCLES = [
   },
   {
     id: 'wrist_flexors',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Forearm (Ligaments & Retinaculum)',
+    ligamentAttachment: 'Flexor retinaculum, transverse carpal ligament',
     name: 'Wrist flexors (flexor carpi radialis, flexor carpi ulnaris)',
     region: 'forearm',
     group: 'wrist flexors',
@@ -512,6 +593,9 @@ const MUSCLES = [
   },
   {
     id: 'finger_flexors',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Forearm (Interosseous Membrane)',
+    ligamentAttachment: 'Interosseous membrane, fibrous digital flexor sheaths, volar plates',
     name: 'Finger flexors (flexor digitorum superficialis and profundus, flexor pollicis longus)',
     region: 'forearm',
     group: 'finger flexors',
@@ -529,6 +613,9 @@ const MUSCLES = [
   },
   {
     id: 'finger_extensors',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Forearm (Retinaculum & Bones)',
+    ligamentAttachment: 'Extensor retinaculum, sagittal bands, dorsal digital expansions',
     name: 'Finger extensors (extensor digitorum, extensor pollicis, abductor pollicis longus)',
     region: 'forearm',
     group: 'finger extensors',
@@ -546,6 +633,9 @@ const MUSCLES = [
   },
   {
     id: 'hand_intrinsics',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Hand (Deep Palmar Ligaments)',
+    ligamentAttachment: 'Deep transverse metacarpal ligaments, palmar aponeurosis',
     name: 'Hand intrinsics (thenar, hypothenar, interossei, lumbricals)',
     region: 'hand',
     group: 'intrinsic hand muscles',
@@ -564,6 +654,9 @@ const MUSCLES = [
   },
   {
     id: 'pronators',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Forearm Interosseous)',
+    ligamentAttachment: 'Antebrachial interosseous membrane, oblique cord',
     name: 'Pronators (pronator teres, pronator quadratus)',
     region: 'forearm',
     group: 'forearm pronators',
@@ -580,6 +673,9 @@ const MUSCLES = [
   },
   {
     id: 'supinator',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Elbow Ligaments)',
+    ligamentAttachment: 'Annular ligament, radial collateral ligament of elbow',
     name: 'Supinator',
     region: 'forearm',
     group: 'forearm supinators',
@@ -596,6 +692,8 @@ const MUSCLES = [
   // ---- Head / jaw / neck extras -----------------------------------------
   {
     id: 'sternocleidomastoid',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Sternocleidomastoid',
     region: 'neck',
     group: 'cervical flexors',
@@ -612,6 +710,9 @@ const MUSCLES = [
   },
   {
     id: 'scalenes',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Lateral Cervical)',
+    ligamentAttachment: 'Prevertebral fascia, suprapleural membrane (Sibson fascia)',
     name: 'Scalenes (anterior, middle, posterior)',
     region: 'neck',
     group: 'lateral neck',
@@ -629,6 +730,9 @@ const MUSCLES = [
   },
   {
     id: 'splenius',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Under Trapezius)',
+    ligamentAttachment: 'Ligamentum nuchae, supraspinous ligaments',
     name: 'Splenius capitis and cervicis',
     region: 'neck',
     group: 'cervical extensors',
@@ -643,6 +747,8 @@ const MUSCLES = [
   },
   {
     id: 'masseter',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Masseter',
     region: 'jaw',
     group: 'muscles of mastication',
@@ -660,6 +766,8 @@ const MUSCLES = [
   },
   {
     id: 'temporalis',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Temporalis',
     region: 'jaw',
     group: 'muscles of mastication',
@@ -674,6 +782,9 @@ const MUSCLES = [
   },
   {
     id: 'pterygoids',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (TMJ Capsule & Ligament)',
+    ligamentAttachment: 'Sphenomandibular ligament, stylomandibular ligament, temporomandibular capsule',
     name: 'Pterygoids (medial and lateral)',
     region: 'jaw',
     group: 'muscles of mastication',
@@ -691,6 +802,9 @@ const MUSCLES = [
   },
   {
     id: 'digastric',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Stabilizer (Hyoid & Ligament)',
+    ligamentAttachment: 'Stylohyoid ligament, fibrous sling of intermediate tendon',
     name: 'Digastric and suprahyoid group',
     region: 'jaw',
     group: 'jaw openers',
@@ -707,6 +821,8 @@ const MUSCLES = [
   // ---- Lower leg --------------------------------------------------------
   {
     id: 'gastrocnemius',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Gastrocnemius',
     region: 'lower leg',
     group: 'plantarflexors',
@@ -721,6 +837,9 @@ const MUSCLES = [
   },
   {
     id: 'soleus',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Calf (Under Gastrocnemius)',
+    ligamentAttachment: 'Tendinous arch of soleus, crural fascia, deep intermuscular septum',
     name: 'Soleus',
     region: 'lower leg',
     group: 'plantarflexors',
@@ -735,6 +854,8 @@ const MUSCLES = [
   },
   {
     id: 'tibialis_anterior',
+    layer: 1,
+    layerName: 'Layer 1 · Superficial (Large Mover)',
     name: 'Tibialis anterior',
     region: 'lower leg',
     group: 'dorsiflexors',
@@ -749,6 +870,9 @@ const MUSCLES = [
   },
   {
     id: 'tibialis_posterior',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Calf (Ligament & Membrane Attached)',
+    ligamentAttachment: 'Crural interosseous membrane, plantar calcaneonavicular (spring) ligament, long plantar ligament',
     name: 'Tibialis posterior',
     region: 'lower leg',
     group: 'invertors',
@@ -766,6 +890,9 @@ const MUSCLES = [
   },
   {
     id: 'peroneals',
+    layer: 2,
+    layerName: 'Layer 2 · Deep Lower Leg (Retinacula Attached)',
+    ligamentAttachment: 'Superior and inferior fibular (peroneal) retinacula, calcaneofibular ligament',
     name: 'Peroneals (fibularis longus and brevis)',
     region: 'lower leg',
     group: 'evertors',
