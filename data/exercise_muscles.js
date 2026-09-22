@@ -92,6 +92,8 @@ const EXERCISE_MUSCLES = {
   single_leg_balance: { primary: ['peroneals', 'gluteus_medius'], secondary: ['soleus', 'tibialis_posterior', 'tibialis_anterior'], clip: 'single_leg_stance' },
   tib_raise: { primary: ['tibialis_anterior'], secondary: ['peroneals'], clip: 'ankle_dorsiflexion' },
   leg_press: { primary: ['quadriceps', 'gluteus_maximus'], secondary: ['hamstrings', 'adductor_group', 'gastrocnemius', 'soleus'], clip: 'leg_press' },
+  push_up: { primary: ['pectoralis_major', 'triceps_brachii', 'deltoid'], secondary: ['serratus_anterior', 'transversus_abdominis', 'rectus_abdominis'], clip: 'push_up' },
+  romanian_deadlift: { primary: ['hamstrings', 'gluteus_maximus'], secondary: ['erector_spinae', 'multifidus', 'latissimus_dorsi'], clip: 'hinge' },
 };
 
 module.exports = { EXERCISE_MUSCLES };

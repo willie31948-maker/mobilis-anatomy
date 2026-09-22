@@ -1,10 +1,36 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, OrbitControls, Environment, useAnimations, ContactShadows } from '@react-three/drei';
+import { useGLTF, OrbitControls, Environment, useAnimations, ContactShadows, Center } from '@react-three/drei';
 import * as THREE from 'three';
-import { Play, Pause, FastForward, Rewind, Info, Layers, Activity } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  FastForward,
+  Rewind,
+  Info,
+  Layers,
+  Activity,
+  Search,
+  Camera,
+  ClipboardList,
+  Plus,
+  Trash2,
+  AlertCircle,
+  FileText,
+  X,
+  CheckCircle,
+  Columns,
+  Sparkles,
+  Eye,
+  Dumbbell,
+} from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { AnatomyMetadata, anatomyRegistry, normalizeAnatomyKey, getAnatomyData } from './data/anatomyData';
+import { AssessmentState, PainSite } from './types/rehab';
+import { AssessmentEngineView } from './components/AssessmentEngineView';
+import { BiomechanicalRigOverlay } from './components/BiomechanicalRigOverlay';
+import { Biomechanical4ViewLab } from './components/Biomechanical4ViewLab';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -13,109 +39,261 @@ function cn(...inputs: ClassValue[]) {
 // ============================================================================
 // DATA & METADATA
 // ============================================================================
-type AnatomyMetadata = {
-  id: string;
-  name: string;
-  latin: string;
-  layer: number; // 0=Bone, 1=Deep, 2=Intermediate, 3=Superficial
-  origin: string;
-  insertion: string;
-  action: string;
-  innervation: string;
-};
+export function classifyStructure(rawName: string): 'nervous' | 'articular' | 'muscular' | 'skeletal' {
+  const name = rawName.toLowerCase();
 
-const anatomyData: Record<string, AnatomyMetadata> = {
-  // Skeleton / Layer 0
-  femur: { id: 'femur', name: 'Femur', latin: 'Os femoris', layer: 0, origin: '-', insertion: '-', action: 'Structural support', innervation: '-' },
-  pelvis: { id: 'pelvis', name: 'Pelvis', latin: 'Pelvis', layer: 0, origin: '-', insertion: '-', action: 'Core stability', innervation: '-' },
-  tibia: { id: 'tibia', name: 'Tibia', latin: 'Os tibiae', layer: 0, origin: '-', insertion: '-', action: 'Structural support', innervation: '-' },
-  fibula: { id: 'fibula', name: 'Fibula', latin: 'Os fibulae', layer: 0, origin: '-', insertion: '-', action: 'Structural support', innervation: '-' },
-  spine: { id: 'spine', name: 'Spine', latin: 'Columna vertebralis', layer: 0, origin: '-', insertion: '-', action: 'Core axis', innervation: '-' },
-  skull: { id: 'skull', name: 'Skull', latin: 'Cranium', layer: 0, origin: '-', insertion: '-', action: 'Protection', innervation: '-' },
-  ribcage: { id: 'ribcage', name: 'Ribcage', latin: 'Thorax', layer: 0, origin: '-', insertion: '-', action: 'Protection', innervation: '-' },
-  
-  // Muscles / Layers 1-3
-  gluteus_maximus: { id: 'gluteus_maximus', name: 'Gluteus Maximus', latin: 'M. gluteus maximus', layer: 3, origin: 'Ilium, sacrum, coccyx', insertion: 'Gluteal tuberosity, IT band', action: 'Hip extension, external rotation', innervation: 'Inferior gluteal nerve' },
-  gluteus_medius: { id: 'gluteus_medius', name: 'Gluteus Medius', latin: 'M. gluteus medius', layer: 2, origin: 'Ilium', insertion: 'Greater trochanter', action: 'Hip abduction, stabilization', innervation: 'Superior gluteal nerve' },
-  rectus_femoris: { id: 'rectus_femoris', name: 'Rectus Femoris', latin: 'M. rectus femoris', layer: 3, origin: 'AIIS', insertion: 'Tibial tuberosity (via patellar tendon)', action: 'Hip flexion, knee extension', innervation: 'Femoral nerve' },
-  vastus_lateralis: { id: 'vastus_lateralis', name: 'Vastus Lateralis', latin: 'M. vastus lateralis', layer: 3, origin: 'Greater trochanter, linea aspera', insertion: 'Tibial tuberosity', action: 'Knee extension', innervation: 'Femoral nerve' },
-  vastus_medialis: { id: 'vastus_medialis', name: 'Vastus Medialis', latin: 'M. vastus medialis', layer: 3, origin: 'Linea aspera', insertion: 'Tibial tuberosity', action: 'Knee extension', innervation: 'Femoral nerve' },
-  biceps_femoris: { id: 'biceps_femoris', name: 'Biceps Femoris', latin: 'M. biceps femoris', layer: 3, origin: 'Ischial tuberosity (long head), linea aspera (short head)', insertion: 'Fibular head', action: 'Hip extension, knee flexion', innervation: 'Sciatic nerve' },
-  semitendinosus: { id: 'semitendinosus', name: 'Semitendinosus', latin: 'M. semitendinosus', layer: 3, origin: 'Ischial tuberosity', insertion: 'Medial surface of tibia (pes anserinus)', action: 'Hip extension, knee flexion', innervation: 'Sciatic nerve' },
-  gastrocnemius: { id: 'gastrocnemius', name: 'Gastrocnemius', latin: 'M. gastrocnemius', layer: 3, origin: 'Femoral condyles', insertion: 'Calcaneus (via Achilles tendon)', action: 'Plantar flexion, knee flexion', innervation: 'Tibial nerve' },
-  soleus: { id: 'soleus', name: 'Soleus', latin: 'M. soleus', layer: 2, origin: 'Tibia and fibula', insertion: 'Calcaneus', action: 'Plantar flexion', innervation: 'Tibial nerve' },
-  tibialis_anterior: { id: 'tibialis_anterior', name: 'Tibialis Anterior', latin: 'M. tibialis anterior', layer: 3, origin: 'Lateral surface of tibia', insertion: 'Medial cuneiform, base of 1st metatarsal', action: 'Dorsiflexion, inversion', innervation: 'Deep fibular nerve' },
-  psoas_major: { id: 'psoas_major', name: 'Psoas Major', latin: 'M. psoas major', layer: 1, origin: 'T12-L5 vertebrae', insertion: 'Lesser trochanter', action: 'Hip flexion', innervation: 'Lumbar plexus' },
-  iliacus: { id: 'iliacus', name: 'Iliacus', latin: 'M. iliacus', layer: 1, origin: 'Iliac fossa', insertion: 'Lesser trochanter', action: 'Hip flexion', innervation: 'Femoral nerve' },
-  transversus_abdominis: { id: 'transversus_abdominis', name: 'Transversus Abdominis', latin: 'M. transversus abdominis', layer: 1, origin: 'Inguinal ligament, iliac crest, costal cartilages', insertion: 'Linea alba, pubic crest', action: 'Compresses abdomen, core stability', innervation: 'Lower intercostal nerves' },
-  rectus_abdominis: { id: 'rectus_abdominis', name: 'Rectus Abdominis', latin: 'M. rectus abdominis', layer: 3, origin: 'Pubic crest, pubic symphysis', insertion: 'Xiphoid process, costal cartilages 5-7', action: 'Trunk flexion', innervation: 'Thoraco-abdominal nerves' },
-  obliquus_externus: { id: 'obliquus_externus', name: 'External Oblique', latin: 'M. obliquus externus abdominis', layer: 3, origin: 'Lower 8 ribs', insertion: 'Linea alba, pubic tubercle, iliac crest', action: 'Trunk flexion, rotation', innervation: 'Lower intercostal nerves' },
-};
+  // 1. Muscular System & Scapular Stabilizers (Must evaluate before any bone checks)
+  const isMuscular =
+    /infra|supra|spinatus|subscap|teres|deltoid|trapez|rhombo|levator|pectoral|latiss|serratus/i.test(name) ||
+    /muscle|musculus|tendon|tendo|aponeuro|diaphragm|fascia|belly|insertio|origo|attachment/i.test(name) ||
+    /femor|brachi|glute|abdomin|obliqu|erector|psoas|iliacus|quad|hamstring|gastro|soleus|tibial|perone/i.test(name) ||
+    /bicep|tricep|pronat|supinat|flexor|extensor|piriform|obturat|gemell|gracil|sartori|adductor/i.test(name);
 
-function getMuscleId(meshName: string): string {
-  // Strip sides and bone prefixes
-  return meshName.replace(/^(bone__)?/, '').replace(/__(l|r|c)(_\d+)?$/, '');
+  if (isMuscular) {
+    return 'muscular';
+  }
+
+  // 2. Nervous System
+  if (/nerve|nervus|nervi|plexus|cord|brain|ganglion/i.test(name)) {
+    return 'nervous';
+  }
+
+  // 3. Articular System (Joints, Ligaments, Cartilage)
+  if (/ligament|ligamentum|articular|capsule|meniscus|labrum|cartilage|cartilago|synovial|discus/i.test(name)) {
+    return 'articular';
+  }
+
+  // 4. Pure Skeletal Bones
+  const isBone = /os_|bone|verteb|costa|rib|sternum|femur|tibia|fibula|patell|pelvi|ilium|ischium|pubis|sacrum|coccyx|scapul|clavic|humer|radius|ulna|cran|skull|mandib|maxil|carpi|tarsi|phalang|calcane|talus|hyoid|sphenoid|ethmoid|vomer|zygomat/i.test(name);
+  if (isBone) {
+    return 'skeletal';
+  }
+
+  // Fallback: Default unclassified soft tissue to muscular
+  return 'muscular';
 }
 
-export function isBoneMesh(name: string) {
-  if (!name) return false;
-  if (name.startsWith('bone__')) return true;
-  const lower = name.toLowerCase();
-  const skeletalKeywords = [
-    'vertebra', 'sacrum', 'coccyx', 'spine',
-    'rib', 'sternum', 'xiphoid',
-    'hip bone', 'ilium', 'ischium', 'pubis', 'pelvis',
-    'femur', 'patella', 'tibia', 'fibula',
-    'calcaneus', 'cuboid', 'cuneiform', 'metatarsal', 'navicular', 'talus', 'sesamoid',
-    'humerus', 'radius', 'ulna', 'clavicle', 'scapula',
-    'scaphoid', 'lunate', 'triquetrum', 'pisiform', 'trapezium', 'trapezoid', 'capitate', 'hamate', 'metacarpal',
-    'parietal', 'frontal', 'occipital', 'temporal', 'mandible', 'maxilla', 'zygomatic', 'skull', 'hyoid',
-    'skeletal', 'joints.g'
-  ];
-  if (skeletalKeywords.some(k => lower.includes(k))) return true;
-  if (lower.includes('phalanx') && (lower.includes('foot') || lower.includes('hand'))) return true;
-  return false;
-}
-
-export function isRogueMesh(name: string) {
+export function isRogueMeshBiomechanics(name: string) {
   const lower = name.toLowerCase();
   return ['disc', 'nucleus', 'ligament', 'costal', 'cartilage'].some(k => lower.includes(k));
 }
 
+function getSystem(name: string) {
+  // Check explicit database metadata first
+  const data = getAnatomyData(name);
+  if (data && data.system === 'Skeletal') return 'skeleton';
+  if (data && data.system === 'Muscular') return 'muscles';
+  if (data && data.system === 'Articular') return 'joints';
+  if (data && data.system === 'Nervous') return 'nerves';
+
+  // Fallbacks based on regex classification if not strictly found in metadata
+  const classification = classifyStructure(name);
+  if (classification === 'nervous') return 'nerves';
+  if (classification === 'articular') return 'joints';
+  if (classification === 'muscular') return 'muscles';
+  
+  return 'skeleton'; 
+}
+
 function getLayer(meshName: string): number {
   if (meshName.toLowerCase().includes('mixamorig')) return 0;
-  if (isBoneMesh(meshName)) return 0;
-  
-  const id = getMuscleId(meshName);
-  return anatomyData[id]?.layer ?? 2; // Default to layer 2 if unknown
+  if (getSystem(meshName) === 'skeleton') return 0;
+  const data = getAnatomyData(meshName);
+  return data?.layer ?? 2;
 }
 
 // ============================================================================
-// COMPONENT: ANATOMY MODEL
+// COMPONENT: ATLAS EXPLORER MODEL (Mode A)
 // ============================================================================
-function AnatomicalModel({
-  mode,
-  activeLayer,
-  progress,
-  playing,
-  onSelect,
-  selectedId
-}: {
-  mode: 'explorer' | 'biomechanics',
+function AtlasModel({ activeLayer, systems, selectedId, onSelect, onFocusMesh, activePainSites, onHover, customHighlights }: {
   activeLayer: number,
-  progress: number,
-  playing: boolean,
+  systems: Record<string, boolean>,
+  selectedId: string | null,
   onSelect: (id: string | null) => void,
-  selectedId: string | null
+  onFocusMesh: (pos: THREE.Vector3 | null) => void,
+  activePainSites: PainSite[],
+  onHover: (meshName: string | null) => void,
+  customHighlights?: { keywords: string[]; color: string; label: string }[]
 }) {
-  const { scene, animations } = useGLTF('/squat_sync.glb');
+  const { scene } = useGLTF('/models/full_atlas_v5.glb');
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  useEffect(() => {
+    scene.traverse((child: any) => {
+      if (child.isMesh) {
+        if (child.geometry && !child.geometry.hasAttribute('normal')) {
+          child.geometry.computeVertexNormals();
+        }
+        if (!child.userData.originalMaterial) {
+          child.material = child.material.clone();
+          child.userData.originalMaterial = child.material.clone();
+          
+          const mat = child.material as THREE.MeshStandardMaterial;
+          const sys = getSystem(child.name);
+          
+          mat.vertexColors = child.geometry.hasAttribute('color');
+          if (mat.vertexColors) {
+            mat.color.setHex(0xffffff);
+          } else {
+            // Fallback colors if the Blender model didn't export vertex colors properly
+            if (sys === 'nerves') mat.color.setHex(0xeab308);
+            else if (sys === 'joints') mat.color.setHex(0x5eead4);
+            else if (sys === 'muscles') mat.color.setHex(0xb85834);
+            else if (sys === 'skeleton') mat.color.setHex(0xe2ded4);
+          }
+          
+          if (sys === 'nerves') {
+            mat.roughness = 0.3;
+            mat.metalness = 0.1;
+          } else if (sys === 'joints') {
+            mat.roughness = 0.6;
+            mat.metalness = 0.05;
+          } else if (sys === 'muscles') {
+            mat.roughness = 0.45;
+            mat.metalness = 0.1;
+          } else if (sys === 'skeleton') {
+            mat.roughness = 0.35;
+            mat.metalness = 0.05;
+          }
+          mat.needsUpdate = true;
+        }
+        child.frustumCulled = false;
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+  }, [scene]);
+
+  useFrame(() => {
+    scene.traverse((child: any) => {
+      if (child.isMesh) {
+        const id = normalizeAnatomyKey(child.name);
+        const sys = getSystem(child.name);
+        const layer = getLayer(child.name);
+
+        let isVisible = systems[sys] ?? false;
+        if (sys === 'muscles') {
+          isVisible = systems.muscles && layer <= activeLayer;
+        }
+
+        child.visible = isVisible;
+        child.raycast = isVisible ? THREE.Mesh.prototype.raycast : () => null;
+
+        const mat = child.material as THREE.MeshStandardMaterial;
+        mat.transparent = false;
+        mat.opacity = 1;
+        mat.emissive.setHex(0x000000);
+        mat.emissiveIntensity = 0;
+
+        if (sys === 'nerves') {
+          mat.emissive.setHex(0x713f12);
+          mat.emissiveIntensity = 0.5;
+        } else if (sys === 'joints') {
+          mat.transparent = true;
+          mat.opacity = 0.85;
+        }
+
+        // Apply depth offsets to prevent Z-fighting
+        if (sys !== 'skeleton' && sys !== 'joints') {
+          mat.polygonOffset = true;
+          mat.polygonOffsetFactor = -1.0;
+          mat.polygonOffsetUnits = -4.0;
+        } else {
+          mat.depthTest = true;
+          mat.depthWrite = true;
+          mat.polygonOffset = false;
+        }
+
+        // Highlight based on custom Assessment Engine rules
+        if (customHighlights && customHighlights.length > 0) {
+          const meshLower = child.name.toLowerCase().replace(/[-_.]/g, ' ');
+          for (const h of customHighlights) {
+            const isMatch = h.keywords.some((kw) => {
+              const kClean = kw.toLowerCase().replace(/[-_.]/g, ' ');
+              return meshLower.includes(kClean) || id.includes(kClean);
+            });
+            if (isMatch) {
+              mat.emissive.set(h.color);
+              mat.emissiveIntensity = 0.85;
+              break;
+            }
+          }
+        }
+
+        if (id === hoveredId) {
+          mat.emissive.setHex(0xcceeff);
+          mat.emissiveIntensity = 0.25;
+        }
+        
+        const isPainSite = activePainSites.some(p => p.id === id);
+        if (isPainSite) {
+          const painSite = activePainSites.find(p => p.id === id)!;
+          // Scale emissive intensity with severity
+          mat.emissive.setHex(0xff2244);
+          mat.emissiveIntensity = 0.3 + (painSite.severity / 10) * 0.7;
+        }
+        
+        if (id === selectedId) {
+          if (isPainSite) {
+            mat.emissive.setHex(0xff5577); // Lighter red if selected
+            mat.emissiveIntensity = 1.0;
+          } else {
+            mat.emissive.setHex(0x00ffff);
+            mat.emissiveIntensity = 0.6;
+          }
+        }
+      }
+    });
+  });
+
+  return (
+    <Center>
+      <primitive 
+        object={scene} 
+        onPointerDown={(e: any) => {
+          e.stopPropagation();
+          console.log('Clicked Mesh:', e.object.name, 'Parent:', e.object.parent?.name);
+        }}
+        onPointerOver={(e: any) => {
+          e.stopPropagation();
+          setHoveredId(normalizeAnatomyKey(e.object.name));
+          onHover(e.object.name);
+          document.body.style.cursor = 'pointer';
+        }}
+        onPointerOut={() => {
+          setHoveredId(null);
+          onHover(null);
+          document.body.style.cursor = 'auto';
+        }}
+        onClick={(e: any) => {
+          e.stopPropagation();
+          onSelect(normalizeAnatomyKey(e.object.name));
+          
+          const vec = new THREE.Vector3();
+          e.object.getWorldPosition(vec);
+          onFocusMesh(vec);
+        }}
+        onPointerMissed={() => {
+          onSelect(null);
+          onFocusMesh(null);
+        }}
+      />
+    </Center>
+  );
+}
+
+useGLTF.preload('/models/full_atlas_v5.glb');
+
+// ============================================================================
+// COMPONENT: BIOMECHANICS MODEL (Mode B)
+// ============================================================================
+function BiomechanicsModel({ progress, playing, progressRef, progressTextRef, exercise }: { progress: number, playing: boolean, progressRef: React.RefObject<HTMLInputElement>, progressTextRef: React.RefObject<HTMLSpanElement>, exercise: string }) {
+  const { scene, animations } = useGLTF('/models/squat_clean.glb');
   const { actions, mixer } = useAnimations(animations, scene);
   
-  // Hide Rogue Meshes
-  useMemo(() => {
+  useEffect(() => {
     scene.traverse((child: any) => {
-      // 1. Rogue Mesh Filtering
-      if (child.isMesh && isRogueMesh(child.name)) {
+      if (child.isMesh && isRogueMeshBiomechanics(child.name)) {
         child.visible = false;
         child.position.set(0, 0, 0);
         child.scale.set(0.0001, 0.0001, 0.0001);
@@ -125,36 +303,55 @@ function AnatomicalModel({
     });
   }, [scene]);
 
-  // Clone materials on mount to avoid mutating shared references
   useEffect(() => {
     scene.traverse((child: any) => {
       if (child.isMesh) {
-        // Fix up normal computation if needed
         if (child.geometry && !child.geometry.hasAttribute('normal')) {
           child.geometry.computeVertexNormals();
         }
         
-        // Ensure unique material
         if (!child.userData.originalMaterial) {
           child.material = child.material.clone();
           child.userData.originalMaterial = child.material.clone();
           
-          // Visual Clipping & Z-Fighting Mitigation (Depth Offsets)
+          const mat = child.material as THREE.MeshStandardMaterial;
+          const sys = getSystem(child.name);
+          
+          mat.vertexColors = child.geometry.hasAttribute('color');
+          if (mat.vertexColors) {
+            mat.color.setHex(0xffffff);
+          } else {
+            if (sys === 'nerves') mat.color.setHex(0xeab308);
+            else if (sys === 'joints') mat.color.setHex(0x5eead4);
+            else if (sys === 'muscles') mat.color.setHex(0xb85834);
+            else if (sys === 'skeleton') mat.color.setHex(0xe2ded4);
+          }
+
+          if (sys === 'nerves') {
+            mat.roughness = 0.3;
+            mat.metalness = 0.1;
+          } else if (sys === 'joints') {
+            mat.roughness = 0.6;
+            mat.metalness = 0.05;
+          } else if (sys === 'muscles') {
+            mat.roughness = 0.45;
+            mat.metalness = 0.1;
+          } else if (sys === 'skeleton') {
+            mat.roughness = 0.35;
+          }
+          
           const layer = getLayer(child.name);
           if (layer > 0) {
-            // Muscles: Pull surface slightly forward in depth buffer
             child.material.polygonOffset = true;
             child.material.polygonOffsetFactor = -1.0;
             child.material.polygonOffsetUnits = -4.0;
           } else {
-            // Bones: Standard depth handling
             child.material.depthTest = true;
             child.material.depthWrite = true;
             child.material.polygonOffset = false;
           }
         }
         
-        // Basic mesh setup
         child.frustumCulled = false;
         child.castShadow = true;
         child.receiveShadow = true;
@@ -162,209 +359,189 @@ function AnatomicalModel({
     });
   }, [scene]);
 
-  // Handle Mode & Layers
-  useFrame(() => {
+  useEffect(() => {
+    const squatAction = actions['Squat'] || Object.values(actions)[0];
+    if (!squatAction) return;
+
+    squatAction.reset().play();
+    squatAction.paused = !playing;
+  }, [playing, actions]);
+
+  useEffect(() => {
+    const squatAction = actions['Squat'] || Object.values(actions)[0];
+    if (!squatAction) return;
+
+    if (!playing) {
+      const clipDuration = squatAction.getClip().duration;
+      squatAction.time = progress * clipDuration;
+    }
+  }, [progress, playing, actions]);
+
+  useFrame((state, delta) => {
+    if (mixer && mixer.update) {
+      mixer.update(delta);
+    }
+    
+    let currentProgress = progress;
+    const action = actions['Squat'] || Object.values(actions)[0];
+    if (action && playing) {
+      currentProgress = (action.time / action.getClip().duration) % 1;
+      if (progressRef.current) {
+        progressRef.current.value = currentProgress.toString();
+      }
+      if (progressTextRef.current) {
+        progressTextRef.current.innerText = Math.round(currentProgress * 100) + '%';
+      }
+    }
+
     scene.traverse((child: any) => {
       if (child.isMesh) {
-        if (isRogueMesh(child.name)) {
-          child.visible = false;
-          child.raycast = () => null;
+        if (isRogueMeshBiomechanics(child.name)) {
           return;
         }
 
-        const id = getMuscleId(child.name);
-        const layer = getLayer(child.name);
-        const isBone = layer === 0;
+        const id = normalizeAnatomyKey(child.name);
+        const isBone = getSystem(child.name) === 'skeleton';
+        if (isBone) return;
+
+        const mat = child.material as THREE.MeshStandardMaterial;
         
-        // Visibility based on layer slider in explorer mode
-        if (mode === 'explorer') {
-          // If we hide it, we must ensure it still doesn't mess with Bounds. But Bounds only observes layout bounds changes, not simple visibility toggles during useFrame if it doesn't scale.
-          child.visible = layer <= activeLayer;
-        } else {
-          // Biomechanics mode: show bones and all muscles (or maybe just superficially?)
-          child.visible = true; 
+        let isExtensor = false;
+        let isFlexor = false;
+        let isHamstring = false;
+        let isCore = ['transversus_abdominis', 'rectus_abdominis', 'obliquus_externus'].includes(id);
+        let isUpperBack = false;
+
+        if (exercise === 'squat' || exercise === 'lunge') {
+            isExtensor = ['gluteus_maximus', 'rectus_femoris', 'vastus_lateralis', 'vastus_medialis', 'soleus', 'gastrocnemius'].includes(id);
+            isFlexor = ['tibialis_anterior', 'psoas_major', 'iliacus'].includes(id);
+            isHamstring = ['biceps_femoris', 'semitendinosus'].includes(id);
+        } else if (exercise === 'hinge') {
+            isExtensor = ['gluteus_maximus', 'biceps_femoris', 'semitendinosus', 'erector_spinae'].includes(id);
+            isFlexor = ['rectus_femoris'].includes(id);
+            isHamstring = false;
+        } else if (exercise === 'row') {
+            isExtensor = ['latissimus_dorsi', 'trapezius', 'rhomboideus', 'biceps_brachii', 'brachialis', 'posterior_deltoid'].includes(id);
+            isFlexor = ['pectoralis_major', 'anterior_deltoid'].includes(id);
+            isHamstring = ['gluteus_maximus', 'biceps_femoris'].includes(id);
+        } else if (exercise === 'bird_dog') {
+            isExtensor = ['gluteus_maximus', 'erector_spinae', 'posterior_deltoid'].includes(id);
+            isFlexor = ['rectus_abdominis', 'iliacus'].includes(id);
+            isCore = true; // heavy core stabilization
+        } else if (exercise === 'dead_bug') {
+            isFlexor = ['rectus_abdominis', 'transversus_abdominis', 'psoas_major'].includes(id);
+            isExtensor = false;
+            isCore = true;
+        } else if (exercise === 'side_plank') {
+            isCore = ['obliquus_externus', 'obliquus_internus', 'transversus_abdominis', 'gluteus_medius'].includes(id);
+            isExtensor = ['latissimus_dorsi'].includes(id);
         }
 
-        // Raycast masking: Disable raycasting for hidden meshes, or if they are bones
-        child.raycast = child.visible && !isBone ? THREE.Mesh.prototype.raycast : () => null;
-
-        // Material Updates
-        const mat = child.material as THREE.MeshStandardMaterial;
-        mat.roughness = 0.5;
-        mat.metalness = 0.1;
-
-        if (mode === 'explorer') {
-          // Explorer styling
-          if (isBone) {
-            mat.color.setHex(0xe8e5d9); // Bone color
-            mat.emissive.setHex(0x000000);
+        if (currentProgress < 0.5) {
+          if (isExtensor) {
+            mat.emissive.setHex(0xaa22ff);
+            mat.emissiveIntensity = 0.4 + (currentProgress * 0.4);
+          } else if (isFlexor) {
+            mat.emissive.setHex(0xffaa00);
+            mat.emissiveIntensity = 0.3;
+          } else if (isCore || isHamstring) {
+            mat.emissive.setHex(0xffaa00);
+            mat.emissiveIntensity = 0.2;
           } else {
-            mat.color.setHex(0xa64b4b); // Default muscle color
-            
-            // Hover/Selection highlight
-            if (id === selectedId) {
-              mat.emissive.setHex(0x00ffff);
-              mat.emissiveIntensity = 0.4;
-            } else {
-              mat.emissive.setHex(0x000000);
-              mat.emissiveIntensity = 0.0;
-            }
+            mat.emissive.setHex(0x000000);
           }
-        } else if (mode === 'biomechanics') {
-          // Biomechanics styling (Heatmaps based on squat phase)
-          if (isBone) {
-            mat.color.setHex(0xd0cbbd);
+        } else {
+          if (isExtensor) {
+            mat.emissive.setHex(0xff2244);
+            mat.emissiveIntensity = 0.8 - ((currentProgress - 0.5) * 0.4);
+          } else if (isFlexor) {
             mat.emissive.setHex(0x000000);
+            mat.emissiveIntensity = 0.0;
+          } else if (isCore || isHamstring) {
+            mat.emissive.setHex(0xffaa00);
+            mat.emissiveIntensity = 0.3;
           } else {
-            mat.color.setHex(0x5a5560); // Darker base for heatmap contrast
-            
-            // Phase logic based on progress (0.0 -> 0.5 descent, 0.5 -> 1.0 ascent)
-            // Agonists for extension (Glutes, Quads)
-            const isExtensor = ['gluteus_maximus', 'rectus_femoris', 'vastus_lateralis', 'vastus_medialis', 'soleus', 'gastrocnemius'].includes(id);
-            // Antagonists/Flexors (Hamstrings, Tibialis Anterior, Psoas)
-            const isFlexor = ['tibialis_anterior', 'psoas_major', 'iliacus'].includes(id);
-            const isHamstring = ['biceps_femoris', 'semitendinosus'].includes(id);
-            const isCore = ['transversus_abdominis', 'rectus_abdominis', 'obliquus_externus'].includes(id);
-
-            // Eccentric Descent (0 - 0.5)
-            if (progress < 0.5) {
-              if (isExtensor) {
-                mat.emissive.setHex(0xaa22ff); // Eccentric yielding (purple/blue)
-                mat.emissiveIntensity = 0.4 + (progress * 0.4);
-              } else if (isFlexor) {
-                mat.emissive.setHex(0xffaa00); // Concentric pull (amber)
-                mat.emissiveIntensity = 0.3;
-              } else if (isCore || isHamstring) {
-                mat.emissive.setHex(0xffaa00); // Synergist/Stabilizer
-                mat.emissiveIntensity = 0.2;
-              } else {
-                mat.emissive.setHex(0x000000);
-              }
-            } else {
-              // Concentric Ascent (0.5 - 1.0)
-              if (isExtensor) {
-                mat.emissive.setHex(0xff2244); // Concentric push (red)
-                mat.emissiveIntensity = 0.8 - ((progress - 0.5) * 0.4);
-              } else if (isFlexor) {
-                mat.emissive.setHex(0x000000); // Relaxing
-                mat.emissiveIntensity = 0.0;
-              } else if (isCore || isHamstring) {
-                mat.emissive.setHex(0xffaa00); // Synergist/Stabilizer
-                mat.emissiveIntensity = 0.3;
-              } else {
-                mat.emissive.setHex(0x000000);
-              }
-            }
+            mat.emissive.setHex(0x000000);
           }
         }
       }
     });
   });
 
-  // Handle Animation Playback & Scrubbing
-  useEffect(() => {
-    const actionName = Object.keys(actions)[0]; // Use first available animation
-    const action = actions[actionName];
-    if (!action) return;
-
-    if (mode === 'explorer') {
-      action.play();
-      action.paused = true;
-      action.time = 0;
-    } else {
-      action.play();
-      if (!playing) {
-        action.paused = true;
-        action.time = progress * action.getClip().duration;
-      } else {
-        action.paused = false;
-      }
-    }
-  }, [mode, actions, progress, playing]);
-
-  // Sync external progress state if playing
-  useFrame(() => {
-    if (mode === 'biomechanics' && playing) {
-      const actionName = Object.keys(actions)[0];
-      const action = actions[actionName];
-      if (action && action.getClip()) {
-        const duration = action.getClip().duration;
-        // This won't update React state to avoid re-renders, but keeps the animation flowing.
-        // We handle the slider sync in a more complex way if needed, but for now R3F drives it.
-      }
-    }
-  });
-
   return (
-    <primitive 
-      object={scene} 
-      onPointerOver={(e: any) => {
-        if (mode === 'explorer') {
-          e.stopPropagation();
-          document.body.style.cursor = 'pointer';
-        }
-      }}
-      onPointerOut={() => {
-        if (mode === 'explorer') {
-          document.body.style.cursor = 'auto';
-        }
-      }}
-      onClick={(e: any) => {
-        if (mode === 'explorer') {
-          e.stopPropagation();
-          onSelect(getMuscleId(e.object.name));
-        }
-      }}
-      onPointerMissed={() => onSelect(null)}
-    />
+    <Center>
+      <primitive object={scene} />
+      <BiomechanicalRigOverlay
+        scene={scene}
+        visible={true}
+        showAxes={true}
+        showForcePlates={true}
+        showWorldAxes={true}
+      />
+    </Center>
   );
 }
 
-useGLTF.preload('/squat_sync.glb');
+useGLTF.preload('/models/squat_clean.glb');
 
 // ============================================================================
 // COMPONENT: CAMERA ANIMATOR
 // ============================================================================
-function CameraAnimator({ focus }: { focus: string }) {
+function CameraAnimator({ focus, focusPoint }: { focus: string, focusPoint: THREE.Vector3 | null }) {
   const { camera, controls } = useThree();
   const [animating, setAnimating] = useState(false);
   const prevFocus = useRef(focus);
+  const prevFocusPoint = useRef(focusPoint);
 
   useEffect(() => {
-    if (focus !== prevFocus.current) {
+    if (focus !== prevFocus.current || focusPoint !== prevFocusPoint.current) {
       setAnimating(true);
       prevFocus.current = focus;
+      prevFocusPoint.current = focusPoint;
     }
-  }, [focus]);
+  }, [focus, focusPoint]);
 
   useFrame((state, delta) => {
     if (!controls || !animating) return;
     const ctrl = controls as any;
-    
-    // Use a smooth, framerate-independent lerp factor
     const speed = 6 * delta; 
     
-    const targets: Record<string, { target: THREE.Vector3, pos: THREE.Vector3 }> = {
-      full: { target: new THREE.Vector3(0, 0.9, 0), pos: new THREE.Vector3(0, 1.1, 2.6) },
-      torso: { target: new THREE.Vector3(0, 1.25, 0), pos: new THREE.Vector3(0, 1.3, 1.25) },
-      lower: { target: new THREE.Vector3(0, 0.45, 0), pos: new THREE.Vector3(0, 0.5, 1.4) }
-    };
+    let targetVec = new THREE.Vector3(0, 0.9, 0);
+    let posVec = new THREE.Vector3(0, 1.1, 2.6);
 
-    const dest = targets[focus] || targets.full;
-    
-    // Always update controls.target first so we pivot correctly around the focal point
-    ctrl.target.lerp(dest.target, speed);
-    camera.position.lerp(dest.pos, speed);
+    if (focusPoint && focus === 'mesh') {
+      targetVec = focusPoint.clone();
+      // Calculate a comfortable offset. Z+1.2 and slightly up.
+      posVec = focusPoint.clone().add(new THREE.Vector3(0, 0.2, 1.2));
+    } else {
+      const targets: Record<string, { target: THREE.Vector3, pos: THREE.Vector3 }> = {
+        full: { target: new THREE.Vector3(0, 0.9, 0), pos: new THREE.Vector3(0, 1.1, 2.6) },
+        torso: { target: new THREE.Vector3(0, 1.25, 0), pos: new THREE.Vector3(0, 1.3, 1.25) },
+        lower: { target: new THREE.Vector3(0, 0.45, 0), pos: new THREE.Vector3(0, 0.5, 1.4) },
+        cervical: { target: new THREE.Vector3(0, 1.55, 0), pos: new THREE.Vector3(0, 1.55, 0.85) },
+        neck: { target: new THREE.Vector3(0, 1.55, 0), pos: new THREE.Vector3(0, 1.55, 0.85) },
+        shoulder: { target: new THREE.Vector3(0, 1.4, 0), pos: new THREE.Vector3(0, 1.4, 1.1) },
+        lumbar: { target: new THREE.Vector3(0, 1.05, 0), pos: new THREE.Vector3(0, 1.1, 1.15) },
+        spine: { target: new THREE.Vector3(0, 1.15, 0), pos: new THREE.Vector3(0, 1.2, 1.2) },
+        hip: { target: new THREE.Vector3(0, 0.85, 0), pos: new THREE.Vector3(0, 0.88, 1.15) },
+        knee: { target: new THREE.Vector3(0, 0.48, 0), pos: new THREE.Vector3(0, 0.5, 1.15) },
+        ankle: { target: new THREE.Vector3(0, 0.15, 0), pos: new THREE.Vector3(0, 0.2, 0.85) }
+      };
+      const dest = targets[focus] || targets.full;
+      targetVec = dest.target;
+      posVec = dest.pos;
+    }
+
+    ctrl.target.lerp(targetVec, speed);
+    camera.position.lerp(posVec, speed);
     
     ctrl.update();
 
-    // Stop animating once we reach the destination to return manual control to the user
-    if (camera.position.distanceTo(dest.pos) < 0.05 && ctrl.target.distanceTo(dest.target) < 0.05) {
+    if (camera.position.distanceTo(posVec) < 0.05 && ctrl.target.distanceTo(targetVec) < 0.05) {
       setAnimating(false);
     }
   });
 
-  // Also stop animating immediately if the user interacts (scrolls, drags)
   useEffect(() => {
     if (!controls) return;
     const ctrl = controls as any;
@@ -380,23 +557,125 @@ function CameraAnimator({ focus }: { focus: string }) {
 // MAIN APPLICATION COMPONENT
 // ============================================================================
 export default function App() {
-  const [mode, setMode] = useState<'explorer' | 'biomechanics'>('explorer');
+  const [mode, setMode] = useState<'explorer' | 'biomechanics' | 'assessment'>('explorer');
   const [activeLayer, setActiveLayer] = useState<number>(3); // 0=Bone, 1, 2, 3
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [cameraFocus, setCameraFocus] = useState<string>('full'); // full, torso, lower
+  const [inspectedMesh, setInspectedMesh] = useState<string | null>(null);
+  
+  // Camera State
+  const [cameraFocus, setCameraFocus] = useState<string>('full'); 
+  const [focusPoint, setFocusPoint] = useState<THREE.Vector3 | null>(null);
+  
+  // Atlas System State
+  const [systems, setSystems] = useState({
+    skeleton: true,
+    muscles: true,
+    joints: true,
+    nerves: true
+  });
   
   // Biomechanics State
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [speed, setSpeed] = useState(1);
+  const [exercise, setExercise] = useState('squat');
+  const progressRef = useRef<HTMLInputElement>(null);
+  const progressTextRef = useRef<HTMLSpanElement>(null);
 
-  // Derive active metadata
-  const activeMeta = selectedId ? anatomyData[selectedId] || { 
-    name: selectedId.replace(/_/g, ' '), 
-    latin: 'Unknown', layer: 2, origin: 'N/A', insertion: 'N/A', action: 'N/A', innervation: 'N/A' 
-  } : null;
+  // Assessment State & Layout
+  const [assessmentLayout, setAssessmentLayout] = useState<'split' | 'console' | 'avatar'>('split');
+  const [custom3DHighlights, setCustom3DHighlights] = useState<{ keywords: string[]; color: string; label: string }[]>([]);
 
-  return (
+  const [assessment, setAssessment] = useState<AssessmentState>({
+    isAssessmentMode: false,
+    safetyAnswers: {}, movementAnswers: {}, painLocations: [], currentPainLevel: 0,
+    activePainSites: [],
+    provocativeMovement: null,
+    painPhase: null,
+    irritability: null,
+    romStatus: '',
+    strengthRating: '',
+    coachNotes: '',
+    showFullReport: false
+  });
+
+  const safetyQuestions = [
+    "Any loss of bladder or bowel control, or numbness around the groin/saddle area?",
+    "Is there progressive weakness, or a foot/hand that drops or gives way?",
+    "Unexplained weight loss, night sweats, or fever with this pain?",
+    "Constant pain that is clearly worse at night and unrelieved by position change?",
+    "Significant trauma (fall, collision, road accident), or unable to bear weight?",
+    "Hot, swollen, tender calf — particularly after surgery, immobility or a long flight?",
+    "History of cancer, with new unexplained musculoskeletal pain?",
+    "Long-term corticosteroid use or known osteoporosis, with new spinal pain?"
+  ];
+
+  const toggleSystem = (sys: keyof typeof systems) => {
+    setSystems(prev => ({ ...prev, [sys]: !prev[sys] }));
+  };
+
+  const handleMeshFocus = (pos: THREE.Vector3 | null) => {
+    setFocusPoint(pos);
+    if (pos) {
+      setCameraFocus('mesh');
+    }
+  };
+
+  let activeMeta = selectedId ? getAnatomyData(selectedId) : null;
+  const sysClass = selectedId ? getSystem(selectedId) : null;
+  
+  if (!activeMeta && selectedId && sysClass) {
+    activeMeta = {
+      commonName: normalizeAnatomyKey(selectedId).replace(/_/g, ' '),
+      latinName: 'Structura Anatomica',
+      system: sysClass === 'skeleton' ? 'Skeletal' : 
+              sysClass === 'joints' ? 'Articular' : 
+              sysClass === 'nerves' ? 'Nervous' : 'Muscular',
+      layer: sysClass === 'skeleton' ? 0 : 2,
+      clinicalRelevance: sysClass === 'skeleton' ? 'Provides structural framework, organ protection, and mechanical leverage for movement.' :
+                         sysClass === 'joints' ? 'Facilitates articulation and provides structural stability to the skeletal system.' :
+                         sysClass === 'nerves' ? 'Transmits somatosensory and motor signals to coordinate physiological functions.' :
+                         'Primary soft tissue. Provides biomechanical leverage and joint stabilization.'
+    };
+  }
+  
+  const addPainSite = () => {
+    if (!selectedId) return;
+    const sys = getSystem(selectedId);
+    const existingIndex = assessment.activePainSites.findIndex(p => p.id === selectedId);
+    
+    if (existingIndex >= 0) return; // Already exists
+
+    const newSite: PainSite = {
+      id: selectedId,
+      name: normalizeAnatomyKey(selectedId).replace(/_/g, ' '),
+      system: sys === 'skeleton' ? 'Skeletal' : sys === 'joints' ? 'Articular' : sys === 'nerves' ? 'Nervous' : 'Muscular',
+      region: 'Other',
+      severity: 5
+    };
+
+    setAssessment(prev => ({
+      ...prev,
+      activePainSites: [...prev.activePainSites, newSite]
+    }));
+  };
+
+  const removePainSite = (id: string) => {
+    setAssessment(prev => ({
+      ...prev,
+      activePainSites: prev.activePainSites.filter(p => p.id !== id)
+    }));
+  };
+
+  const updatePainSiteSeverity = (id: string, severity: number) => {
+    setAssessment(prev => ({
+      ...prev,
+      activePainSites: prev.activePainSites.map(p => p.id === id ? { ...p, severity } : p)
+    }));
+  };
+
+  const displayTitle = activeMeta ? activeMeta.commonName : (selectedId ? normalizeAnatomyKey(selectedId).replace(/_/g, ' ') : 'Unknown Structure');
+
+    return (
     <div className="w-screen h-screen bg-gray-950 flex flex-col font-sans text-gray-100 overflow-hidden relative">
       {/* HEADER */}
       <header className="h-16 border-b border-gray-800 bg-gray-900/80 backdrop-blur-md flex items-center justify-between px-6 z-10">
@@ -405,196 +684,468 @@ export default function App() {
           <h1 className="font-semibold text-lg tracking-wide text-white">Mobilis 3D</h1>
         </div>
         
-        <div className="flex bg-gray-950 p-1 rounded-lg border border-gray-800">
-          <button
-            onClick={() => { setMode('explorer'); setPlaying(false); }}
-            className={cn(
-              "px-4 py-1.5 rounded-md text-sm font-medium transition-all",
-              mode === 'explorer' ? "bg-gray-800 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
-            )}
-          >
-            <Layers className="w-4 h-4 inline-block mr-2" />
-            Layered Explorer
-          </button>
-          <button
-            onClick={() => { setMode('biomechanics'); setSelectedId(null); }}
-            className={cn(
-              "px-4 py-1.5 rounded-md text-sm font-medium transition-all",
-              mode === 'biomechanics' ? "bg-gray-800 text-emerald-400 shadow-sm" : "text-gray-400 hover:text-gray-200"
-            )}
-          >
-            <Activity className="w-4 h-4 inline-block mr-2" />
-            Biomechanics
-          </button>
+        <div className="flex items-center gap-3">
+          {mode === 'assessment' && (
+            <div className="hidden sm:flex bg-gray-950 p-1 rounded-lg border border-purple-900/40 gap-1 text-xs">
+              <button
+                onClick={() => setAssessmentLayout('split')}
+                className={cn(
+                  "px-3 py-1.5 rounded-md font-medium transition-all flex items-center gap-1.5",
+                  assessmentLayout === 'split' ? "bg-purple-600 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+                )}
+              >
+                <Columns className="w-3.5 h-3.5" />
+                Split View
+              </button>
+              <button
+                onClick={() => setAssessmentLayout('console')}
+                className={cn(
+                  "px-3 py-1.5 rounded-md font-medium transition-all flex items-center gap-1.5",
+                  assessmentLayout === 'console' ? "bg-purple-600 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+                )}
+              >
+                <ClipboardList className="w-3.5 h-3.5" />
+                Assessment Console
+              </button>
+              <button
+                onClick={() => setAssessmentLayout('avatar')}
+                className={cn(
+                  "px-3 py-1.5 rounded-md font-medium transition-all flex items-center gap-1.5",
+                  assessmentLayout === 'avatar' ? "bg-purple-600 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+                )}
+              >
+                <Eye className="w-3.5 h-3.5" />
+                3D Avatar Focus
+              </button>
+            </div>
+          )}
+
+          <div className="flex bg-gray-950 p-1 rounded-lg border border-gray-800">
+            <button
+              onClick={() => { setMode('explorer'); setPlaying(false); setCameraFocus('full'); setFocusPoint(null); }}
+              className={cn(
+                "px-4 py-1.5 rounded-md text-sm font-medium transition-all",
+                mode === 'explorer' ? "bg-gray-800 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+              )}
+            >
+              <Layers className="w-4 h-4 inline-block mr-2" />
+              Atlas Explorer
+            </button>
+            <button
+              onClick={() => { setMode('biomechanics'); setAssessment(a => ({...a, isAssessmentMode: false})); setSelectedId(null); setCameraFocus('full'); setFocusPoint(null); }}
+              className={cn(
+                "px-4 py-1.5 rounded-md text-sm font-medium transition-all",
+                mode === 'biomechanics' ? "bg-gray-800 text-emerald-400 shadow-sm" : "text-gray-400 hover:text-gray-200"
+              )}
+            >
+              <Activity className="w-4 h-4 inline-block mr-2" />
+              Biomechanics
+            </button>
+            <button
+              onClick={() => { setMode('assessment'); setAssessment(a => ({...a, isAssessmentMode: true})); setSelectedId(null); setCameraFocus('full'); setFocusPoint(null); }}
+              className={cn(
+                "px-4 py-1.5 rounded-md text-sm font-medium transition-all",
+                mode === 'assessment' ? "bg-gray-800 text-purple-400 shadow-sm" : "text-gray-400 hover:text-gray-200"
+              )}
+            >
+              <ClipboardList className="w-4 h-4 inline-block mr-2" />
+              Movement Assessment
+            </button>
+          </div>
         </div>
       </header>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 relative">
-        {/* 3D CANVAS */}
-        <div className="absolute inset-0 z-0" style={{ background: 'radial-gradient(circle at 50% 45%, #162032 0%, #080c14 100%)' }}>
-          <Canvas camera={{ position: [0, 1.1, 2.6], fov: 40 }}>
-            <ambientLight intensity={0.4} />
-            <directionalLight position={[2, 3, 3]} intensity={1.2} castShadow />
-            <directionalLight position={[-2, 1, 1]} intensity={0.5} color="#e0e8ff" />
-            <directionalLight position={[0, 3, -3]} intensity={1.5} color="#60a5fa" />
-            
-            <group position={[0, 0.9, 0]}>
-              <AnatomicalModel 
-                mode={mode} 
-                activeLayer={activeLayer} 
-                progress={progress} 
-                playing={playing} 
-                onSelect={setSelectedId} 
-                selectedId={selectedId} 
-              />
-            </group>
-            
-            <CameraAnimator focus={cameraFocus} />
-
-            <ContactShadows position={[0, 0, 0]} opacity={0.65} blur={1.8} scale={2.5} far={1.2} resolution={512} color="#000000" />
-            
-            <OrbitControls 
-              makeDefault 
-              target={[0, 0.9, 0]} 
-              minDistance={0.8} 
-              maxDistance={4.5}
-              maxPolarAngle={Math.PI / 2 + 0.05}
-            />
-            <Environment preset="city" environmentIntensity={0.25} />
-          </Canvas>
-        </div>
-
-        {/* Camera Focus HUD */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 flex bg-gray-900/80 backdrop-blur-md rounded-full border border-gray-700 shadow-xl p-1 gap-1">
-          <button onClick={() => setCameraFocus('full')} className={cn("px-4 py-1.5 rounded-full text-xs font-semibold transition-colors", cameraFocus === 'full' ? 'bg-emerald-500 text-gray-950' : 'text-gray-300 hover:text-white')}>Full Body</button>
-          <button onClick={() => setCameraFocus('torso')} className={cn("px-4 py-1.5 rounded-full text-xs font-semibold transition-colors", cameraFocus === 'torso' ? 'bg-emerald-500 text-gray-950' : 'text-gray-300 hover:text-white')}>Torso / Core</button>
-          <button onClick={() => setCameraFocus('lower')} className={cn("px-4 py-1.5 rounded-full text-xs font-semibold transition-colors", cameraFocus === 'lower' ? 'bg-emerald-500 text-gray-950' : 'text-gray-300 hover:text-white')}>Lower Limbs</button>
-        </div>
-
-        {/* OVERLAYS: EXPLORER MODE */}
-        {mode === 'explorer' && (
+      <main className="flex-1 relative flex overflow-hidden">
+        {mode === 'biomechanics' ? (
+          <Biomechanical4ViewLab />
+        ) : (
           <>
-            {/* Layer Controls */}
-            <div className="absolute left-6 top-6 z-10 w-64 bg-gray-900/90 backdrop-blur-md border border-gray-800 rounded-xl p-4 shadow-xl">
-              <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">Depth Layer</h3>
-              <input 
-                type="range" 
-                min="0" max="3" step="1" 
-                value={activeLayer}
-                onChange={(e) => setActiveLayer(parseInt(e.target.value))}
-                className="w-full accent-emerald-500 mb-2 cursor-pointer"
-              />
-              <div className="flex justify-between text-xs font-medium text-gray-500">
-                <span className={activeLayer === 0 ? "text-emerald-400" : ""}>Bone</span>
-                <span className={activeLayer === 1 ? "text-emerald-400" : ""}>Deep</span>
-                <span className={activeLayer === 2 ? "text-emerald-400" : ""}>Mid</span>
-                <span className={activeLayer === 3 ? "text-emerald-400" : ""}>Surface</span>
+            {/* 3D VIEWPORT CONTAINER */}
+            <div 
+              className={cn(
+                "relative h-full transition-all duration-300 overflow-hidden",
+                mode === 'assessment' && assessmentLayout === 'console'
+                  ? "hidden"
+                  : mode === 'assessment' && assessmentLayout === 'split'
+                  ? "w-full md:w-[42%] lg:w-[44%] shrink-0 border-r border-gray-800"
+                  : "w-full shrink-0"
+              )}
+              style={{ background: 'radial-gradient(circle at 50% 45%, #162032 0%, #080c14 100%)' }}
+            >
+              <Canvas 
+                camera={{ position: [0, 1.1, 2.6], fov: 40 }}
+                gl={{ toneMapping: THREE.ACESFilmicToneMapping, outputColorSpace: THREE.SRGBColorSpace }}
+              >
+                <ambientLight intensity={1.0} />
+                <directionalLight position={[2, 3, 3]} intensity={2.0} castShadow />
+                <directionalLight position={[-2, 1, 1]} intensity={1.2} color="#e0e8ff" />
+                <directionalLight position={[0, 3, -3]} intensity={2.5} color="#60a5fa" />
+                
+                <group position={[0, 0.9, 0]}>
+                  <AtlasModel 
+                    activeLayer={activeLayer}
+                    systems={systems}
+                    selectedId={selectedId}
+                    onSelect={setSelectedId}
+                    onFocusMesh={handleMeshFocus}
+                    activePainSites={assessment.activePainSites}
+                    onHover={setInspectedMesh}
+                    customHighlights={custom3DHighlights}
+                  />
+                </group>
+                
+                <CameraAnimator focus={cameraFocus} focusPoint={focusPoint} />
+
+                <ContactShadows position={[0, 0, 0]} opacity={0.65} blur={1.8} scale={2.5} far={1.2} resolution={512} color="#000000" />
+                
+                <OrbitControls 
+                  makeDefault 
+                  target={[0, 0.9, 0]} 
+                  minDistance={0.5} 
+                  maxDistance={4.5}
+                  maxPolarAngle={Math.PI / 2 + 0.05}
+                />
+                <Environment preset="city" environmentIntensity={0.25} />
+              </Canvas>
+
+              {/* Camera Focus HUD (Centered in visible 3D canvas viewport) */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 pointer-events-auto">
+                {inspectedMesh && (
+                  <div className="bg-gray-900/90 text-gray-300 text-xs px-3 py-1 rounded-md border border-gray-700 shadow-md flex items-center gap-2 max-w-[240px] truncate">
+                    <Search className="w-3 h-3 text-emerald-400 shrink-0" />
+                    <span className="font-mono truncate">{inspectedMesh}</span>
+                    <span className="text-gray-500 shrink-0">({getSystem(inspectedMesh)})</span>
+                  </div>
+                )}
+                <div className="flex bg-gray-900/80 backdrop-blur-md rounded-full border border-gray-700 shadow-xl p-1 gap-1">
+                  <button onClick={() => { setFocusPoint(null); setCameraFocus('full'); }} className={cn("px-3 py-1.5 rounded-full text-xs font-semibold transition-colors", cameraFocus === 'full' ? 'bg-emerald-500 text-gray-950' : 'text-gray-300 hover:text-white')}>Full Body</button>
+                  <button onClick={() => { setFocusPoint(null); setCameraFocus('torso'); }} className={cn("px-3 py-1.5 rounded-full text-xs font-semibold transition-colors", cameraFocus === 'torso' ? 'bg-emerald-500 text-gray-950' : 'text-gray-300 hover:text-white')}>Torso</button>
+                  <button onClick={() => { setFocusPoint(null); setCameraFocus('lower'); }} className={cn("px-3 py-1.5 rounded-full text-xs font-semibold transition-colors", cameraFocus === 'lower' ? 'bg-emerald-500 text-gray-950' : 'text-gray-300 hover:text-white')}>Lower</button>
+                </div>
               </div>
+
+              {/* Assessment Mode Overlays on the 3D viewport */}
+              {mode === 'assessment' && (
+                <>
+                  {/* Kinetic 3D Highlights Floating Badge */}
+                  {custom3DHighlights.length > 0 && (
+                    <div className="absolute top-4 left-4 z-10 max-w-[280px] pointer-events-auto">
+                      <div className="bg-gray-900/90 backdrop-blur-md border border-purple-900/50 rounded-xl p-3 shadow-xl">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-purple-400" /> Kinetic 3D Highlights
+                          </span>
+                          <button
+                            onClick={() => setCustom3DHighlights([])}
+                            className="text-[10px] text-gray-400 hover:text-white uppercase font-semibold"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {custom3DHighlights.map((h, i) => (
+                            <span
+                              key={i}
+                              className="text-xs px-2 py-0.5 rounded-md font-semibold border flex items-center gap-1.5"
+                              style={{
+                                backgroundColor: `${h.color}22`,
+                                borderColor: `${h.color}66`,
+                                color: h.color,
+                              }}
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: h.color }} />
+                              {h.label}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Selected Mesh Action in 3D viewport */}
+                  {selectedId && (
+                    <div className="absolute bottom-16 left-4 z-10 w-64 bg-gray-900/95 backdrop-blur-md border border-purple-500/50 rounded-xl p-3 shadow-2xl animate-in fade-in slide-in-from-bottom-2">
+                      <div className="text-[10px] uppercase font-bold text-purple-400">Selected Anatomy</div>
+                      <div className="text-xs font-bold text-white capitalize leading-tight mb-2 truncate">{displayTitle}</div>
+                      <button
+                        onClick={addPainSite}
+                        className="w-full py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow-md shadow-purple-900/40 transition-colors"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Add as Symptom Site
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Avatar Focus Mode: Floating button to return to Assessment Console */}
+                  {assessmentLayout === 'avatar' && (
+                    <div className="absolute bottom-4 right-4 z-10 pointer-events-auto">
+                      <button
+                        onClick={() => setAssessmentLayout('split')}
+                        className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs shadow-2xl shadow-purple-900/50 flex items-center gap-2 border border-purple-400/30 transition-all hover:scale-[1.02]"
+                      >
+                        <ClipboardList className="w-4 h-4" /> Open Assessment Console
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
 
-            {/* Metadata Drawer */}
-            {activeMeta && (
-              <div className="absolute right-6 top-6 z-10 w-80 bg-gray-900/90 backdrop-blur-md border border-gray-800 rounded-xl overflow-hidden shadow-2xl transition-all animate-in slide-in-from-right-4 fade-in">
-                <div className="bg-emerald-950/40 border-b border-emerald-900/30 p-4">
-                  <h2 className="text-lg font-bold text-white capitalize">{activeMeta.name}</h2>
-                  <p className="text-xs italic text-emerald-400">{activeMeta.latin}</p>
-                </div>
-                <div className="p-4 space-y-4 text-sm">
-                  <div>
-                    <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Origin</span>
-                    <span className="text-gray-200">{activeMeta.origin}</span>
-                  </div>
-                  <div>
-                    <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Insertion</span>
-                    <span className="text-gray-200">{activeMeta.insertion}</span>
-                  </div>
-                  <div>
-                    <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</span>
-                    <span className="text-gray-200">{activeMeta.action}</span>
-                  </div>
-                  <div>
-                    <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Innervation</span>
-                    <span className="text-gray-200">{activeMeta.innervation}</span>
-                  </div>
-                </div>
+            {/* ASSESSMENT ENGINE VIEW CONTAINER (Console or Split) */}
+            {mode === 'assessment' && assessmentLayout !== 'avatar' && (
+              <div
+                className={cn(
+                  "relative h-full flex flex-col bg-gray-950 overflow-hidden",
+                  assessmentLayout === 'console'
+                    ? "w-full"
+                    : "w-full md:w-[58%] lg:w-[56%] flex-1"
+                )}
+              >
+                <AssessmentEngineView
+                  onHighlightMeshes={setCustom3DHighlights}
+                  onSetCameraRegion={(reg) => {
+                    setCameraFocus(reg);
+                    setFocusPoint(null);
+                  }}
+                  activePainSites={assessment.activePainSites}
+                  onAddPainSite={(reg, sev) => {
+                    const id = reg.toLowerCase().replace(/\s+/g, '_');
+                    if (!assessment.activePainSites.some((p) => p.id === id)) {
+                      setAssessment((prev) => ({
+                        ...prev,
+                        activePainSites: [
+                          ...prev.activePainSites,
+                          {
+                            id,
+                            name: reg,
+                            system: 'Muscular',
+                            region: (['Cervical', 'Shoulder', 'Lumbar', 'Hip', 'Knee', 'Ankle'].includes(reg)
+                              ? reg
+                              : 'Other') as any,
+                            severity: sev,
+                          },
+                        ],
+                      }));
+                    }
+                  }}
+                  onRemovePainSite={(id) => {
+                    setAssessment((prev) => ({
+                      ...prev,
+                      activePainSites: prev.activePainSites.filter((p) => p.id !== id),
+                    }));
+                  }}
+                />
               </div>
+            )}
+
+            {/* OVERLAYS: EXPLORER MODE */}
+            {mode === 'explorer' && (
+              <>
+                {/* Left Sidebar: Systems & Layers */}
+                <div className="absolute left-6 top-6 z-10 w-72 flex flex-col gap-4">
+                  {/* System Toggles */}
+                  <div className="bg-gray-900/90 backdrop-blur-md border border-gray-800 rounded-xl p-4 shadow-xl">
+                    <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">Anatomical Systems</h3>
+                    <div className="flex flex-col gap-3">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" checked={systems.skeleton} onChange={() => toggleSystem('skeleton')} className="w-4 h-4 rounded accent-emerald-500 cursor-pointer" />
+                        <span className="text-sm text-gray-200">Skeletal System</span>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" checked={systems.muscles} onChange={() => toggleSystem('muscles')} className="w-4 h-4 rounded accent-emerald-500 cursor-pointer" />
+                        <span className="text-sm text-gray-200">Muscular System</span>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" checked={systems.joints} onChange={() => toggleSystem('joints')} className="w-4 h-4 rounded accent-emerald-500 cursor-pointer" />
+                        <span className="text-sm text-gray-200">Articular System (Joints)</span>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" checked={systems.nerves} onChange={() => toggleSystem('nerves')} className="w-4 h-4 rounded accent-emerald-500 cursor-pointer" />
+                        <span className="text-sm text-gray-200">Nervous System</span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  {/* Depth Layer for Muscles */}
+                  <div className={cn("bg-gray-900/90 backdrop-blur-md border border-gray-800 rounded-xl p-4 shadow-xl transition-opacity", !systems.muscles && "opacity-50 pointer-events-none")}>
+                    <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">Muscle Depth</h3>
+                    <input 
+                      type="range" 
+                      min="0" max="3" step="1" 
+                      value={activeLayer}
+                      onChange={(e) => setActiveLayer(parseInt(e.target.value))}
+                      className="w-full accent-emerald-500 mb-2 cursor-pointer"
+                    />
+                    <div className="flex justify-between text-xs font-medium text-gray-500">
+                      <span className={activeLayer === 0 ? "text-emerald-400" : ""}>Bone</span>
+                      <span className={activeLayer === 1 ? "text-emerald-400" : ""}>Deep</span>
+                      <span className={activeLayer === 2 ? "text-emerald-400" : ""}>Mid</span>
+                      <span className={activeLayer === 3 ? "text-emerald-400" : ""}>Surface</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Metadata Drawer (Right Sidebar) */}
+                {selectedId && (
+                  <div className="absolute right-6 top-6 z-10 w-80 bg-gray-900/90 backdrop-blur-md border border-gray-800 rounded-xl overflow-hidden shadow-2xl transition-all animate-in slide-in-from-right-4 fade-in max-h-[85vh] flex flex-col">
+                    <div className={cn("border-b p-4 shrink-0", 
+                      getSystem(selectedId) === 'nerves' ? "bg-yellow-950/40 border-yellow-900/30" :
+                      getSystem(selectedId) === 'joints' ? "bg-cyan-950/40 border-cyan-900/30" :
+                      getSystem(selectedId) === 'muscles' ? "bg-orange-950/40 border-orange-900/30" :
+                      "bg-emerald-950/40 border-emerald-900/30"
+                    )}>
+                      <div className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">
+                        {getSystem(selectedId) === 'nerves' ? "Peripheral Nervous System" :
+                         getSystem(selectedId) === 'joints' ? "Articular Capsule & Ligament" :
+                         getSystem(selectedId) === 'muscles' ? "Skeletal Muscle" : "Bone"}
+                      </div>
+                      <h2 className="text-lg font-bold text-white capitalize">{displayTitle}</h2>
+                      {activeMeta?.latinName && <p className="text-sm italic text-gray-400 font-serif mt-1">{activeMeta.latinName}</p>}
+                    </div>
+                    
+                    <div className="p-4 space-y-4 overflow-y-auto flex-1">
+                      {activeMeta ? (
+                        <>
+                          {activeMeta.origin && (
+                            <div>
+                              <h3 className="text-xs font-semibold text-gray-500 uppercase">Origin</h3>
+                              <p className="text-sm text-gray-300 mt-1 leading-snug">{activeMeta.origin}</p>
+                            </div>
+                          )}
+                          {activeMeta.insertion && (
+                            <div>
+                              <h3 className="text-xs font-semibold text-gray-500 uppercase">Insertion</h3>
+                              <p className="text-sm text-gray-300 mt-1 leading-snug">{activeMeta.insertion}</p>
+                            </div>
+                          )}
+                          {activeMeta.actions && activeMeta.actions.length > 0 && (
+                            <div>
+                              <h3 className="text-xs font-semibold text-gray-500 uppercase">Actions</h3>
+                              <ul className="list-disc list-outside ml-4 mt-1 text-sm text-gray-300 space-y-0.5">
+                                {activeMeta.actions.map((act, i) => <li key={i}>{act}</li>)}
+                              </ul>
+                            </div>
+                          )}
+                          {activeMeta.innervation && (
+                            <div>
+                              <h3 className="text-xs font-semibold text-gray-500 uppercase">Innervation</h3>
+                              <p className="text-sm text-gray-300 mt-1 leading-snug">{activeMeta.innervation}</p>
+                            </div>
+                          )}
+                          {activeMeta.relatedStructures && activeMeta.relatedStructures.length > 0 && (
+                            <div>
+                              <h3 className="text-xs font-semibold text-gray-500 uppercase">Related Structures</h3>
+                              <div className="flex flex-wrap gap-2 mt-1.5">
+                                {activeMeta.relatedStructures.map((struct, i) => (
+                                  <span key={i} className="px-2 py-0.5 bg-gray-800/80 text-gray-300 rounded text-xs border border-gray-700/50">
+                                    {struct}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {activeMeta.exercises && activeMeta.exercises.length > 0 && (
+                            <div>
+                              <h3 className="text-xs font-semibold text-gray-500 uppercase">Training & Exercises</h3>
+                              <ul className="list-disc list-outside ml-4 mt-1 text-sm text-gray-300 space-y-0.5">
+                                {activeMeta.exercises.map((ex, i) => <li key={i}>{ex}</li>)}
+                              </ul>
+                            </div>
+                          )}
+                          {activeMeta.clinicalRelevance && (
+                            <div className="pt-3 border-t border-gray-800">
+                              <h3 className="text-xs font-semibold text-emerald-500 uppercase">Functional & Movement Role</h3>
+                              <p className="text-sm text-gray-300 mt-1 leading-snug italic">{activeMeta.clinicalRelevance}</p>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <p className="text-sm text-gray-400 italic">Detailed functional movement metadata for this specific mesh structure is not yet available in the database.</p>
+                      )}
+
+                      <button 
+                        onClick={() => {
+                          // Trigger a re-focus
+                          setCameraFocus('');
+                          setTimeout(() => setCameraFocus('mesh'), 10);
+                        }}
+                        className="mt-4 w-full flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium py-2 rounded-lg transition-colors border border-gray-700"
+                      >
+                        <Camera className="w-4 h-4" /> Focus Camera
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
 
         {/* OVERLAYS: BIOMECHANICS MODE */}
         {mode === 'biomechanics' && (
-          <>
-            {/* Playback Controls */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 w-[500px] bg-gray-900/95 backdrop-blur-md border border-gray-800 rounded-2xl p-4 shadow-2xl flex flex-col gap-4">
-              <div className="flex items-center justify-between gap-4">
-                <button 
-                  onClick={() => setPlaying(!playing)}
-                  className="w-12 h-12 flex items-center justify-center rounded-full bg-emerald-500 hover:bg-emerald-400 text-gray-950 transition-colors"
-                >
-                  {playing ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-1" />}
-                </button>
-                
-                <div className="flex-1 flex flex-col justify-center">
-                  <input 
-                    type="range" 
-                    min="0" max="1" step="0.001"
-                    value={progress}
-                    onChange={(e) => {
-                      setPlaying(false);
-                      setProgress(parseFloat(e.target.value));
-                    }}
-                    className="w-full accent-emerald-500 h-1.5 cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    <span>Standing</span>
-                    <span>Deep Squat</span>
-                    <span>Return</span>
-                  </div>
-                </div>
-              </div>
+          <div className="absolute left-1/2 bottom-20 -translate-x-1/2 z-10 w-96 bg-gray-900/90 backdrop-blur-md border border-gray-800 rounded-xl p-4 shadow-xl">
+            <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4 flex justify-between items-center">
+              <span>Kinematic Playback</span>
+              <span ref={progressTextRef} className="text-emerald-400 font-mono text-xs">{Math.round(progress * 100)}%</span>
+            </h3>
+            
+            <div className="mb-4">
+              <select 
+                value={exercise}
+                onChange={(e) => {
+                  setPlaying(false);
+                  setProgress(0);
+                  if (progressRef.current) progressRef.current.value = "0";
+                  if (progressTextRef.current) progressTextRef.current.innerText = "0%";
+                  setExercise(e.target.value);
+                }}
+                className="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-sm text-gray-200 outline-none focus:border-emerald-500 transition-colors">
+                <option value="squat">Bodyweight Squat</option>
+                <option value="hinge" disabled>Hip Hinge (Coming Soon)</option>
+                <option value="lunge" disabled>Forward Lunge (Coming Soon)</option>
+                <option value="row" disabled>Bent Over Row (Coming Soon)</option>
+              </select>
+            </div>
+            
+            <div className="flex items-center gap-4 mb-4">
+              <button 
+                onClick={() => {
+                  if (playing) {
+                    if (progressRef.current) {
+                      setProgress(parseFloat(progressRef.current.value));
+                    }
+                  }
+                  setPlaying(!playing);
+                }}
+                className="w-10 h-10 rounded-full bg-emerald-500 text-gray-950 flex items-center justify-center hover:bg-emerald-400 transition-colors"
+              >
+                {playing ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-1" />}
+              </button>
+              
+              <input 
+                ref={progressRef}
+                type="range" 
+                min="0" max="1" step="0.01" 
+                defaultValue={progress}
+                onChange={(e) => {
+                  setPlaying(false);
+                  setProgress(parseFloat(e.target.value));
+                }}
+                className="flex-1 accent-emerald-500 cursor-pointer"
+              />
             </div>
 
-            {/* Biomechanics HUD */}
-            <div className="absolute right-6 top-6 z-10 w-72 bg-gray-900/90 backdrop-blur-md border border-gray-800 rounded-xl p-5 shadow-xl">
-              <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4 border-b border-gray-800 pb-2">Kinematic State</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <span className="block text-xs font-medium text-gray-500 mb-1">Current Phase</span>
-                  <div className={cn(
-                    "px-3 py-1.5 rounded text-sm font-bold border",
-                    progress < 0.5 
-                      ? "bg-purple-950/30 text-purple-400 border-purple-900/50" 
-                      : "bg-red-950/30 text-red-400 border-red-900/50"
-                  )}>
-                    {progress < 0.5 ? "Eccentric Descent" : "Concentric Ascent"}
-                  </div>
-                </div>
-                
-                <div className="pt-2 border-t border-gray-800">
-                  <span className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Activation Legend</span>
-                  <ul className="space-y-2 text-xs">
-                    <li className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-[#ff2244] shadow-[0_0_8px_#ff2244]" />
-                      <span className="text-gray-300">Agonist (Concentric)</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-[#aa22ff] shadow-[0_0_8px_#aa22ff]" />
-                      <span className="text-gray-300">Agonist (Eccentric)</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-[#ffaa00] shadow-[0_0_8px_#ffaa00]" />
-                      <span className="text-gray-300">Synergist / Stabilizer</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+            <div className="flex justify-between items-center text-xs text-gray-500 border-t border-gray-800 pt-3">
+              <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#aa22ff]" /> Eccentric (Yield)</span>
+              <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#ffaa00]" /> Stabilizer</span>
+              <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#ff2244]" /> Concentric (Push)</span>
             </div>
-          </>
+          </div>
         )}
+
       </main>
     </div>
   );
 }
+

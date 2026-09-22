@@ -748,6 +748,39 @@ const EXERCISES = [
     ],
     contraindications: ['Acute meniscal tear in deep flexion', 'Unstable patellofemoral subluxation'],
   },
+  {
+    id: 'push_up',
+    name: 'Push up',
+    mode: 'strengthen',
+    targets: ['pectoralis_major', 'triceps_brachii', 'deltoid', 'serratus_anterior'],
+    stage: ['subacute', 'chronic'],
+    equipment: 'none',
+    dose: '3-4 sets x 8-15 reps',
+    cues: [
+      'Start in a high plank, hands slightly wider than shoulders.',
+      'Keep body in a straight line from head to heels with active core.',
+      'Lower chest to the floor with control.',
+      'Push back up fully, protracting shoulder blades slightly at the top.',
+    ],
+    contraindications: ['Acute shoulder pain', 'Wrist pain with extension'],
+  },
+  {
+    id: 'romanian_deadlift',
+    name: 'Romanian deadlift (RDL)',
+    mode: 'strengthen',
+    targets: ['hamstrings', 'gluteus_maximus', 'erector_spinae'],
+    stage: ['chronic'],
+    equipment: 'barbell or dumbbells',
+    dose: '3 sets x 8-12 reps',
+    cues: [
+      'Stand with feet hip-width, holding the weight with an overhand grip.',
+      'Hinge at the hips, pushing them back while keeping the back completely straight.',
+      'Maintain a slight, fixed bend in the knees.',
+      'Lower the weight down the legs until you feel a deep stretch in the hamstrings.',
+      'Squeeze the glutes to drive the hips forward and stand back up.',
+    ],
+    contraindications: ['Acute lower back pain', 'Radicular leg pain'],
+  },
 ];
 
 module.exports = { EXERCISES };
